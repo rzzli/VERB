@@ -3,14 +3,20 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { checkout, copyFixtures, freeze, git, hash, readJSON, resolveRef, saveJSON, working } from '../lib/files.js';
+import { checkout, copyFixtures, freeze, git, hash, resolveRef, saveJSON, working } from '../lib/files.js';
 import { interrupt, runSide } from '../lib/run.js';
-import { detectConflicts, entries, load, prune, recent } from '../lib/store.js';
+import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
+import { currentConflict, detectConflicts, entries, load, proofProblem, prune, recent } from '../lib/store.js';
 
 const usage = 'VERB — Verify Expected Runtime Behavior\n\nverb baseline CLAIM --base REF\nverb check CLAIM\nverb prove CLAIM --base REF [--candidate REF]\nverb status [RECEIPT | --active]\nverb summary RECEIPT\nverb deactivate CLAIM\nAdd --json for machine-readable output. Run from the target Git repository.';
 const codes = { verified: 0, failed: 1, inconclusive: 2 };
 let interrupted = false;
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { interrupted = true; interrupt(); });
+const invocation = new AbortController();
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
+  interrupted = true;
+  invocation.abort();
+  interrupt();
+});
 
 function argumentsFor(argv) {
   const [action, ...args] = argv;
@@ -46,6 +52,8 @@ function textReport(r) {
     }
   }
   if (r.reason) lines.push(r.reason);
+  for (const warning of r.warnings ?? []) lines.push('Scope: ' + warning.message);
+  for (const error of r.cleanupErrors ?? []) lines.push('Cleanup: ' + error.message);
   if (r.replay) lines.push('Replay argv: ' + JSON.stringify(r.replay));
   if (r.receipt) lines.push('Receipt: ' + r.receipt);
   return lines.join('\n');
@@ -68,8 +76,8 @@ function* proofs(repo, store, file, matches = () => true) {
     .sort((a, b) => b.time - a.time || b.file.localeCompare(a.file)).map(e => e.file);
   let id;
   for (const stored of files) {
-    const r = file ? readJSON(file) : load(stored);
-    const target = r?.sides?.candidate ?? r?.target;
+    const r = readReceipt(file ?? stored);
+    const target = r.sides?.candidate ?? r.target;
     if (r?.action !== 'prove' || r.repo !== repo || target?.kind !== 'working' || !matches(r)) continue;
     id ??= working(repo).id;
     if (target.id === id) yield { r, file: stored };
@@ -80,13 +88,14 @@ function status(repo, store, { file, active }) {
   const result = { action: 'status', verdict: 'inconclusive' };
   if (active) {
     const dir = path.join(store, 'baselines');
-    const claims = entries(dir).filter(e => e.isDirectory()).map(e => load(path.join(dir, e.name, 'current.json')))
+    const claims = entries(dir).filter(e => e.isDirectory())
+      .map(e => readBaseline(path.join(dir, e.name, 'current.json')))
       .filter(saved => saved && (saved.verdict === 'verified' || saved.active));
     if (!claims.length) return { ...result, active: 0, verdict: 'verified', reason: 'No active VERB claims.' };
     result.active = claims.length;
-    const pending = new Map();
+    const pending = new Map(), noted = new Set();
     for (const saved of claims) {
-      const baseline = saved.claimPath ? saved : readJSON(saved.receipt);
+      const baseline = saved.claimPath ? saved : readReceipt(saved.receipt);
       const claimPath = canonicalClaim(baseline.claimPath ?? baseline.replay[2]);
       if (freeze(claimPath).digest !== saved.digest || saved.verdict !== 'verified') {
         return { ...result, reason: 'Run baseline again for ' + path.relative(repo, claimPath) + '.' };
@@ -100,8 +109,12 @@ function status(repo, store, { file, active }) {
       const { digest, base, baselineReceipt } = pending.get(claimPath);
       if (r.verdict !== 'verified' || r.digest !== digest || r.sides.base.id !== base ||
           r.baselineReceipt !== baselineReceipt) break;
+      const problem = proofProblem(store, hash(claimPath), r);
+      if (problem) return { ...result, reason: problem };
+      for (const warning of r.warnings ?? []) noted.add(warning.message);
       pending.delete(claimPath);
-      if (!pending.size) return { ...result, verdict: 'verified', reason: 'All active claims have a fresh verified proof.' };
+      if (!pending.size) return { ...result, verdict: 'verified', warnings: [...noted].map(message => ({ code: 'scope', message })),
+        reason: 'All active claims have a fresh verified proof.' };
     }
     return { ...result, reason: 'Run prove for ' + [...pending.keys()].map(p => path.relative(repo, p)).join(', ') + '.' };
   }
@@ -109,7 +122,11 @@ function status(repo, store, { file, active }) {
   if (!latest) return { ...result, reason: 'No proof receipt matches the current working tree.' };
   result.receipt = latest.file;
   if (latest.r.verdict !== 'verified') return { ...result, reason: 'Matching proof was not verified.' };
-  return { ...result, verdict: 'verified', reason: 'Working files match a verified proof.' };
+  const claimPath = latest.r.claimPath ?? latest.r.replay?.[2];
+  if (typeof claimPath !== 'string') return { ...result, reason: 'Proof lacks claim identity; run prove again.' };
+  const problem = proofProblem(store, hash(canonicalClaim(claimPath)), latest.r);
+  if (problem) return { ...result, reason: problem };
+  return { ...result, verdict: 'verified', warnings: latest.r.warnings ?? [], reason: 'Working files match a verified proof.' };
 }
 
 function summary(r) {
@@ -144,13 +161,27 @@ function summary(r) {
     const args = argv.map(relativeArg);
     lines.push(`Required ${JSON.stringify(args)}: ${executed[i] ? 'exit ' + (executed[i].code ?? 'unavailable') : 'not run'}`);
   }
+  for (const warning of r.warnings ?? []) lines.push('Scope: ' + warning.message);
   return lines.join('\n');
+}
+
+// Cleanup is evidence too: failed deletion must never bypass the attempt's receipt.
+function cleanupSnapshot(dir, receipt) {
+  try {
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    return true;
+  } catch (error) {
+    (receipt.cleanupErrors ??= []).push({ path: dir, message: error.message });
+    receipt.verdict = 'inconclusive';
+    receipt.reason ??= 'snapshot cleanup failed';
+    return false;
+  }
 }
 
 async function main() {
   const opts = argumentsFor(process.argv.slice(2));
   if (opts.action === 'summary') {
-    console.log(summary(readJSON(opts.file)));
+    console.log(summary(readReceipt(opts.file)));
     return 0;
   }
   const repo = fs.realpathSync.native(git(process.cwd(), ['rev-parse', '--show-toplevel']).trim());
@@ -183,17 +214,17 @@ async function main() {
   const runId = randomUUID();
   const receipts = path.join(store, 'receipts', claimKey);
   const receipt = path.join(receipts, runId + '.json');
-  const r = { action: opts.action, repo, claimPath: opts.file, receipt, timestamp: new Date().toISOString(), verdict: 'inconclusive',
-    sides: {}, replay: ['verb', opts.action, opts.file] };
+  const r = { action: opts.action, format: receiptFormat, repo, claimPath: opts.file, receipt,
+    timestamp: new Date().toISOString(), verdict: 'inconclusive', sides: {}, replay: ['verb', opts.action, opts.file] };
   try {
     if (opts.action === 'prove') {
       // Keep failed attempts visible to status even if baseline/setup aborts before the candidate runs.
       if (!opts.candidate) r.target = working(repo);
-      r.baselineReceipt = load(slot)?.receipt;
+      r.baselineReceipt = readBaseline(slot)?.receipt;
     }
     const bundle = path.join(temp, 'frozen');
-    const { spec, digest } = freeze(opts.file, bundle);
-    Object.assign(r, { claim: spec.claim, digest, required: spec.required });
+    const { spec, digest, contents, scope, warnings } = freeze(opts.file, bundle);
+    Object.assign(r, { claim: spec.claim, digest, required: spec.required, scope, warnings });
     const base = opts.base && resolveRef(repo, opts.base);
     if (base) r.replay.push('--base', base);
     const candidate = opts.candidate && resolveRef(repo, opts.candidate);
@@ -212,19 +243,21 @@ async function main() {
         r.sides[role] = side;
         const privateBundle = path.join(sideDir, 'bundle');
         copyFixtures(spec.fixtures, bundle, privateBundle);
-        await runSide(side, spec, privateBundle, tree, path.join(sideDir, 'profile'), role, suites);
+        await runSide(side, spec, privateBundle, tree, path.join(sideDir, 'profile'), role, suites, invocation.signal);
         detectConflicts(store, claimKey, digest, role, side);
         return side;
       } finally {
         // A surviving sibling would disclose which side is running, even with random names.
-        fs.rmSync(sideDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+        if (!cleanupSnapshot(sideDir, r)) {
+          throw Object.assign(Error('snapshot cleanup failed'), { cause: r.sides[role]?.reason });
+        }
       }
     };
     if (opts.action === 'check') {
       if (!fs.existsSync(slot)) throw Error('Run baseline first.');
-      const saved = readJSON(slot);
+      const saved = readBaseline(slot);
       if (saved.digest !== digest || saved.verdict !== 'verified') throw Error('Baseline invalid or claim changed. Run baseline again.');
-      r.sides.base = { ...(saved.base ?? readJSON(saved.receipt).sides.base), cached: true };
+      r.sides.base = { ...(saved.base ?? readReceipt(saved.receipt).sides.base), cached: true };
       // Check history too: an intervening prove may have contradicted this saved observation.
       detectConflicts(store, claimKey, digest, 'base', r.sides.base);
     } else {
@@ -239,21 +272,39 @@ async function main() {
     if (opts.action === 'baseline' && r.verdict === 'verified') {
       const saved = path.join(store, 'baselines', hash(opts.file), runId);
       copyFixtures(spec.fixtures, bundle, path.join(saved, 'fixtures'));
-      saveJSON(path.join(saved, 'claim.json'), spec);
+      fs.writeFileSync(path.join(saved, 'claim.json'), contents);
       r.frozen = saved;
     }
   } catch (error) {
     r.verdict = 'inconclusive';
-    r.reason = error.message;
+    r.reason = error.cause ? error.cause + '; ' + error.message : error.message;
+    if (error.field) r.field = error.field;
   } finally {
-    fs.rmSync(temp, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    cleanupSnapshot(temp, r);
   }
   if (interrupted) Object.assign(r, { verdict: 'inconclusive', reason: 'interrupted' });
+  return finalize({ r, opts, store, claimKey, slot, receipts, receipt, interrupted });
+}
+
+// The single approval rule after execution: recheck the read-only eligibility of the
+// decision against completed history (cleanup is slow, so another run may have won),
+// then persist the attempt, save baseline state, and prune only old receipts.
+function finalize({ r, opts, store, claimKey, slot, receipts, receipt, interrupted: stopped }) {
+  // Cleanup may be slow: another completed execution can invalidate this decision.
+  // Status repeats this read-only revision check, including after receipt publication.
+  if (r.verdict === 'verified') {
+    try {
+      for (const [role, side] of Object.entries(r.sides)) {
+        const problem = currentConflict(store, claimKey, r.digest, role, side);
+        if (problem) { Object.assign(r, { verdict: 'inconclusive', reason: problem }); break; }
+      }
+    } catch (error) { Object.assign(r, { verdict: 'inconclusive', reason: error.message }); }
+  }
   saveJSON(receipt, r);
-  if (opts.action === 'baseline') {
-    const previous = load(slot);
-    saveJSON(slot, { receipt, claimPath: opts.file, verdict: r.verdict, digest: r.digest, base: r.sides.base,
-      active: r.verdict === 'verified' || previous?.verdict === 'verified' || previous?.active });
+  if (opts.action === 'baseline' && !stopped) {
+    const previous = readBaseline(slot);
+    saveJSON(slot, { format: baselineFormat, receipt, claimPath: opts.file, verdict: r.verdict, digest: r.digest,
+      base: r.sides.base, active: r.verdict === 'verified' || previous?.verdict === 'verified' || previous?.active });
   }
   for (const file of prune(receipts)) {
     fs.rmSync(path.join(path.dirname(slot), path.basename(file, '.json')), { recursive: true, force: true });

@@ -95,8 +95,8 @@ test('pre-commit rejects clean filters that conceal different staged behavior', 
   write(path.join(repo, 'filter.mjs'), `import fs from 'node:fs';
 const data = fs.readFileSync(0, 'utf8');
 process.stdout.write(process.argv[2] === 'clean' ? data.replaceAll('new', 'old') : data);`);
-  git('config', 'filter.rewrite.clean', 'node filter.mjs clean');
-  git('config', 'filter.rewrite.smudge', 'node filter.mjs smudge');
+  git('config', 'filter.rewrite.clean', JSON.stringify(process.execPath) + ' filter.mjs clean');
+  git('config', 'filter.rewrite.smudge', JSON.stringify(process.execPath) + ' filter.mjs smudge');
   git('add', '.');
   git('commit', '-qm', 'content filter');
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');

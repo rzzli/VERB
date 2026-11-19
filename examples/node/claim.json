@@ -1,0 +1,15 @@
+{
+  "claim": "Preserve an explicitly empty display name without removing the missing-name fallback",
+  "env": { "GREETER_BUILD_VERSION": "demo-1" },
+  "setup": [["{node}", "build.cjs"]],
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    { "key": "empty name", "base": "Hello, Guest!", "fixed": "Hello, !" },
+    { "key": "missing name", "base": "Hello, Guest!", "fixed": "Hello, Guest!" },
+    { "key": "named person", "base": "Hello, Ada!", "fixed": "Hello, Ada!" },
+    { "key": "build version", "base": "demo-1", "fixed": "demo-1" }
+  ],
+  "required": [["{node}", "--test", "greeter.test.cjs"]],
+  "timeoutMs": 10000
+}

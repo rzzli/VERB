@@ -5,7 +5,11 @@
   "description": "VERB — Verify Expected Runtime Behavior by replaying a behavioral claim against broken and proposed code",
   "type": "module",
   "bin": { "verb": "./bin/verb.js" },
-  "files": ["bin", "lib", "hooks", "skills", "examples/click", "templates", "README.md"],
+  "files": ["bin", "lib", "hooks", "skills", "examples/click", "examples/node", "templates", "README.md"],
   "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test test/*.test.js" }
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:installed": "node --test test/installed-smoke.js",
+    "bench:resources": "node test/resource-budget.mjs"
+  }
 }
