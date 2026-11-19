@@ -1,0 +1,9 @@
+VERB VERIFIED (baseline): On Windows, a claim's lowercase path environment override must replace inherited PATH just as an uppercase PATH override does.
+Claim: ../../../test/agent-pilot/02-env-case/claim.json
+Claim digest (SHA-256): 5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f
+base: commit c48f6c2099f5ffe2fabcfa6412cf28998462c73b
+  Origin: bin/verb.js
+  PASS lowercase PATH override: expected "ignored", observed "ignored"
+  PASS uppercase PATH override [control]: expected "honored", observed "honored"
+candidate: not run
+Required ["{node}","--test","test/*.test.js"]: not run

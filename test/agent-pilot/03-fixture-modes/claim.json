@@ -1,0 +1,14 @@
+{
+  "claim": "Frozen POSIX fixtures retain their executable mode and mode changes invalidate the baseline",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    {"key": "executable fixture baseline", "base": "inconclusive", "fixed": "verified"},
+    {"key": "mode change invalidates baseline", "base": "no", "fixed": "yes"},
+    {"key": "explicit interpreter control", "base": "verified", "fixed": "verified"},
+    {"key": "nonexecutable control", "base": "inconclusive", "fixed": "inconclusive"}
+  ],
+  "required": [["{node}", "--test", "test/*.test.js"]],
+  "timeoutMs": 120000,
+  "requiredTimeoutMs": 120000
+}

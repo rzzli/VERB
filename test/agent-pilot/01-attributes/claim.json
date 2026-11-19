@@ -1,0 +1,12 @@
+{
+  "claim": "Historical baseline checkout uses its own Git attributes, not the candidate's line-ending policy",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    {"key": "historical baseline after attribute change", "base": "inconclusive", "fixed": "verified"},
+    {"key": "unchanged policy control", "base": "verified", "fixed": "verified"}
+  ],
+  "required": [["{node}", "--test", "test/*.test.js"]],
+  "timeoutMs": 120000,
+  "requiredTimeoutMs": 120000
+}

@@ -1,0 +1,14 @@
+VERB VERIFIED (prove): A command timeout must bound waiting for stdout held by a detached descendant after the launcher has exited; ordinary timeout classification and successful commands must remain intact.
+Claim: ../../../test/agent-pilot/05-timeout-pipes/claim.json
+Claim digest (SHA-256): 5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a
+base: commit c48f6c2099f5ffe2fabcfa6412cf28998462c73b
+  Origin: bin/verb.js
+  PASS detached pipe timeout: expected "waited for detached child", observed "waited for detached child"
+  PASS active root timeout [control]: expected "inconclusive", observed "inconclusive"
+  PASS normal setup and probe [control]: expected "verified", observed "verified"
+candidate: working aee6e41e9eef8155624bd99893f500ce4a2bf9b68eea9e9f625cfa30292a5e49
+  Origin: bin/verb.js
+  PASS detached pipe timeout: expected "bounded", observed "bounded"
+  PASS active root timeout [control]: expected "inconclusive", observed "inconclusive"
+  PASS normal setup and probe [control]: expected "verified", observed "verified"
+Required ["{node}","--test","test/*.test.js"]: exit 0

@@ -1,0 +1,355 @@
+{
+  "recordedAt": "2026-11-19T06:24:26.671Z",
+  "localDate": "2026-11-18",
+  "timeZone": "America/Los_Angeles",
+  "scope": "Five prospective self-hosted VERB bug fixes; no injected production defects, historical known-fix trials, human review, or external-project effectiveness claim",
+  "baselineBundleSha256": "ed23ac0b80fed0056406ef4ef01573b721364019e44c32d7edfb36f41011e8e9",
+  "originalUserRepoHead": "8c879cff554014bb1977ae4094d19d2a841970fc",
+  "seedCapturedAt": "2026-11-19T05:39:02.366Z",
+  "timeFromSeedCaptureToFirstClaimMinutes": 6.150716666666667,
+  "totalDiscoveryAndSharedHarnessMinutes": null,
+  "sharedCostNote": "Not separately timed end-to-end. The seed capture timestamp is after preparation of the baseline bundle, not the start of the human request or discovery.",
+  "completedTrials": 5,
+  "firstCandidatesVerified": 5,
+  "additionalDefectsCaughtBeyondStaticReview": 0,
+  "medianSetupMinutes": 1.9430166666666666,
+  "totalSetupMinutes": 8.168000000000001,
+  "runtimeDelta": [
+    {
+      "file": "bin/verb.js",
+      "beforeLines": 271,
+      "afterLines": 273,
+      "sha256": "8407a363436c5cad309f6387c24740ef199ea1ae00a4dbf2a7841fdafcc6b58d"
+    },
+    {
+      "file": "lib/files.js",
+      "beforeLines": 233,
+      "afterLines": 242,
+      "sha256": "e4ee0df027361bb80a85cdf134b50bfb85a92ccff9d6bde312b0b0dd07a5ab96"
+    },
+    {
+      "file": "lib/run.js",
+      "beforeLines": 125,
+      "afterLines": 136,
+      "sha256": "4f18a0a349cd0564972bf7561dd8df98f1e3fad46c3d3af32570440351442da8"
+    }
+  ],
+  "netRuntimeLines": 22,
+  "newRuntimeDependencies": 0,
+  "newPublicCommands": 0,
+  "newClaimFields": 0,
+  "integratedSuite": {
+    "windows": {
+      "passed": 45,
+      "failed": 0,
+      "skipped": 2
+    },
+    "linux": {
+      "passed": 44,
+      "failed": 0,
+      "skipped": 3
+    }
+  },
+  "historicalClickReleaseGates": {
+    "platform": "win32",
+    "matchedExpectedOutcomes": 10,
+    "totalGates": 10,
+    "interpreter": "explicit existing Python executable, not app alias"
+  },
+  "packageValidation": {
+    "files": 12,
+    "packedBytes": 19206,
+    "unpackedBytes": 56287,
+    "offlineInstall": "passed",
+    "installedCommand": "passed",
+    "inactiveHook": "passed",
+    "pilotArtifactsExcluded": true
+  },
+  "installedLifecycle": {
+    "recordedAt": "2026-11-19T06:21:10.983Z",
+    "runtimeBytesMatchSource": true,
+    "baseline": "verified",
+    "proof": "verified",
+    "active": "verified",
+    "requiredCommandExit": 0,
+    "inactiveAndActiveInstalledHooks": "passed"
+  },
+  "trials": [
+    {
+      "id": "01-attributes",
+      "platform": "win32",
+      "setupMinutes": 0.37805,
+      "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "claimDigest": "7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143",
+      "firstPatchSha256": "d084578a0049a56412d657dc786246091a666214c465fb6aeb96faab822d831d",
+      "firstCandidateVerdict": "verified",
+      "firstProofMs": 29493,
+      "orchestrationOverheadMs": 411,
+      "reviewDecision": "approve",
+      "reviewAt": "2026-11-19T05:48:07.6691264Z",
+      "additionalDefectCaughtBeyondReview": false,
+      "setupStartedAt": "2026-11-19T05:45:52.971Z",
+      "baselineVerifiedAt": "2026-11-19T05:46:15.654Z",
+      "firstPatchCapturedAt": "2026-11-19T05:47:16.835Z",
+      "firstProofStartedAt": "2026-11-19T05:49:21.451Z",
+      "evidenceDirectory": "test/agent-pilot/01-attributes"
+    },
+    {
+      "id": "02-env-case",
+      "platform": "win32",
+      "setupMinutes": 1.9629,
+      "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "claimDigest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f",
+      "firstPatchSha256": "8e7fdc0f45357db3983dacdfc925fe69e6ca9f33ad234c4c475d4b0274270e72",
+      "firstCandidateVerdict": "verified",
+      "firstProofMs": 27813,
+      "orchestrationOverheadMs": 434,
+      "reviewDecision": "approve",
+      "reviewAt": "2026-11-19T05:49:31.6184928Z",
+      "additionalDefectCaughtBeyondReview": false,
+      "setupStartedAt": "2026-11-19T05:45:11.409Z",
+      "baselineVerifiedAt": "2026-11-19T05:47:09.183Z",
+      "firstPatchCapturedAt": "2026-11-19T05:48:18.364Z",
+      "firstProofStartedAt": "2026-11-19T05:50:25.955Z",
+      "evidenceDirectory": "test/agent-pilot/02-env-case"
+    },
+    {
+      "id": "03-fixture-modes",
+      "platform": "linux",
+      "setupMinutes": 1.9430166666666666,
+      "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "claimDigest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a",
+      "firstPatchSha256": "84744f60d0f71f18500e2d371f4c38b271e3d5268be36327d23cac08b82c6b7d",
+      "firstCandidateVerdict": "verified",
+      "firstProofMs": 8135,
+      "orchestrationOverheadMs": 850,
+      "reviewDecision": "approve",
+      "reviewAt": "2026-11-19T05:54:34.4234039Z",
+      "additionalDefectCaughtBeyondReview": false,
+      "setupStartedAt": "2026-11-19T05:47:38.200Z",
+      "baselineVerifiedAt": "2026-11-19T05:49:34.781Z",
+      "firstPatchCapturedAt": "2026-11-19T05:52:36.131Z",
+      "firstProofStartedAt": "2026-11-19T05:56:38.205Z",
+      "evidenceDirectory": "test/agent-pilot/03-fixture-modes"
+    },
+    {
+      "id": "04-portable-summary",
+      "platform": "linux",
+      "setupMinutes": 2.2343333333333333,
+      "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "claimDigest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971",
+      "firstPatchSha256": "0d1aae3f67ba25cc4a91377fa775a428d4273fda560ae6122f244e914aa31e78",
+      "firstCandidateVerdict": "verified",
+      "firstProofMs": 10528,
+      "orchestrationOverheadMs": 3340,
+      "reviewDecision": "approve",
+      "reviewAt": "2026-11-19T05:56:11.9093984Z",
+      "additionalDefectCaughtBeyondReview": false,
+      "setupStartedAt": "2026-11-19T05:50:22.646Z",
+      "baselineVerifiedAt": "2026-11-19T05:52:36.706Z",
+      "firstPatchCapturedAt": "2026-11-19T05:54:08.707Z",
+      "firstProofStartedAt": "2026-11-19T05:58:03.772Z",
+      "evidenceDirectory": "test/agent-pilot/04-portable-summary"
+    },
+    {
+      "id": "05-timeout-pipes",
+      "platform": "win32",
+      "setupMinutes": 1.6497,
+      "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "claimDigest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a",
+      "firstPatchSha256": "3407b22e59826befdde12c2981908d2dc1036f0af7b1a94ad4865a53e47b0a8e",
+      "firstCandidateVerdict": "verified",
+      "firstProofMs": 33834,
+      "orchestrationOverheadMs": 489,
+      "reviewDecision": "approve",
+      "reviewAt": "2026-11-19T05:54:46.0607775Z",
+      "additionalDefectCaughtBeyondReview": false,
+      "setupStartedAt": "2026-11-19T05:49:27.723Z",
+      "baselineVerifiedAt": "2026-11-19T05:51:06.705Z",
+      "firstPatchCapturedAt": "2026-11-19T05:52:52.013Z",
+      "firstProofStartedAt": "2026-11-19T05:56:30.645Z",
+      "evidenceDirectory": "test/agent-pilot/05-timeout-pipes"
+    }
+  ],
+  "replays": {
+    "windows-first": {
+      "recordedAt": "2026-11-19T06:06:00.615Z",
+      "platform": "win32",
+      "node": "v22.23.5",
+      "runner": "frozen seed",
+      "candidate": "original first patches",
+      "results": [
+        {
+          "id": "01-attributes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 1405,
+          "proofMs": 31901,
+          "digest": "7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143"
+        },
+        {
+          "id": "02-env-case",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 1085,
+          "proofMs": 29918,
+          "digest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f"
+        },
+        {
+          "id": "03-fixture-modes",
+          "skipped": "requires linux/darwin"
+        },
+        {
+          "id": "04-portable-summary",
+          "skipped": "requires linux/darwin"
+        },
+        {
+          "id": "05-timeout-pipes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 5004,
+          "proofMs": 34849,
+          "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a"
+        }
+      ]
+    },
+    "linux-first": {
+      "recordedAt": "2026-11-19T06:05:02.151Z",
+      "platform": "linux",
+      "node": "v22.23.5",
+      "runner": "frozen seed",
+      "candidate": "original first patches",
+      "results": [
+        {
+          "id": "01-attributes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 256,
+          "proofMs": 6953,
+          "digest": "7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143"
+        },
+        {
+          "id": "02-env-case",
+          "skipped": "requires win32"
+        },
+        {
+          "id": "03-fixture-modes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 447,
+          "proofMs": 8082,
+          "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a"
+        },
+        {
+          "id": "04-portable-summary",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 171,
+          "proofMs": 7185,
+          "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971"
+        },
+        {
+          "id": "05-timeout-pipes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 3714,
+          "proofMs": 12402,
+          "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a"
+        }
+      ]
+    },
+    "windows-integrated": {
+      "recordedAt": "2026-11-19T06:09:09.518Z",
+      "platform": "win32",
+      "node": "v22.23.5",
+      "runner": "current",
+      "candidate": "integrated current source",
+      "results": [
+        {
+          "id": "01-attributes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 1406,
+          "proofMs": 32332,
+          "digest": "fb216341ee99a0a42cae7413f47d4e5b44a0c0d497e90adbab6a6f89addea76e"
+        },
+        {
+          "id": "02-env-case",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 1107,
+          "proofMs": 29198,
+          "digest": "6f98f23d5f10bdcf64a8a0e2f78315e7fe4df412404f6f1fbeb10a4a775f42ea"
+        },
+        {
+          "id": "03-fixture-modes",
+          "skipped": "requires linux/darwin"
+        },
+        {
+          "id": "04-portable-summary",
+          "skipped": "requires linux/darwin"
+        },
+        {
+          "id": "05-timeout-pipes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 4969,
+          "proofMs": 32648,
+          "digest": "43bb494104b2c0c1f75cc10ca3eae19de6f9dfd56814a0bf0a11cfa061e0f1ac"
+        }
+      ]
+    },
+    "linux-integrated": {
+      "recordedAt": "2026-11-19T06:08:14.341Z",
+      "platform": "linux",
+      "node": "v22.23.5",
+      "runner": "current",
+      "candidate": "integrated current source",
+      "results": [
+        {
+          "id": "01-attributes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 287,
+          "proofMs": 7236,
+          "digest": "3978ebaba1b1a67432ba20975727efed7a01a627c8adabc76d149031f3a6a44a"
+        },
+        {
+          "id": "02-env-case",
+          "skipped": "requires win32"
+        },
+        {
+          "id": "03-fixture-modes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 450,
+          "proofMs": 7932,
+          "digest": "3f9a79be06a5825c2280eae14e952a642a645d4ad09d0557c79b7c8a1e0e8737"
+        },
+        {
+          "id": "04-portable-summary",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 209,
+          "proofMs": 7233,
+          "digest": "830405ebe65e90f47d135ba2dcdff182e8b7530e3d632160711ab67957772b59"
+        },
+        {
+          "id": "05-timeout-pipes",
+          "verdict": "verified",
+          "code": 0,
+          "baselineMs": 3739,
+          "proofMs": 12445,
+          "digest": "3ac5b8f3527998eeb801dccccd57e6fecc14c0318b093245aa0eed774e18c505"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Self-hosted sample only, not five independent projects",
+    "Reviewers are automated independent agents, not humans",
+    "Setup timings are wall-clock, including tool and scheduling delays, excluding prior discovery/shared harness preparation",
+    "First two Windows captures retain incidental CRLF checkout churn; original artifacts were not rewritten; integration contains only semantic fixes",
+    "Process-tree termination remains best-effort for detached descendants; timeout fix bounds pipe draining, not sandboxing"
+  ]
+}

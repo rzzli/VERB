@@ -1,0 +1,74 @@
+diff --git a/lib/files.js b/lib/files.js
+index a8d0f71..bee47d9 100644
+--- a/lib/files.js
++++ b/lib/files.js
+@@ -172,12 +172,18 @@ function command(value) {
+     value.every(arg => typeof arg === 'string') && value[0].length > 0;
+ }
+ 
+-// Copy bytes, without inheriting source filesystem encryption or ACL metadata.
++function writeFixture(file, bytes, executable) {
++  fs.writeFileSync(file, bytes);
++  fs.chmodSync(file, (fs.statSync(file).mode & 0o666) | executable);
++}
++
++// Copy bytes and executable bits, without inheriting source encryption or ACL metadata.
+ export function copyFixtures(names, source, dest) {
+   for (const name of names) {
+     const file = path.join(dest, name);
++    const input = plainFile(source, name);
+     fs.mkdirSync(path.dirname(file), { recursive: true });
+-    fs.writeFileSync(file, fs.readFileSync(plainFile(source, name)));
++    writeFixture(file, fs.readFileSync(input), fs.statSync(input).mode & 0o111);
+   }
+ }
+ 
+@@ -221,12 +227,14 @@ export function freeze(claimPath, dest) {
+   for (const name of [...new Set(spec.fixtures)].sort()) {
+     if (typeof name !== 'string' || !name || name.includes('\\') ||
+         name.split('/').some(part => !part || part === '..' || part === '.')) throw Error('Invalid fixture path');
+-    const bytes = fs.readFileSync(plainFile(root, name));
+-    digest.update(JSON.stringify([name, hash(bytes)]));
++    const input = plainFile(root, name);
++    const bytes = fs.readFileSync(input);
++    const executable = fs.statSync(input).mode & 0o111;
++    digest.update(JSON.stringify([name, hash(bytes), executable]));
+     if (dest) {
+       const file = path.join(dest, name);
+       fs.mkdirSync(path.dirname(file), { recursive: true });
+-      fs.writeFileSync(file, bytes);
++      writeFixture(file, bytes, executable);
+     }
+   }
+   return { spec, digest: digest.digest('hex') };
+diff --git a/test/fixture-modes.test.js b/test/fixture-modes.test.js
+new file mode 100644
+index 0000000..9c28d0d
+--- /dev/null
++++ b/test/fixture-modes.test.js
+@@ -0,0 +1,25 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import fs from 'node:fs';
++import path from 'node:path';
++import { freeze, copyFixtures } from '../lib/files.js';
++import { fixture, write } from './helpers.js';
++
++test('frozen fixtures preserve executable bits and bind them into the digest', {skip: process.platform === 'win32'}, t => {
++  const f = fixture(t);
++  const helper = path.join(f.dir, 'helper.sh');
++  write(helper, '#!/bin/sh\nprintf hello\n');
++  fs.chmodSync(helper, 0o740);
++  write(f.claim, {...f.spec, fixtures:[...f.spec.fixtures, 'helper.sh']});
++  const bundle = path.join(f.dir, 'bundle'), privateBundle = path.join(f.dir, 'private');
++  const first = freeze(f.claim, bundle);
++  assert.equal(fs.statSync(path.join(bundle, 'helper.sh')).mode & 0o111, 0o100);
++  copyFixtures(['helper.sh'], bundle, privateBundle);
++  assert.equal(fs.statSync(path.join(privateBundle, 'helper.sh')).mode & 0o111, 0o100);
++  fs.chmodSync(helper, 0o640);
++  assert.notEqual(freeze(f.claim).digest, first.digest);
++  freeze(f.claim, bundle);
++  copyFixtures(['helper.sh'], bundle, privateBundle);
++  assert.equal(fs.statSync(path.join(bundle, 'helper.sh')).mode & 0o111, 0);
++  assert.equal(fs.statSync(path.join(privateBundle, 'helper.sh')).mode & 0o111, 0);
++});

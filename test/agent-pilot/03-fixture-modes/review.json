@@ -1,0 +1,45 @@
+{
+  "reviewedAt": "2026-11-19T05:54:34.4234039Z",
+  "reviewer": "automated independent-agent",
+  "reviewType": "independent static review",
+  "independentOfCandidateAuthor": true,
+  "decision": "approve",
+  "predictedVerdict": "verified",
+  "candidateRuntimeResultSeen": false,
+  "candidateExecutionPerformed": false,
+  "testsOrProofsRun": [],
+  "statement": "I did not author this candidate. This review inspected only the captured patch, frozen claim/probe, isolated implementation, and regression source. No candidate runtime result was seen and no candidate execution, test, or proof was performed.",
+  "scope": [
+    "test/agent-pilot/03-fixture-modes/first-candidate.patch",
+    "test/agent-pilot/03-fixture-modes/claim.json",
+    "test/agent-pilot/03-fixture-modes/probe.mjs",
+    ".pilot/agent-trials-20261118-2134/03-fixture-modes/lib/files.js",
+    ".pilot/agent-trials-20261118-2134/03-fixture-modes/test/fixture-modes.test.js"
+  ],
+  "findings": [
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Executable copy semantics",
+      "assessment": "No blocking defect found. Both freeze and copyFixtures route through the same byte-writing helper and restore exactly the source's 0o111 bits. The helper replaces, rather than ORs with, existing destination execute bits, so a subsequent nonexecutable source also clears stale executable bits. It does not copy setuid/setgid/sticky bits, source encryption, or source ACLs."
+    },
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Digest binding and behavioral claim",
+      "assessment": "The digest includes each fixture's executable mask alongside its name and content hash. The frozen probe genuinely exercises direct execution from the copied inner bundle, keeps explicit-interpreter and nonexecutable controls, and changes only a helper's mode before check. Static reasoning predicts the distinguishing observations and controls will match the fixed expectations on POSIX. Existing pre-change frozen-input digests will change and require rebaselining; this fails closed rather than silently reusing a stale baseline."
+    },
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Read-only source and umask",
+      "assessment": "The new copy still creates destination bytes using the existing default writeFileSync permissions and then preserves that destination's read/write bits while restoring only source execute bits. A read-only source therefore does not newly make the destination read-only. Fresh destination read/write permissions remain subject to umask; exact execute bits are intentionally restored independently. Updating a separately preexisting read-only destination can still fail, but that is unchanged from the prior writeFileSync path and is not the fresh-bundle CLI flow. The new regression does not explicitly exercise restrictive umasks or read-only sources."
+    },
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Windows compatibility and validation limits",
+      "assessment": "No Windows regression is apparent statically: chmod is applied only to the newly written destination and retains its writable bit; it does not request POSIX ownership or source ACL copying. Windows cannot supply POSIX executable semantics, and the focused mode regression is correctly skipped there. Native Windows suite coverage should still be run during validation because this patch adds a chmod call to every fixture copy; this review is not evidence of a Windows runtime pass."
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Frozen pilot inputs and recorded patches must survive cross-platform checkouts byte-for-byte.
+* -text
+*.bundle binary

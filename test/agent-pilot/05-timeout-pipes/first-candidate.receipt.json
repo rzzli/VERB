@@ -1,0 +1,140 @@
+{
+  "action": "prove",
+  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes",
+  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\4ed6b60b-86d7-4f31-b3e7-8b57c040f4cc.json",
+  "timestamp": "2026-11-19T05:56:30.746Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-BqoBgu\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 4817,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-BqoBgu\\\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"waited for detached child\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
+          "stderr": "{\"detachedElapsedMs\":3384,\"activeElapsedMs\":804,\"normalElapsedMs\":329,\"configuredTimeoutMs\":400,\"boundedThresholdMs\":1500}\n"
+        }
+      ],
+      "origin": "bin\\verb.js",
+      "observations": {
+        "detached pipe timeout": "waited for detached child",
+        "active root timeout": "inconclusive",
+        "normal setup and probe": "verified"
+      },
+      "assertions": [
+        {
+          "key": "detached pipe timeout",
+          "control": false,
+          "expected": "waited for detached child",
+          "actual": "waited for detached child",
+          "pass": true
+        },
+        {
+          "key": "active root timeout",
+          "control": true,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        },
+        {
+          "key": "normal setup and probe",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    },
+    "candidate": {
+      "kind": "working",
+      "id": "aee6e41e9eef8155624bd99893f500ce4a2bf9b68eea9e9f625cfa30292a5e49",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-BqoBgu\\983fca15-745c-412b-91c3-865c2ad22022\\bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 2315,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-BqoBgu\\\\983fca15-745c-412b-91c3-865c2ad22022\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"bounded\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
+          "stderr": "{\"detachedElapsedMs\":806,\"activeElapsedMs\":795,\"normalElapsedMs\":333,\"configuredTimeoutMs\":400,\"boundedThresholdMs\":1500}\n"
+        },
+        {
+          "phase": "required",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "--test",
+            "test/*.test.js"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 26213,
+          "stdout": "TAP version 13\n# Subtest: snapshot sibling layout cannot distinguish base from candidate on unchanged code\nok 1 - snapshot sibling layout cannot distinguish base from candidate on unchanged code\n  ---\n  duration_ms: 696.454\n  type: 'test'\n  ...\n# Subtest: a newer inconclusive proof without a candidate invalidates an earlier verified proof\nok 2 - a newer inconclusive proof without a candidate invalidates an earlier verified proof\n  ---\n  duration_ms: 2148.3489\n  type: 'test'\n  ...\n# Subtest: a fresh baseline needs a subsequent proof, not a proof from the previous activation\nok 3 - a fresh baseline needs a subsequent proof, not a proof from the previous activation\n  ---\n  duration_ms: 2785.3487\n  type: 'test'\n  ...\n# Subtest: Windows claim aliases share a baseline, proof and deactivation slot\nok 4 - Windows claim aliases share a baseline, proof and deactivation slot\n  ---\n  duration_ms: 1450.1906\n  type: 'test'\n  ...\n# Subtest: Windows deactivation handles deleted claims and legacy case-alias slots\nok 5 - Windows deactivation handles deleted claims and legacy case-alias slots\n  ---\n  duration_ms: 909.2321\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects index flags that conceal unstaged files\nok 6 - pre-commit rejects index flags that conceal unstaged files\n  ---\n  duration_ms: 2247.4542\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects clean filters that conceal different staged behavior\nok 7 - pre-commit rejects clean filters that conceal different staged behavior\n  ---\n  duration_ms: 2023.9942\n  type: 'test'\n  ...\n# Subtest: summary keeps flag paths relative and distinguishes failed and unrun commands\nok 8 - summary keeps flag paths relative and distinguishes failed and unrun commands\n  ---\n  duration_ms: 837.915\n  type: 'test'\n  ...\n# Subtest: Windows batch launch failures are recorded instead of appearing unrun\nok 9 - Windows batch launch failures are recorded instead of appearing unrun\n  ---\n  duration_ms: 723.5963\n  type: 'test'\n  ...\n# Subtest: inactive hooks do not inspect an unsupported working tree\nok 10 - inactive hooks do not inspect an unsupported working tree\n  ---\n  duration_ms: 551.4491\n  type: 'test'\n  ...\n# Subtest: every active claim needs its own proof and failed rebaselines stay active\nok 11 - every active claim needs its own proof and failed rebaselines stay active\n  ---\n  duration_ms: 3045.2171\n  type: 'test'\n  ...\n# Subtest: the documented Git hook blocks a real commit until the staged tree is proved\nok 12 - the documented Git hook blocks a real commit until the staged tree is proved\n  ---\n  duration_ms: 1857.3122\n  type: 'test'\n  ...\n# Subtest: checks cannot replace the three actual required-command reruns needed for recovery\nok 13 - checks cannot replace the three actual required-command reruns needed for recovery\n  ---\n  duration_ms: 4251.8968\n  type: 'test'\n  ...\n# Subtest: a later required-command conflict survives runs stopped by an earlier command\nok 14 - a later required-command conflict survives runs stopped by an earlier command\n  ---\n  duration_ms: 5503.677\n  type: 'test'\n  ...\n# Subtest: cached baselines do not count toward recovery after a contradictory fresh baseline\nok 15 - cached baselines do not count toward recovery after a contradictory fresh baseline\n  ---\n  duration_ms: 2526.1046\n  type: 'test'\n  ...\n# Subtest: candidate observations retain one shared history across check and prove\nok 16 - candidate observations retain one shared history across check and prove\n  ---\n  duration_ms: 2555.9262\n  type: 'test'\n  ...\n# Subtest: required conflicts survive more than 30 checks and incomplete command executions\nok 17 - required conflicts survive more than 30 checks and incomplete command executions\n  ---\n  duration_ms: 521.8158\n  type: 'test'\n  ...\n# Subtest: history and receipt retention remain bounded across check and prove modes\nok 18 - history and receipt retention remain bounded across check and prove modes\n  ---\n  duration_ms: 10728.7313\n  type: 'test'\n  ...\n# Subtest: prove composes shared dependencies and internal aliases without modifying the shared source\nok 19 - prove composes shared dependencies and internal aliases without modifying the shared source\n  ---\n  duration_ms: 1013.4375\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared deps\nok 20 - working: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 654.3241\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared cache/deps\nok 21 - working: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 669.3166\n  type: 'test'\n  ...\n# Subtest: working: shared links do not permit external or dangling symlinks\nok 22 - working: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 997.836\n  type: 'test'\n  ...\n# Subtest: working: declared directories must exist, be ignored, and contain no tracked files\nok 23 - working: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 857.7562\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared deps\nok 24 - commit: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 816.3019\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared cache/deps\nok 25 - commit: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 812.0741\n  type: 'test'\n  ...\n# Subtest: commit: shared links do not permit external or dangling symlinks\nok 26 - commit: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 1294.7618\n  type: 'test'\n  ...\n# Subtest: commit: declared directories must exist, be ignored, and contain no tracked files\nok 27 - commit: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 1145.2745\n  type: 'test'\n  ...\n# Subtest: timeout stops draining pipes held by a detached descendant after launcher exit\nok 28 - timeout stops draining pipes held by a detached descendant after launcher exit\n  ---\n  duration_ms: 698.8884\n  type: 'test'\n  ...\n# Subtest: active-root timeouts stay inconclusive and normal output is preserved\nok 29 - active-root timeouts stay inconclusive and normal output is preserved\n  ---\n  duration_ms: 695.1234\n  type: 'test'\n  ...\n# Subtest: frozen baseline, uncommitted snapshot, receipt freshness and replay\nok 30 - frozen baseline, uncommitted snapshot, receipt freshness and replay\n  ---\n  duration_ms: 4142.8831\n  type: 'test'\n  ...\n# Subtest: status requires the newest matching working-tree proof to be verified\nok 31 - status requires the newest matching working-tree proof to be verified\n  ---\n  duration_ms: 3258.9842\n  type: 'test'\n  ...\n# Subtest: setup failure, missing observation, outside origin and timeout are inconclusive\nok 32 - setup failure, missing observation, outside origin and timeout are inconclusive\n  ---\n  duration_ms: 2160.7376\n  type: 'test'\n  ...\n# Subtest: conflicting observations recover after three consistent runs, and missing history is empty\nok 33 - conflicting observations recover after three consistent runs, and missing history is empty\n  ---\n  duration_ms: 1978.2206\n  type: 'test'\n  ...\n# Subtest: parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\nok 34 - parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\n  ---\n  duration_ms: 824.7556\n  type: 'test'\n  ...\n# Subtest: hooks only gate active claims and pre-commit refuses a partial tree\nok 35 - hooks only gate active claims and pre-commit refuses a partial tree\n  ---\n  duration_ms: 3540.6615\n  type: 'test'\n  ...\n# Subtest: pruning keeps 30 receipts and history records without invalidating the saved baseline\nok 36 - pruning keeps 30 receipts and history records without invalidating the saved baseline\n  ---\n  duration_ms: 1151.8853\n  type: 'test'\n  ...\n# Subtest: build setup can read shared ignored dependencies; required checks get a separate timeout\nok 37 - build setup can read shared ignored dependencies; required checks get a separate timeout\n  ---\n  duration_ms: 3864.1725\n  type: 'test'\n  ...\n# Subtest: commit and working snapshots preserve internal symlinks but reject escaping targets\nok 38 - commit and working snapshots preserve internal symlinks but reject escaping targets\n  ---\n  duration_ms: 2083.4257\n  type: 'test'\n  ...\n# Subtest: submodules remain unsupported in commit and working snapshots\nok 39 - submodules remain unsupported in commit and working snapshots\n  ---\n  duration_ms: 700.121\n  type: 'test'\n  ...\n1..39\n# tests 39\n# suites 0\n# pass 39\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 26162.879\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin\\verb.js",
+      "observations": {
+        "detached pipe timeout": "bounded",
+        "active root timeout": "inconclusive",
+        "normal setup and probe": "verified"
+      },
+      "assertions": [
+        {
+          "key": "detached pipe timeout",
+          "control": false,
+          "expected": "bounded",
+          "actual": "bounded",
+          "pass": true
+        },
+        {
+          "key": "active root timeout",
+          "control": true,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        },
+        {
+          "key": "normal setup and probe",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "prove",
+    "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "target": {
+    "kind": "working",
+    "id": "aee6e41e9eef8155624bd99893f500ce4a2bf9b68eea9e9f625cfa30292a5e49"
+  },
+  "baselineReceipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351.json",
+  "claim": "A command timeout must bound waiting for stdout held by a detached descendant after the launcher has exited; ordinary timeout classification and successful commands must remain intact.",
+  "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ]
+}

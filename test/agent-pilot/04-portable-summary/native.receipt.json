@@ -1,0 +1,83 @@
+{
+  "action": "baseline",
+  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes",
+  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
+  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/cfa4bb83-1b6e-4858-90b1-e75bca83e71a.json",
+  "timestamp": "2026-11-19T05:49:33.988Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-797fFH/a5cf4506-39de-44a3-b9be-8bba2c0a18f9/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 384,
+          "stdout": "{\"origin\":\"/tmp/verb-797fFH/a5cf4506-39de-44a3-b9be-8bba2c0a18f9/tree/bin/verb.js\",\"observations\":{\"executable fixture baseline\":\"inconclusive\",\"mode change invalidates baseline\":\"no\",\"explicit interpreter control\":\"verified\",\"nonexecutable control\":\"inconclusive\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "executable fixture baseline": "inconclusive",
+        "mode change invalidates baseline": "no",
+        "explicit interpreter control": "verified",
+        "nonexecutable control": "inconclusive"
+      },
+      "assertions": [
+        {
+          "key": "executable fixture baseline",
+          "control": false,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        },
+        {
+          "key": "mode change invalidates baseline",
+          "control": false,
+          "expected": "no",
+          "actual": "no",
+          "pass": true
+        },
+        {
+          "key": "explicit interpreter control",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        },
+        {
+          "key": "nonexecutable control",
+          "control": true,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "baseline",
+    "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "claim": "Frozen POSIX fixtures retain their executable mode and mode changes invalidate the baseline",
+  "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ],
+  "frozen": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/baselines/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/cfa4bb83-1b6e-4858-90b1-e75bca83e71a"
+}

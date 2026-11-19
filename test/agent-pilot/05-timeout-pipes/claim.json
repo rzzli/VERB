@@ -1,0 +1,13 @@
+{
+  "claim": "A command timeout must bound waiting for stdout held by a detached descendant after the launcher has exited; ordinary timeout classification and successful commands must remain intact.",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    {"key": "detached pipe timeout", "base": "waited for detached child", "fixed": "bounded"},
+    {"key": "active root timeout", "base": "inconclusive", "fixed": "inconclusive"},
+    {"key": "normal setup and probe", "base": "verified", "fixed": "verified"}
+  ],
+  "required": [["{node}", "--test", "test/*.test.js"]],
+  "timeoutMs": 20000,
+  "requiredTimeoutMs": 120000
+}

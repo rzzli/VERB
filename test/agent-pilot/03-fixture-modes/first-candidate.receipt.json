@@ -1,0 +1,156 @@
+{
+  "action": "prove",
+  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes",
+  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
+  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/165a91ed-dc2d-4240-acf2-e4e5a161e832.json",
+  "timestamp": "2026-11-19T05:56:38.285Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-Pvlj3Q/43c685e9-7005-4ee1-9a8c-7fb8485e9f0c/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 364,
+          "stdout": "{\"origin\":\"/tmp/verb-Pvlj3Q/43c685e9-7005-4ee1-9a8c-7fb8485e9f0c/tree/bin/verb.js\",\"observations\":{\"executable fixture baseline\":\"inconclusive\",\"mode change invalidates baseline\":\"no\",\"explicit interpreter control\":\"verified\",\"nonexecutable control\":\"inconclusive\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "executable fixture baseline": "inconclusive",
+        "mode change invalidates baseline": "no",
+        "explicit interpreter control": "verified",
+        "nonexecutable control": "inconclusive"
+      },
+      "assertions": [
+        {
+          "key": "executable fixture baseline",
+          "control": false,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        },
+        {
+          "key": "mode change invalidates baseline",
+          "control": false,
+          "expected": "no",
+          "actual": "no",
+          "pass": true
+        },
+        {
+          "key": "explicit interpreter control",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        },
+        {
+          "key": "nonexecutable control",
+          "control": true,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    },
+    "candidate": {
+      "kind": "working",
+      "id": "739f7e6d008ca31661db59894eb6127dc6db323d0111c2f281d5024cc38a929f",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-Pvlj3Q/85c12f7b-9e31-4054-8b08-330c8ab8d614/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 288,
+          "stdout": "{\"origin\":\"/tmp/verb-Pvlj3Q/85c12f7b-9e31-4054-8b08-330c8ab8d614/tree/bin/verb.js\",\"observations\":{\"executable fixture baseline\":\"verified\",\"mode change invalidates baseline\":\"yes\",\"explicit interpreter control\":\"verified\",\"nonexecutable control\":\"inconclusive\"}}\n",
+          "stderr": ""
+        },
+        {
+          "phase": "required",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "--test",
+            "test/*.test.js"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 6633,
+          "stdout": "TAP version 13\n# Subtest: snapshot sibling layout cannot distinguish base from candidate on unchanged code\nok 1 - snapshot sibling layout cannot distinguish base from candidate on unchanged code\n  ---\n  duration_ms: 123.829324\n  type: 'test'\n  ...\n# Subtest: a newer inconclusive proof without a candidate invalidates an earlier verified proof\nok 2 - a newer inconclusive proof without a candidate invalidates an earlier verified proof\n  ---\n  duration_ms: 437.683369\n  type: 'test'\n  ...\n# Subtest: a fresh baseline needs a subsequent proof, not a proof from the previous activation\nok 3 - a fresh baseline needs a subsequent proof, not a proof from the previous activation\n  ---\n  duration_ms: 602.388143\n  type: 'test'\n  ...\n# Subtest: Windows claim aliases share a baseline, proof and deactivation slot\nok 4 - Windows claim aliases share a baseline, proof and deactivation slot # SKIP\n  ---\n  duration_ms: 0.054857\n  type: 'test'\n  ...\n# Subtest: Windows deactivation handles deleted claims and legacy case-alias slots\nok 5 - Windows deactivation handles deleted claims and legacy case-alias slots # SKIP\n  ---\n  duration_ms: 0.047314\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects index flags that conceal unstaged files\nok 6 - pre-commit rejects index flags that conceal unstaged files\n  ---\n  duration_ms: 403.081061\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects clean filters that conceal different staged behavior\nok 7 - pre-commit rejects clean filters that conceal different staged behavior\n  ---\n  duration_ms: 433.740793\n  type: 'test'\n  ...\n# Subtest: summary keeps flag paths relative and distinguishes failed and unrun commands\nok 8 - summary keeps flag paths relative and distinguishes failed and unrun commands\n  ---\n  duration_ms: 174.347687\n  type: 'test'\n  ...\n# Subtest: Windows batch launch failures are recorded instead of appearing unrun\nok 9 - Windows batch launch failures are recorded instead of appearing unrun # SKIP\n  ---\n  duration_ms: 0.133923\n  type: 'test'\n  ...\n# Subtest: inactive hooks do not inspect an unsupported working tree\nok 10 - inactive hooks do not inspect an unsupported working tree\n  ---\n  duration_ms: 108.867809\n  type: 'test'\n  ...\n# Subtest: every active claim needs its own proof and failed rebaselines stay active\nok 11 - every active claim needs its own proof and failed rebaselines stay active\n  ---\n  duration_ms: 687.25689\n  type: 'test'\n  ...\n# Subtest: the documented Git hook blocks a real commit until the staged tree is proved\nok 12 - the documented Git hook blocks a real commit until the staged tree is proved\n  ---\n  duration_ms: 335.553009\n  type: 'test'\n  ...\n# Subtest: frozen fixtures preserve executable bits and bind them into the digest\nok 13 - frozen fixtures preserve executable bits and bind them into the digest\n  ---\n  duration_ms: 21.455458\n  type: 'test'\n  ...\n# Subtest: checks cannot replace the three actual required-command reruns needed for recovery\nok 14 - checks cannot replace the three actual required-command reruns needed for recovery\n  ---\n  duration_ms: 948.368895\n  type: 'test'\n  ...\n# Subtest: a later required-command conflict survives runs stopped by an earlier command\nok 15 - a later required-command conflict survives runs stopped by an earlier command\n  ---\n  duration_ms: 1237.019217\n  type: 'test'\n  ...\n# Subtest: cached baselines do not count toward recovery after a contradictory fresh baseline\nok 16 - cached baselines do not count toward recovery after a contradictory fresh baseline\n  ---\n  duration_ms: 570.590575\n  type: 'test'\n  ...\n# Subtest: candidate observations retain one shared history across check and prove\nok 17 - candidate observations retain one shared history across check and prove\n  ---\n  duration_ms: 568.200981\n  type: 'test'\n  ...\n# Subtest: required conflicts survive more than 30 checks and incomplete command executions\nok 18 - required conflicts survive more than 30 checks and incomplete command executions\n  ---\n  duration_ms: 29.20176\n  type: 'test'\n  ...\n# Subtest: history and receipt retention remain bounded across check and prove modes\nok 19 - history and receipt retention remain bounded across check and prove modes\n  ---\n  duration_ms: 2651.290352\n  type: 'test'\n  ...\n# Subtest: prove composes shared dependencies and internal aliases without modifying the shared source\nok 20 - prove composes shared dependencies and internal aliases without modifying the shared source\n  ---\n  duration_ms: 152.87134\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared deps\nok 21 - working: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 38.894718\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared cache/deps\nok 22 - working: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 39.040985\n  type: 'test'\n  ...\n# Subtest: working: shared links do not permit external or dangling symlinks\nok 23 - working: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 57.632049\n  type: 'test'\n  ...\n# Subtest: working: declared directories must exist, be ignored, and contain no tracked files\nok 24 - working: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 49.861806\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared deps\nok 25 - commit: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 45.229275\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared cache/deps\nok 26 - commit: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 44.753557\n  type: 'test'\n  ...\n# Subtest: commit: shared links do not permit external or dangling symlinks\nok 27 - commit: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 73.762319\n  type: 'test'\n  ...\n# Subtest: commit: declared directories must exist, be ignored, and contain no tracked files\nok 28 - commit: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 57.781266\n  type: 'test'\n  ...\n# Subtest: frozen baseline, uncommitted snapshot, receipt freshness and replay\nok 29 - frozen baseline, uncommitted snapshot, receipt freshness and replay\n  ---\n  duration_ms: 884.854651\n  type: 'test'\n  ...\n# Subtest: status requires the newest matching working-tree proof to be verified\nok 30 - status requires the newest matching working-tree proof to be verified\n  ---\n  duration_ms: 710.955744\n  type: 'test'\n  ...\n# Subtest: setup failure, missing observation, outside origin and timeout are inconclusive\nok 31 - setup failure, missing observation, outside origin and timeout are inconclusive\n  ---\n  duration_ms: 761.991105\n  type: 'test'\n  ...\n# Subtest: conflicting observations recover after three consistent runs, and missing history is empty\nok 32 - conflicting observations recover after three consistent runs, and missing history is empty\n  ---\n  duration_ms: 418.402938\n  type: 'test'\n  ...\n# Subtest: parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\nok 33 - parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\n  ---\n  duration_ms: 150.316334\n  type: 'test'\n  ...\n# Subtest: hooks only gate active claims and pre-commit refuses a partial tree\nok 34 - hooks only gate active claims and pre-commit refuses a partial tree\n  ---\n  duration_ms: 879.629135\n  type: 'test'\n  ...\n# Subtest: pruning keeps 30 receipts and history records without invalidating the saved baseline\nok 35 - pruning keeps 30 receipts and history records without invalidating the saved baseline\n  ---\n  duration_ms: 215.03599\n  type: 'test'\n  ...\n# Subtest: build setup can read shared ignored dependencies; required checks get a separate timeout\nok 36 - build setup can read shared ignored dependencies; required checks get a separate timeout\n  ---\n  duration_ms: 2014.357938\n  type: 'test'\n  ...\n# Subtest: commit and working snapshots preserve internal symlinks but reject escaping targets\nok 37 - commit and working snapshots preserve internal symlinks but reject escaping targets\n  ---\n  duration_ms: 396.535983\n  type: 'test'\n  ...\n# Subtest: submodules remain unsupported in commit and working snapshots\nok 38 - submodules remain unsupported in commit and working snapshots\n  ---\n  duration_ms: 108.078198\n  type: 'test'\n  ...\n1..38\n# tests 38\n# suites 0\n# pass 35\n# fail 0\n# cancelled 0\n# skipped 3\n# todo 0\n# duration_ms 6601.909923\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "executable fixture baseline": "verified",
+        "mode change invalidates baseline": "yes",
+        "explicit interpreter control": "verified",
+        "nonexecutable control": "inconclusive"
+      },
+      "assertions": [
+        {
+          "key": "executable fixture baseline",
+          "control": false,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        },
+        {
+          "key": "mode change invalidates baseline",
+          "control": false,
+          "expected": "yes",
+          "actual": "yes",
+          "pass": true
+        },
+        {
+          "key": "explicit interpreter control",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        },
+        {
+          "key": "nonexecutable control",
+          "control": true,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "prove",
+    "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "target": {
+    "kind": "working",
+    "id": "739f7e6d008ca31661db59894eb6127dc6db323d0111c2f281d5024cc38a929f"
+  },
+  "baselineReceipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/cfa4bb83-1b6e-4858-90b1-e75bca83e71a.json",
+  "claim": "Frozen POSIX fixtures retain their executable mode and mode changes invalidate the baseline",
+  "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ]
+}

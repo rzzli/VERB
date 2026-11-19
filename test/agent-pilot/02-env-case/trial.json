@@ -1,0 +1,29 @@
+{
+  "id": "02-env-case",
+  "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+  "setupStartedAt": "2026-11-19T05:45:11.409Z",
+  "platform": "win32",
+  "node": "v22.23.5",
+  "scope": "prospective self-hosted VERB defect; existing bug, not injected",
+  "baseline": {
+    "startedAt": "2026-11-19T05:47:08.046Z",
+    "finishedAt": "2026-11-19T05:47:09.183Z",
+    "ms": 1137,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f"
+  },
+  "setupMinutes": 1.9629,
+  "firstCandidate": {
+    "capturedAt": "2026-11-19T05:48:18.364Z",
+    "patchSha256": "8e7fdc0f45357db3983dacdfc925fe69e6ca9f33ad234c4c475d4b0274270e72"
+  },
+  "first-candidate": {
+    "startedAt": "2026-11-19T05:50:25.955Z",
+    "finishedAt": "2026-11-19T05:50:53.768Z",
+    "ms": 27813,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f"
+  }
+}

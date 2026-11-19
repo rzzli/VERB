@@ -1,0 +1,67 @@
+{
+  "action": "baseline",
+  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary",
+  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
+  "timestamp": "2026-11-19T05:52:34.842Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-g9152R/ea1b63ae-d493-4df8-a0d9-70dff622ae13/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 91,
+          "stdout": "{\"origin\":\"/tmp/verb-g9152R/ea1b63ae-d493-4df8-a0d9-70dff622ae13/tree/bin/verb.js\",\"observations\":{\"Windows receipt paths on Linux\":\"host-path-leak\",\"native receipt path control\":\"relative\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "Windows receipt paths on Linux": "host-path-leak",
+        "native receipt path control": "relative"
+      },
+      "assertions": [
+        {
+          "key": "Windows receipt paths on Linux",
+          "control": false,
+          "expected": "host-path-leak",
+          "actual": "host-path-leak",
+          "pass": true
+        },
+        {
+          "key": "native receipt path control",
+          "control": true,
+          "expected": "relative",
+          "actual": "relative",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "baseline",
+    "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "claim": "Reviewing a Windows receipt on Linux must keep claim, origin, executable, and option paths repository-relative without leaking native drive paths",
+  "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ],
+  "frozen": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/baselines/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170"
+}

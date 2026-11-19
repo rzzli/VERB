@@ -1,0 +1,124 @@
+{
+  "action": "prove",
+  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes",
+  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
+  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\c5fc5871-a30e-470b-b097-6a74eac96869.json",
+  "timestamp": "2026-11-19T05:49:21.561Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-TOlKZC\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 1027,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-TOlKZC\\\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"inconclusive\",\"unchanged policy control\":\"verified\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin\\verb.js",
+      "observations": {
+        "historical baseline after attribute change": "inconclusive",
+        "unchanged policy control": "verified"
+      },
+      "assertions": [
+        {
+          "key": "historical baseline after attribute change",
+          "control": false,
+          "expected": "inconclusive",
+          "actual": "inconclusive",
+          "pass": true
+        },
+        {
+          "key": "unchanged policy control",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    },
+    "candidate": {
+      "kind": "working",
+      "id": "94e029fbb00b2a797e64a6c265d6bc42c2930a041e5c114f0d81a8dcd9d410f8",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-TOlKZC\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 997,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-TOlKZC\\\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"verified\",\"unchanged policy control\":\"verified\"}}\n",
+          "stderr": ""
+        },
+        {
+          "phase": "required",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "--test",
+            "test/*.test.js"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 27058,
+          "stdout": "TAP version 13\n# Subtest: snapshot sibling layout cannot distinguish base from candidate on unchanged code\nok 1 - snapshot sibling layout cannot distinguish base from candidate on unchanged code\n  ---\n  duration_ms: 693.9173\n  type: 'test'\n  ...\n# Subtest: a newer inconclusive proof without a candidate invalidates an earlier verified proof\nok 2 - a newer inconclusive proof without a candidate invalidates an earlier verified proof\n  ---\n  duration_ms: 1950.3167\n  type: 'test'\n  ...\n# Subtest: a fresh baseline needs a subsequent proof, not a proof from the previous activation\nok 3 - a fresh baseline needs a subsequent proof, not a proof from the previous activation\n  ---\n  duration_ms: 2680.6925\n  type: 'test'\n  ...\n# Subtest: Windows claim aliases share a baseline, proof and deactivation slot\nok 4 - Windows claim aliases share a baseline, proof and deactivation slot\n  ---\n  duration_ms: 1896.4884\n  type: 'test'\n  ...\n# Subtest: Windows deactivation handles deleted claims and legacy case-alias slots\nok 5 - Windows deactivation handles deleted claims and legacy case-alias slots\n  ---\n  duration_ms: 1092.2143\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects index flags that conceal unstaged files\nok 6 - pre-commit rejects index flags that conceal unstaged files\n  ---\n  duration_ms: 2512.9351\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects clean filters that conceal different staged behavior\nok 7 - pre-commit rejects clean filters that conceal different staged behavior\n  ---\n  duration_ms: 2033.4014\n  type: 'test'\n  ...\n# Subtest: summary keeps flag paths relative and distinguishes failed and unrun commands\nok 8 - summary keeps flag paths relative and distinguishes failed and unrun commands\n  ---\n  duration_ms: 916.498\n  type: 'test'\n  ...\n# Subtest: Windows batch launch failures are recorded instead of appearing unrun\nok 9 - Windows batch launch failures are recorded instead of appearing unrun\n  ---\n  duration_ms: 745.3935\n  type: 'test'\n  ...\n# Subtest: inactive hooks do not inspect an unsupported working tree\nok 10 - inactive hooks do not inspect an unsupported working tree\n  ---\n  duration_ms: 579.1797\n  type: 'test'\n  ...\n# Subtest: every active claim needs its own proof and failed rebaselines stay active\nok 11 - every active claim needs its own proof and failed rebaselines stay active\n  ---\n  duration_ms: 3163.0627\n  type: 'test'\n  ...\n# Subtest: the documented Git hook blocks a real commit until the staged tree is proved\nok 12 - the documented Git hook blocks a real commit until the staged tree is proved\n  ---\n  duration_ms: 1771.9239\n  type: 'test'\n  ...\n# Subtest: checks cannot replace the three actual required-command reruns needed for recovery\nok 13 - checks cannot replace the three actual required-command reruns needed for recovery\n  ---\n  duration_ms: 4043.8879\n  type: 'test'\n  ...\n# Subtest: a later required-command conflict survives runs stopped by an earlier command\nok 14 - a later required-command conflict survives runs stopped by an earlier command\n  ---\n  duration_ms: 6424.5248\n  type: 'test'\n  ...\n# Subtest: cached baselines do not count toward recovery after a contradictory fresh baseline\nok 15 - cached baselines do not count toward recovery after a contradictory fresh baseline\n  ---\n  duration_ms: 2676.3719\n  type: 'test'\n  ...\n# Subtest: candidate observations retain one shared history across check and prove\nok 16 - candidate observations retain one shared history across check and prove\n  ---\n  duration_ms: 2673.3828\n  type: 'test'\n  ...\n# Subtest: required conflicts survive more than 30 checks and incomplete command executions\nok 17 - required conflicts survive more than 30 checks and incomplete command executions\n  ---\n  duration_ms: 530.2711\n  type: 'test'\n  ...\n# Subtest: history and receipt retention remain bounded across check and prove modes\nok 18 - history and receipt retention remain bounded across check and prove modes\n  ---\n  duration_ms: 10587.6658\n  type: 'test'\n  ...\n# Subtest: commit snapshots use historical root and nested attributes, not candidate policies\nok 19 - commit snapshots use historical root and nested attributes, not candidate policies\n  ---\n  duration_ms: 524.1207\n  type: 'test'\n  ...\n# Subtest: prove composes shared dependencies and internal aliases without modifying the shared source\nok 20 - prove composes shared dependencies and internal aliases without modifying the shared source\n  ---\n  duration_ms: 990.1587\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared deps\nok 21 - working: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 605.0451\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared cache/deps\nok 22 - working: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 635.9309\n  type: 'test'\n  ...\n# Subtest: working: shared links do not permit external or dangling symlinks\nok 23 - working: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 1020.9434\n  type: 'test'\n  ...\n# Subtest: working: declared directories must exist, be ignored, and contain no tracked files\nok 24 - working: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 906.8296\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared deps\nok 25 - commit: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 1016.6194\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared cache/deps\nok 26 - commit: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 1169.6485\n  type: 'test'\n  ...\n# Subtest: commit: shared links do not permit external or dangling symlinks\nok 27 - commit: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 2234.1451\n  type: 'test'\n  ...\n# Subtest: commit: declared directories must exist, be ignored, and contain no tracked files\nok 28 - commit: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 1191.35\n  type: 'test'\n  ...\n# Subtest: frozen baseline, uncommitted snapshot, receipt freshness and replay\nok 29 - frozen baseline, uncommitted snapshot, receipt freshness and replay\n  ---\n  duration_ms: 3993.5074\n  type: 'test'\n  ...\n# Subtest: status requires the newest matching working-tree proof to be verified\nok 30 - status requires the newest matching working-tree proof to be verified\n  ---\n  duration_ms: 3778.3367\n  type: 'test'\n  ...\n# Subtest: setup failure, missing observation, outside origin and timeout are inconclusive\nok 31 - setup failure, missing observation, outside origin and timeout are inconclusive\n  ---\n  duration_ms: 2407.9343\n  type: 'test'\n  ...\n# Subtest: conflicting observations recover after three consistent runs, and missing history is empty\nok 32 - conflicting observations recover after three consistent runs, and missing history is empty\n  ---\n  duration_ms: 2091.5877\n  type: 'test'\n  ...\n# Subtest: parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\nok 33 - parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\n  ---\n  duration_ms: 818.835\n  type: 'test'\n  ...\n# Subtest: hooks only gate active claims and pre-commit refuses a partial tree\nok 34 - hooks only gate active claims and pre-commit refuses a partial tree\n  ---\n  duration_ms: 3743.7184\n  type: 'test'\n  ...\n# Subtest: pruning keeps 30 receipts and history records without invalidating the saved baseline\nok 35 - pruning keeps 30 receipts and history records without invalidating the saved baseline\n  ---\n  duration_ms: 1095.3749\n  type: 'test'\n  ...\n# Subtest: build setup can read shared ignored dependencies; required checks get a separate timeout\nok 36 - build setup can read shared ignored dependencies; required checks get a separate timeout\n  ---\n  duration_ms: 3906.5908\n  type: 'test'\n  ...\n# Subtest: commit and working snapshots preserve internal symlinks but reject escaping targets\nok 37 - commit and working snapshots preserve internal symlinks but reject escaping targets\n  ---\n  duration_ms: 2057.208\n  type: 'test'\n  ...\n# Subtest: submodules remain unsupported in commit and working snapshots\nok 38 - submodules remain unsupported in commit and working snapshots\n  ---\n  duration_ms: 697.9495\n  type: 'test'\n  ...\n1..38\n# tests 38\n# suites 0\n# pass 38\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 27005.875\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin\\verb.js",
+      "observations": {
+        "historical baseline after attribute change": "verified",
+        "unchanged policy control": "verified"
+      },
+      "assertions": [
+        {
+          "key": "historical baseline after attribute change",
+          "control": false,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        },
+        {
+          "key": "unchanged policy control",
+          "control": true,
+          "expected": "verified",
+          "actual": "verified",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "prove",
+    "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "target": {
+    "kind": "working",
+    "id": "94e029fbb00b2a797e64a6c265d6bc42c2930a041e5c114f0d81a8dcd9d410f8"
+  },
+  "baselineReceipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66.json",
+  "claim": "Historical baseline checkout uses its own Git attributes, not the candidate's line-ending policy",
+  "digest": "7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "05-timeout-pipes",
+  "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+  "setupStartedAt": "2026-11-19T05:49:27.723Z",
+  "platform": "win32",
+  "node": "v22.23.5",
+  "scope": "prospective self-hosted VERB defect; existing bug, not injected",
+  "baseline": {
+    "startedAt": "2026-11-19T05:51:01.724Z",
+    "finishedAt": "2026-11-19T05:51:06.705Z",
+    "ms": 4981,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a"
+  },
+  "setupMinutes": 1.6497,
+  "firstCandidate": {
+    "capturedAt": "2026-11-19T05:52:52.013Z",
+    "patchSha256": "3407b22e59826befdde12c2981908d2dc1036f0af7b1a94ad4865a53e47b0a8e"
+  },
+  "first-candidate": {
+    "startedAt": "2026-11-19T05:56:30.645Z",
+    "finishedAt": "2026-11-19T05:57:04.479Z",
+    "ms": 33834,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a"
+  }
+}

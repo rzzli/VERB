@@ -1,0 +1,16 @@
+VERB VERIFIED (prove): Frozen POSIX fixtures retain their executable mode and mode changes invalidate the baseline
+Claim: ../../../test/agent-pilot/03-fixture-modes/claim.json
+Claim digest (SHA-256): 455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a
+base: commit c48f6c2099f5ffe2fabcfa6412cf28998462c73b
+  Origin: bin/verb.js
+  PASS executable fixture baseline: expected "inconclusive", observed "inconclusive"
+  PASS mode change invalidates baseline: expected "no", observed "no"
+  PASS explicit interpreter control [control]: expected "verified", observed "verified"
+  PASS nonexecutable control [control]: expected "inconclusive", observed "inconclusive"
+candidate: working 739f7e6d008ca31661db59894eb6127dc6db323d0111c2f281d5024cc38a929f
+  Origin: bin/verb.js
+  PASS executable fixture baseline: expected "verified", observed "verified"
+  PASS mode change invalidates baseline: expected "yes", observed "yes"
+  PASS explicit interpreter control [control]: expected "verified", observed "verified"
+  PASS nonexecutable control [control]: expected "inconclusive", observed "inconclusive"
+Required ["{node}","--test","test/*.test.js"]: exit 0

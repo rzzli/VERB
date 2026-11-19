@@ -1,0 +1,12 @@
+VERB VERIFIED (prove): Historical baseline checkout uses its own Git attributes, not the candidate's line-ending policy
+Claim: ../../../test/agent-pilot/01-attributes/claim.json
+Claim digest (SHA-256): 7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143
+base: commit c48f6c2099f5ffe2fabcfa6412cf28998462c73b
+  Origin: bin/verb.js
+  PASS historical baseline after attribute change: expected "inconclusive", observed "inconclusive"
+  PASS unchanged policy control [control]: expected "verified", observed "verified"
+candidate: working 94e029fbb00b2a797e64a6c265d6bc42c2930a041e5c114f0d81a8dcd9d410f8
+  Origin: bin/verb.js
+  PASS historical baseline after attribute change: expected "verified", observed "verified"
+  PASS unchanged policy control [control]: expected "verified", observed "verified"
+Required ["{node}","--test","test/*.test.js"]: exit 0

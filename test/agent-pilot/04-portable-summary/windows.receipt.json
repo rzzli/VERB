@@ -1,0 +1,123 @@
+{
+  "action": "prove",
+  "repo": "D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\repository",
+  "claimPath": "D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\claim.json",
+  "receipt": "D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\repository\\.git\\verb\\receipts\\52d575c7f3e50e0dbbbc2d51239e9819558bc1c8c7ac386df6a82e9f7f029e5c\\599ae4e9-559c-4415-b18e-75ec01e2cd9a.json",
+  "timestamp": "2026-11-19T05:51:37.893Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c51b4c87269803c7ec72436c6d22ca9ff06841b4",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-5587GX\\1e8bd667-eb19-487f-a97c-d24958e28e1d\\bundle/observe.cjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 118,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-5587GX\\\\1e8bd667-eb19-487f-a97c-d24958e28e1d\\\\tree\\\\src\\\\app.cjs\",\"observations\":{\"value\":\"old\",\"neighbor\":\"same\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "src\\app.cjs",
+      "observations": {
+        "value": "old",
+        "neighbor": "same"
+      },
+      "assertions": [
+        {
+          "key": "value",
+          "control": false,
+          "expected": "old",
+          "actual": "old",
+          "pass": true
+        },
+        {
+          "key": "neighbor",
+          "control": true,
+          "expected": "same",
+          "actual": "same",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    },
+    "candidate": {
+      "kind": "working",
+      "id": "dd1bd8bced8713b8601cc86b865ad2fe271b0177915c58128e6c05a03c31f5a2",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-5587GX\\acdab18b-c1bc-46da-a713-cedccecb26db\\bundle/observe.cjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 105,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-5587GX\\\\acdab18b-c1bc-46da-a713-cedccecb26db\\\\tree\\\\src\\\\app.cjs\",\"observations\":{\"value\":\"new\",\"neighbor\":\"same\"}}\n",
+          "stderr": ""
+        },
+        {
+          "phase": "required",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "verify.cjs",
+            "--config=D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\settings.json"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 37,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "origin": "src\\app.cjs",
+      "observations": {
+        "value": "new",
+        "neighbor": "same"
+      },
+      "assertions": [
+        {
+          "key": "value",
+          "control": false,
+          "expected": "new",
+          "actual": "new",
+          "pass": true
+        },
+        {
+          "key": "neighbor",
+          "control": true,
+          "expected": "same",
+          "actual": "same",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "prove",
+    "D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\claim.json",
+    "--base",
+    "c51b4c87269803c7ec72436c6d22ca9ff06841b4"
+  ],
+  "target": {
+    "kind": "working",
+    "id": "dd1bd8bced8713b8601cc86b865ad2fe271b0177915c58128e6c05a03c31f5a2"
+  },
+  "claim": "Read the updated application value while preserving the neighboring output",
+  "digest": "e5d7dc8c1f3edbd460538746904f48292dbb9d1a749ff1274c0afc2d114422c9",
+  "required": [
+    [
+      "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+      "verify.cjs",
+      "--config=D:\\Projects\\coding_var\\.pilot\\audit-new-79367b\\windows-summary-h4kc09\\settings.json"
+    ]
+  ]
+}

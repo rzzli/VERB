@@ -1,0 +1,29 @@
+{
+  "id": "03-fixture-modes",
+  "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+  "setupStartedAt": "2026-11-19T05:47:38.200Z",
+  "platform": "linux",
+  "node": "v22.23.5",
+  "scope": "prospective self-hosted VERB defect; existing bug, not injected",
+  "baseline": {
+    "startedAt": "2026-11-19T05:49:33.853Z",
+    "finishedAt": "2026-11-19T05:49:34.781Z",
+    "ms": 928,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a"
+  },
+  "setupMinutes": 1.9430166666666666,
+  "firstCandidate": {
+    "capturedAt": "2026-11-19T05:52:36.131Z",
+    "patchSha256": "84744f60d0f71f18500e2d371f4c38b271e3d5268be36327d23cac08b82c6b7d"
+  },
+  "first-candidate": {
+    "startedAt": "2026-11-19T05:56:38.205Z",
+    "finishedAt": "2026-11-19T05:56:46.340Z",
+    "ms": 8135,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a"
+  }
+}

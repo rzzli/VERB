@@ -1,0 +1,12 @@
+{
+  "claim": "Reviewing a Windows receipt on Linux must keep claim, origin, executable, and option paths repository-relative without leaking native drive paths",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs", "windows.receipt.json", "native.receipt.json"],
+  "assertions": [
+    {"key": "Windows receipt paths on Linux", "base": "host-path-leak", "fixed": "relative"},
+    {"key": "native receipt path control", "base": "relative", "fixed": "relative"}
+  ],
+  "required": [["{node}", "--test", "test/*.test.js"]],
+  "timeoutMs": 120000,
+  "requiredTimeoutMs": 120000
+}

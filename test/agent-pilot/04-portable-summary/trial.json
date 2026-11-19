@@ -1,0 +1,29 @@
+{
+  "id": "04-portable-summary",
+  "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+  "setupStartedAt": "2026-11-19T05:50:22.646Z",
+  "platform": "linux",
+  "node": "v22.23.5",
+  "scope": "prospective self-hosted VERB defect; existing bug, not injected",
+  "baseline": {
+    "startedAt": "2026-11-19T05:52:34.572Z",
+    "finishedAt": "2026-11-19T05:52:36.706Z",
+    "ms": 2134,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971"
+  },
+  "setupMinutes": 2.2343333333333333,
+  "firstCandidate": {
+    "capturedAt": "2026-11-19T05:54:08.707Z",
+    "patchSha256": "0d1aae3f67ba25cc4a91377fa775a428d4273fda560ae6122f244e914aa31e78"
+  },
+  "first-candidate": {
+    "startedAt": "2026-11-19T05:58:03.772Z",
+    "finishedAt": "2026-11-19T05:58:14.300Z",
+    "ms": 10528,
+    "code": 0,
+    "verdict": "verified",
+    "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971"
+  }
+}

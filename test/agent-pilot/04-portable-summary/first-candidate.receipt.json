@@ -1,0 +1,124 @@
+{
+  "action": "prove",
+  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary",
+  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/9e364144-0fed-4eb5-b4bd-f7409bce8a32.json",
+  "timestamp": "2026-11-19T05:58:04.510Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-P6ruLc/51ec0313-652a-4e75-8454-dedf6e4d8729/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 124,
+          "stdout": "{\"origin\":\"/tmp/verb-P6ruLc/51ec0313-652a-4e75-8454-dedf6e4d8729/tree/bin/verb.js\",\"observations\":{\"Windows receipt paths on Linux\":\"host-path-leak\",\"native receipt path control\":\"relative\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "Windows receipt paths on Linux": "host-path-leak",
+        "native receipt path control": "relative"
+      },
+      "assertions": [
+        {
+          "key": "Windows receipt paths on Linux",
+          "control": false,
+          "expected": "host-path-leak",
+          "actual": "host-path-leak",
+          "pass": true
+        },
+        {
+          "key": "native receipt path control",
+          "control": true,
+          "expected": "relative",
+          "actual": "relative",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    },
+    "candidate": {
+      "kind": "working",
+      "id": "44f585b9a5ae366a90e99471715d4dc12e84d2846f8694013f4f93ee1193872f",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tmp/verb-P6ruLc/74de0ff3-fbe3-4f76-b0e2-c02e41e2f43c/bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 79,
+          "stdout": "{\"origin\":\"/tmp/verb-P6ruLc/74de0ff3-fbe3-4f76-b0e2-c02e41e2f43c/tree/bin/verb.js\",\"observations\":{\"Windows receipt paths on Linux\":\"relative\",\"native receipt path control\":\"relative\"}}\n",
+          "stderr": ""
+        },
+        {
+          "phase": "required",
+          "argv": [
+            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "--test",
+            "test/*.test.js"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 6985,
+          "stdout": "TAP version 13\n# Subtest: snapshot sibling layout cannot distinguish base from candidate on unchanged code\nok 1 - snapshot sibling layout cannot distinguish base from candidate on unchanged code\n  ---\n  duration_ms: 137.046721\n  type: 'test'\n  ...\n# Subtest: a newer inconclusive proof without a candidate invalidates an earlier verified proof\nok 2 - a newer inconclusive proof without a candidate invalidates an earlier verified proof\n  ---\n  duration_ms: 364.129849\n  type: 'test'\n  ...\n# Subtest: a fresh baseline needs a subsequent proof, not a proof from the previous activation\nok 3 - a fresh baseline needs a subsequent proof, not a proof from the previous activation\n  ---\n  duration_ms: 622.479863\n  type: 'test'\n  ...\n# Subtest: Windows claim aliases share a baseline, proof and deactivation slot\nok 4 - Windows claim aliases share a baseline, proof and deactivation slot # SKIP\n  ---\n  duration_ms: 0.049699\n  type: 'test'\n  ...\n# Subtest: Windows deactivation handles deleted claims and legacy case-alias slots\nok 5 - Windows deactivation handles deleted claims and legacy case-alias slots # SKIP\n  ---\n  duration_ms: 0.044391\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects index flags that conceal unstaged files\nok 6 - pre-commit rejects index flags that conceal unstaged files\n  ---\n  duration_ms: 496.039844\n  type: 'test'\n  ...\n# Subtest: pre-commit rejects clean filters that conceal different staged behavior\nok 7 - pre-commit rejects clean filters that conceal different staged behavior\n  ---\n  duration_ms: 520.347967\n  type: 'test'\n  ...\n# Subtest: summary keeps flag paths relative and distinguishes failed and unrun commands\nok 8 - summary keeps flag paths relative and distinguishes failed and unrun commands\n  ---\n  duration_ms: 207.270489\n  type: 'test'\n  ...\n# Subtest: Windows batch launch failures are recorded instead of appearing unrun\nok 9 - Windows batch launch failures are recorded instead of appearing unrun # SKIP\n  ---\n  duration_ms: 0.110415\n  type: 'test'\n  ...\n# Subtest: inactive hooks do not inspect an unsupported working tree\nok 10 - inactive hooks do not inspect an unsupported working tree\n  ---\n  duration_ms: 87.848703\n  type: 'test'\n  ...\n# Subtest: every active claim needs its own proof and failed rebaselines stay active\nok 11 - every active claim needs its own proof and failed rebaselines stay active\n  ---\n  duration_ms: 746.03062\n  type: 'test'\n  ...\n# Subtest: the documented Git hook blocks a real commit until the staged tree is proved\nok 12 - the documented Git hook blocks a real commit until the staged tree is proved\n  ---\n  duration_ms: 410.06964\n  type: 'test'\n  ...\n# Subtest: checks cannot replace the three actual required-command reruns needed for recovery\nok 13 - checks cannot replace the three actual required-command reruns needed for recovery\n  ---\n  duration_ms: 883.634817\n  type: 'test'\n  ...\n# Subtest: a later required-command conflict survives runs stopped by an earlier command\nok 14 - a later required-command conflict survives runs stopped by an earlier command\n  ---\n  duration_ms: 1458.631935\n  type: 'test'\n  ...\n# Subtest: cached baselines do not count toward recovery after a contradictory fresh baseline\nok 15 - cached baselines do not count toward recovery after a contradictory fresh baseline\n  ---\n  duration_ms: 588.569463\n  type: 'test'\n  ...\n# Subtest: candidate observations retain one shared history across check and prove\nok 16 - candidate observations retain one shared history across check and prove\n  ---\n  duration_ms: 658.127698\n  type: 'test'\n  ...\n# Subtest: required conflicts survive more than 30 checks and incomplete command executions\nok 17 - required conflicts survive more than 30 checks and incomplete command executions\n  ---\n  duration_ms: 39.216389\n  type: 'test'\n  ...\n# Subtest: history and receipt retention remain bounded across check and prove modes\nok 18 - history and receipt retention remain bounded across check and prove modes\n  ---\n  duration_ms: 3087.608202\n  type: 'test'\n  ...\n# Subtest: summary formats Windows drive receipt paths independently of host platform\nok 19 - summary formats Windows drive receipt paths independently of host platform\n  ---\n  duration_ms: 28.770242\n  type: 'test'\n  ...\n# Subtest: summary formats Windows UNC receipt paths independently of host platform\nok 20 - summary formats Windows UNC receipt paths independently of host platform\n  ---\n  duration_ms: 25.424606\n  type: 'test'\n  ...\n# Subtest: summary formats POSIX receipt paths independently of host platform\nok 21 - summary formats POSIX receipt paths independently of host platform\n  ---\n  duration_ms: 30.398288\n  type: 'test'\n  ...\n# Subtest: prove composes shared dependencies and internal aliases without modifying the shared source\nok 22 - prove composes shared dependencies and internal aliases without modifying the shared source\n  ---\n  duration_ms: 162.612502\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared deps\nok 23 - working: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 31.212008\n  type: 'test'\n  ...\n# Subtest: working: tracked symlinks resolve through shared cache/deps\nok 24 - working: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 27.535144\n  type: 'test'\n  ...\n# Subtest: working: shared links do not permit external or dangling symlinks\nok 25 - working: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 42.325846\n  type: 'test'\n  ...\n# Subtest: working: declared directories must exist, be ignored, and contain no tracked files\nok 26 - working: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 35.30922\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared deps\nok 27 - commit: tracked symlinks resolve through shared deps\n  ---\n  duration_ms: 32.219716\n  type: 'test'\n  ...\n# Subtest: commit: tracked symlinks resolve through shared cache/deps\nok 28 - commit: tracked symlinks resolve through shared cache/deps\n  ---\n  duration_ms: 33.238792\n  type: 'test'\n  ...\n# Subtest: commit: shared links do not permit external or dangling symlinks\nok 29 - commit: shared links do not permit external or dangling symlinks\n  ---\n  duration_ms: 56.434425\n  type: 'test'\n  ...\n# Subtest: commit: declared directories must exist, be ignored, and contain no tracked files\nok 30 - commit: declared directories must exist, be ignored, and contain no tracked files\n  ---\n  duration_ms: 41.986813\n  type: 'test'\n  ...\n# Subtest: frozen baseline, uncommitted snapshot, receipt freshness and replay\nok 31 - frozen baseline, uncommitted snapshot, receipt freshness and replay\n  ---\n  duration_ms: 816.372419\n  type: 'test'\n  ...\n# Subtest: status requires the newest matching working-tree proof to be verified\nok 32 - status requires the newest matching working-tree proof to be verified\n  ---\n  duration_ms: 812.869845\n  type: 'test'\n  ...\n# Subtest: setup failure, missing observation, outside origin and timeout are inconclusive\nok 33 - setup failure, missing observation, outside origin and timeout are inconclusive\n  ---\n  duration_ms: 795.217009\n  type: 'test'\n  ...\n# Subtest: conflicting observations recover after three consistent runs, and missing history is empty\nok 34 - conflicting observations recover after three consistent runs, and missing history is empty\n  ---\n  duration_ms: 460.12463\n  type: 'test'\n  ...\n# Subtest: parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\nok 35 - parallel proofs run new files, omit deleted files and isolate profiles without labeling snapshot paths\n  ---\n  duration_ms: 151.724929\n  type: 'test'\n  ...\n# Subtest: hooks only gate active claims and pre-commit refuses a partial tree\nok 36 - hooks only gate active claims and pre-commit refuses a partial tree\n  ---\n  duration_ms: 1050.374854\n  type: 'test'\n  ...\n# Subtest: pruning keeps 30 receipts and history records without invalidating the saved baseline\nok 37 - pruning keeps 30 receipts and history records without invalidating the saved baseline\n  ---\n  duration_ms: 287.981642\n  type: 'test'\n  ...\n# Subtest: build setup can read shared ignored dependencies; required checks get a separate timeout\nok 38 - build setup can read shared ignored dependencies; required checks get a separate timeout\n  ---\n  duration_ms: 2035.732627\n  type: 'test'\n  ...\n# Subtest: commit and working snapshots preserve internal symlinks but reject escaping targets\nok 39 - commit and working snapshots preserve internal symlinks but reject escaping targets\n  ---\n  duration_ms: 372.451896\n  type: 'test'\n  ...\n# Subtest: submodules remain unsupported in commit and working snapshots\nok 40 - submodules remain unsupported in commit and working snapshots\n  ---\n  duration_ms: 113.656884\n  type: 'test'\n  ...\n1..40\n# tests 40\n# suites 0\n# pass 37\n# fail 0\n# cancelled 0\n# skipped 3\n# todo 0\n# duration_ms 6943.379724\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin/verb.js",
+      "observations": {
+        "Windows receipt paths on Linux": "relative",
+        "native receipt path control": "relative"
+      },
+      "assertions": [
+        {
+          "key": "Windows receipt paths on Linux",
+          "control": false,
+          "expected": "relative",
+          "actual": "relative",
+          "pass": true
+        },
+        {
+          "key": "native receipt path control",
+          "control": true,
+          "expected": "relative",
+          "actual": "relative",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "prove",
+    "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "target": {
+    "kind": "working",
+    "id": "44f585b9a5ae366a90e99471715d4dc12e84d2846f8694013f4f93ee1193872f"
+  },
+  "baselineReceipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
+  "claim": "Reviewing a Windows receipt on Linux must keep claim, origin, executable, and option paths repository-relative without leaking native drive paths",
+  "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ]
+}

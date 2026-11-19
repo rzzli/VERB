@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-11-19T05:49:31.6184928Z",
+  "reviewer": "independent-agent-static-review",
+  "decision": "approve",
+  "predictedVerdict": "verified",
+  "reviewType": "Automated independent agent static review, not human review",
+  "candidateExecutionSeen": false,
+  "findings": [
+    "No candidate tests or candidate VERB execution were run or seen by this reviewer. This decision is a static prediction recorded before runtime proof, not an observed test result.",
+    "The substantive production edit in isolated lib/run.js:75-83 removes all case-insensitive aliases from the copied Windows child environment before applying each claim override. This addresses Node's duplicate-key selection problem for lowercase path overriding inherited PATH, without mutating the parent process environment.",
+    "Alias removal is guarded by the existing Windows platform check. POSIX remains case-sensitive and keeps differently cased variables separate. Placeholder expansion and the common environment used by setup, probe, and required commands remain unchanged.",
+    "The added regression test checks both lowercase and uppercase overrides, the configured value through both spellings on Windows, preservation of distinct POSIX names, completed child execution, and restoration of test-process environment state. Its separate profile paths avoid runSide temporary-directory collisions.",
+    "The frozen behavioral probe drives the real CLI with a normally inherited uppercase PATH and compares lowercase override behavior against an uppercase control. Static inspection supports the predicted honored/honored candidate observations.",
+    "A claim containing multiple differently cased aliases on Windows now has last-entry-wins behavior; that is consistent with a single Windows environment identity. No blocking regression was identified. Runtime cross-platform coverage remains unobserved.",
+    "The immutable captured patch contains broad line-ending-only churn. A read-only diff ignoring end-of-line whitespace shows only lib/run.js and test/environment.test.js as substantive changes. I reviewed the candidate unchanged and did not edit source, tests, patch, claim, or probe."
+  ]
+}

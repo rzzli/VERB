@@ -1,0 +1,41 @@
+{
+  "reviewedAt": "2026-11-19T05:56:11.9093984Z",
+  "reviewer": "automated independent-agent",
+  "reviewType": "independent static review",
+  "independentOfCandidateAuthor": true,
+  "decision": "approve",
+  "predictedVerdict": "verified",
+  "candidateRuntimeResultSeen": false,
+  "candidateExecutionPerformed": false,
+  "testsOrProofsRun": [],
+  "statement": "I did not author this candidate. I inspected its captured patch, isolated summary implementation and regression source, frozen claim/probe, and the two raw receipts used as frozen input fixtures. Those input receipts are not candidate-runtime results. No candidate runtime result was seen and no candidate execution, test, or proof was performed.",
+  "scope": [
+    "test/agent-pilot/04-portable-summary/first-candidate.patch",
+    "test/agent-pilot/04-portable-summary/claim.json",
+    "test/agent-pilot/04-portable-summary/probe.mjs",
+    "test/agent-pilot/04-portable-summary/windows.receipt.json",
+    "test/agent-pilot/04-portable-summary/native.receipt.json",
+    ".pilot/agent-trials-20261118-2134/04-portable-summary/bin/verb.js",
+    ".pilot/agent-trials-20261118-2134/04-portable-summary/test/portable-summary.test.js"
+  ],
+  "findings": [
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Receipt-native path semantics",
+      "assessment": "No blocking defect found for the selected fully qualified receipt paths. Real receipt repo fields are canonical absolute paths. Windows drive-qualified and backslash-UNC roots select path.win32; POSIX roots select path.posix. The same selected dialect is consistently used for claim relativization, origin separator normalization, direct absolute command arguments, and --option=absolute-path arguments. Receipt-file lookup still correctly uses the reviewing host's own filesystem semantics."
+    },
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Controls and scope",
+      "assessment": "The frozen probe invokes the actual snapshot CLI summary command on genuine stored-receipt fixtures and checks structured output while preserving digest and revision identities. Hard-coded regression expectations independently cover drive paths, same-share UNC paths, cross-drive volume fallback, and POSIX paths. Literal observations are explicitly checked to remain unchanged; this is structured path presentation, not a general private-data scrubber. Static reasoning predicts the Linux behavioral claim will verify."
+    },
+    {
+      "severity": "informational",
+      "blocking": false,
+      "topic": "Remaining pathname limitations",
+      "assessment": "The reviewed claim and fixtures use fully qualified paths. Rooted-but-drive-less Windows argv such as \\cache, drive-relative arguments, and shell slash-options are not covered by this trial. Their contextual meaning is not established merely by selecting path.win32, and Node resolution of incomplete paths can retain host/current-directory context. The change should not be described as arbitrary-command redaction or complete portability for every possible argv spelling. This does not block the selected canonical-path defect fix."
+    }
+  ]
+}

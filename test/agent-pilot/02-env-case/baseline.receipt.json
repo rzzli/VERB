@@ -1,0 +1,67 @@
+{
+  "action": "baseline",
+  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case",
+  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
+  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54.json",
+  "timestamp": "2026-11-19T05:47:08.149Z",
+  "verdict": "verified",
+  "sides": {
+    "base": {
+      "kind": "commit",
+      "id": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
+      "commands": [
+        {
+          "phase": "probe",
+          "argv": [
+            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-zKN6zu\\ce856041-ce7c-4151-9205-ee57fcb1169f\\bundle/probe.mjs"
+          ],
+          "code": 0,
+          "error": null,
+          "ms": 882,
+          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-zKN6zu\\\\ce856041-ce7c-4151-9205-ee57fcb1169f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"ignored\",\"uppercase PATH override\":\"honored\"}}\n",
+          "stderr": ""
+        }
+      ],
+      "origin": "bin\\verb.js",
+      "observations": {
+        "lowercase PATH override": "ignored",
+        "uppercase PATH override": "honored"
+      },
+      "assertions": [
+        {
+          "key": "lowercase PATH override",
+          "control": false,
+          "expected": "ignored",
+          "actual": "ignored",
+          "pass": true
+        },
+        {
+          "key": "uppercase PATH override",
+          "control": true,
+          "expected": "honored",
+          "actual": "honored",
+          "pass": true
+        }
+      ],
+      "verdict": "verified"
+    }
+  },
+  "replay": [
+    "verb",
+    "baseline",
+    "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
+    "--base",
+    "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
+  ],
+  "claim": "On Windows, a claim's lowercase path environment override must replace inherited PATH just as an uppercase PATH override does.",
+  "digest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f",
+  "required": [
+    [
+      "{node}",
+      "--test",
+      "test/*.test.js"
+    ]
+  ],
+  "frozen": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\baselines\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54"
+}

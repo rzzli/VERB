@@ -1,0 +1,9 @@
+VERB VERIFIED (baseline): Reviewing a Windows receipt on Linux must keep claim, origin, executable, and option paths repository-relative without leaking native drive paths
+Claim: ../../../test/agent-pilot/04-portable-summary/claim.json
+Claim digest (SHA-256): 93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971
+base: commit c48f6c2099f5ffe2fabcfa6412cf28998462c73b
+  Origin: bin/verb.js
+  PASS Windows receipt paths on Linux: expected "host-path-leak", observed "host-path-leak"
+  PASS native receipt path control [control]: expected "relative", observed "relative"
+candidate: not run
+Required ["{node}","--test","test/*.test.js"]: not run

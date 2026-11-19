@@ -1,0 +1,12 @@
+{
+  "claim": "On Windows, a claim's lowercase path environment override must replace inherited PATH just as an uppercase PATH override does.",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    {"key": "lowercase PATH override", "base": "ignored", "fixed": "honored"},
+    {"key": "uppercase PATH override", "base": "honored", "fixed": "honored"}
+  ],
+  "required": [["{node}", "--test", "test/*.test.js"]],
+  "timeoutMs": 30000,
+  "requiredTimeoutMs": 120000
+}

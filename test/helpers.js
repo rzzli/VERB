@@ -15,6 +15,29 @@ export function cmd(cwd, exe, args) {
   assert.equal(p.status, 0, p.stderr + p.stdout);
   return p.stdout.trim();
 }
+export function fixture(t) {
+  const dir = scratch();
+  t.after(() => clean(dir));
+  const repo = path.join(dir, 'repository'), claim = path.join(dir, 'claim.json');
+  fs.mkdirSync(repo);
+  const git = (...args) => cmd(repo, 'git', args);
+  git('init', '-q');
+  git('config', 'user.email', 'fixture@localhost');
+  git('config', 'user.name', 'Fixture');
+  write(path.join(repo, 'value'), 'old');
+  git('add', '.');
+  git('commit', '-qm', 'broken');
+  const probe = path.join(dir, 'probe.mjs');
+  write(probe, `import fs from 'node:fs'; import path from 'node:path';
+const origin = path.resolve('value');
+console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'utf8'),neighbor:'same'}}));`);
+  const spec = { claim: 'read saved value', probe: ['{node}', '{bundle}/probe.mjs'], fixtures: ['probe.mjs'],
+    assertions: [{ key: 'value', base: 'old', fixed: 'new' }, { key: 'neighbor', base: 'same', fixed: 'same' }],
+    required: [['{node}', '-e', 'process.exit(0)']] };
+  write(claim, spec);
+  return { dir, repo, claim, spec, git, probe };
+}
+
 export function verb(cwd, code, ...args) {
   const p = spawnSync(process.execPath, [path.join(project, 'bin/verb.js'), ...args, '--json'],
     { cwd, encoding: 'utf8', windowsHide: true, timeout: 120000, maxBuffer: 16 * 1024 * 1024 });
