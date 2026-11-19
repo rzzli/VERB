@@ -1,0 +1,10 @@
+{
+  "claim": "Reading a saved setting after restart returns its value",
+  "probe": ["{node}", "{bundle}/probe.mjs"],
+  "fixtures": ["probe.mjs"],
+  "assertions": [
+    { "key": "saved theme", "base": "light", "fixed": "dark" },
+    { "key": "unconfigured locale", "base": "en", "fixed": "en" }
+  ],
+  "required": [["{node}", "--test"]]
+}

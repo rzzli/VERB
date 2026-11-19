@@ -1,0 +1,260 @@
+This talk—"A New Age of Software Engineering" by Walden Yan, Co-founder and
+Chief Product Officer at Cognition (the creators of Devin)—is the natural
+companion to Lauren Tan’s talk. While Lauren focused heavily on codebase hygiene
+and verification, Walden zooms out to organizational design, sandbox
+infrastructure, recursive factory optimization, and delegating entire jobs (not
+just tasks) to agents.
+
+Here is a complete, deeply elaborated guide to every part of the talk, blending
+what Cognition built with the underlying engineering concepts.
+
+1. The Headline Metric: 40.4x Delivery Capacity
+
+Over a 12-month period (Nov 2025 – Oct 2026):
+
+  - Cognition’s merged PR throughput exploded 40.4x.
+  - Over that same year, their engineering headcount grew only 2.7x.
+  - Net impact: Every engineer at Cognition became ~15x more productive (40.4
+    / 2.7), while maintaining PR quality that Walden argues is equal to or
+    higher than before.
+
+His core argument: You don’t get a 40x speedup just by buying a coding agent.
+You get it by rebuilding both your software infrastructure and your engineering
+org chart around agents.
+
+2. The Software Factory & Restructuring Teams into "Vertical Pods"
+
+"Default Autonomous; Human Judgment Where Needed"
+
+Cognition treats their entire Software Development Lifecycle (SDLC) as a
+self-driving Software Factory across six stages: Triage → Build → Test → Review
+→ Deploy → Oncall
+
+  - By default, Devin runs every stage end-to-end: Triaging customer bug reports
+    and deduplicating them, writing code, running unit/integration/live QA
+    tests, performing automated Devin Review, running release pipelines, and
+    even acting as first-responder during oncall (correlating Sentry/Datadog
+    logs with recent commits and opening hotfix PRs).
+  - Humans enter only via "Escalations": When product judgment, ambiguity
+    resolution, or high-risk sign-off is required.
+
+Why They Blew Up the Traditional Org Chart
+
+In March 2026, Cognition’s leadership gave their engineers a blunt warning:
+
+"If your workflow is picking tickets off a Linear board and sending them to an
+agent to implement, you will not be set up for success in the age of AI."
+
+Why? Because if a human can cleanly specify a ticket, an agent can already
+receive that ticket directly—making the human middleman redundant.
+
+To adapt, Cognition reorganized from horizontal functional silos into autonomous
+vertical pods:
+
+  - Before (By Role): Separate layers for Product (PM) → Engineering (4
+    engineers) → QA & Oncall.
+  - After (By Vertical): Small 2–3 person pods owning an entire product area
+    (e.g., Billing, Mobile App, Integrations). Every person in the pod is a
+    hybrid "Product Eng / Oncall" commanding a fleet of Devin agents.
+  - The New Engineer's Job: Each engineer listens directly to customers, handles
+    product management/prioritization, designs verification criteria, manages
+    their own Linear board, and dispatches swarms of agents to execute the
+    implementation. (In classic org-design terms, this turns every individual
+    engineer into a miniature, full-stack "two-pizza team.")
+
+3. Abstracting Away the IDE: Debugging, Testing & Merging from Slack
+
+When your agents are reliable enough, the interface for software engineering
+changes. Walden walks through a real production bug flow at Cognition:
+
+1.  Customer reports a UI bug in a shared Slack channel (e.g., "file comment
+    should scroll into view" with a screen recording showing "No comment
+    appears").
+2.  An engineer forwards the thread into #internal-bug-reports and tags @Devin.
+3.  Devin replies in-thread with:
+      - A ready PR with all CI checks passing and Devin Review complete.
+      - An embedded verification video recorded on a live preview deployment
+        proving the fix works ("Comment appears").
+4.  The engineer reviews the 5-second video—never opening an IDE, an agent
+    dashboard, or even GitHub—merges, and forwards the video proof straight back
+    to the customer.
+
+Key takeaway: Code review shifts from reading syntax diffs to reviewing
+visual/behavioral evidence. Several Cognition engineers now do much of their
+daily engineering work from iPads.
+
+4. The Hard Infrastructure Part: Building an Agent-Testable Codebase
+
+Walden emphasizes that Slack-to-PR magic is impossible unless you solve the
+environment problem underneath. Agents fail most often not because they can't
+write code, but because they can't run and verify the whole system safely.
+
+1. Localizing Everything Into a Single VM
+
+  - Before: Testing required connecting to AWS, staging databases, live
+    GitHub/Slack/Teams webhooks, and live servers—meaning agents collided with
+    each other, corrupted shared staging state, or lacked permissions.
+  - After: Cognition ran a massive migration so every internal service runs
+    locally inside docker compose on a single isolated virtual machine (VM), and
+    every external 3rd-party dependency (AWS, Slack, Teams, GitHub, etc.) has a
+    local mock. Every Devin gets its own self-contained replica of the entire
+    company stack.
+
+2. Hourly VM Snapshots (with Self-Healing Builds)
+
+  - Spinning up and compiling a huge monorepo from scratch wastes 10+ minutes
+    per agent session.
+  - Cognition rebuilds the entire codebase from main into a fresh VM snapshot
+    every hour. Every Slack-triggered Devin boots instantly into a warm,
+    pre-built environment.
+  - Self-healing snapshots: In a codebase merging hundreds of PRs a day, builds
+    occasionally break. When an hourly snapshot build fails, Devin is
+    automatically paged first to fix the broken build so human engineers don't
+    have to babysit CI.
+
+3. Self-Maintaining SKILL.md Files & Advanced "Multiplayer" Testing
+
+  - Instead of humans manually updating QA scripts every time the UI changes,
+    Devin maintains its own SKILL.md testing instructions, updating how to test
+    features as the codebase evolves.
+  - Complex Multi-Agent Testing (The Zoom Voice Call Example): When building
+    Devin’s ability to join live Zoom calls, they didn't force humans to jump on
+    test calls. Inside a single VM, they routed virtual audio devices
+    (BlackHole 2ch), launched multiple test accounts in a meeting
+    simultaneously, and had them speak voice prompts to each other ("This is
+    Devin speaking on the Mac Devin, what is the capital of Spain?") to verify
+    end-to-end audio/transcription/response loops autonomously.
+
+4. The Underrated Bonus: Cloud-VM Security
+
+Moving engineers off laptops stuffed with local .env files, SSH keys, and DevOps
+tokens into ephemeral, sandboxed cloud VMs drastically shrinks the attack
+surface for supply-chain and credential-leakage attacks.
+
+5. Recursive Self-Improvement (At the System Level, Not the Model Level)
+
+Most people hear "recursive self-improvement" and think of training new model
+weights via reinforcement learning. Walden points out a much more practical form
+available today: Factory-Level Recursive Self-Improvement.
+
+Because every cloud agent session—every shell command, CI retry, tool call, and
+failure—is logged, Cognition runs analyzer agents over thousands of past Devin
+traces (1,300+ sessions analyzed in the demo) to hunt for systemic waste. Every
+day, Devin posts concrete optimization proposals in Slack:
+
+  - Eliminating Toolchain Drift: "Setup fails on Node drift → blueprint pins the
+    toolchain" (Cut setup time from 9 min → 40 sec).
+  - Cutting Redundant Compute: "Sessions re-run full CI on every small edit →
+    tests scoped to the diff" (-18% cost).
+  - Squashing Flaky Tests: "One flaky E2E suite retried 12+ times → root cause
+    fixed" (0 retries).
+  - Turning Repeated GUI Actions into Skills: "Login via computer-use repeated
+    in 80% of test runs → saved as a reusable skill" (-31% test time).
+
+In other words, your agents continuously optimize the environment for future
+agents, compounding speed and lowering token costs automatically.
+
+6. The Next Paradigm: "We Give Agents Jobs, Not Tasks"
+
+This is Walden’s biggest conceptual leap. Most teams use AI like a contractor
+receiving micro-tickets ("Add an index to the orders table"). Cognition argues
+you should treat an agent like an autonomous employee owning a KPI.
+
+From Delegating Tasks → Delegating Outcomes
+
+1.  Human expresses a desire: "Make our P99 endpoint latency faster."
+2.  Agent defines goals & KPIs: Measures baseline (840ms), proposes a target
+    (500ms), and requests a compute budget (5,000 ACUs approved).
+3.  Agent scans and creates its own backlog: Audits the codebase and generates
+    14 issues (batching order lookups, adding missing DB indexes, setting up
+    Datadog alerts if P99 > 1s, scheduling a weekly Slack report).
+4.  Agent executes, monitors, and reports: Ships fixes, watches production
+    telemetry for regressions, and sends daily metric summaries to the
+    engineer's phone ("P99 is down 45%. No regressions.").
+
+Walden’s Rule of Thumb: Anything you think isn't measurable, find a way to
+measure it—click latency, UI layout shifts (by measuring DOM bounding-box
+movement), onboarding retention, CI duration—and put an agent on a 24/7 loop to
+optimize that number.
+
+7. Two Real-World Case Studies of "Job Delegation"
+
+Case Study 1: 2.8x Inference Speedup on NVIDIA Vera Rubin GPUs
+
+Cognition was one of the first recipients of NVIDIA's new Vera Rubin GPUs—so
+early that optimized inference kernels didn't even exist yet. Instead of
+dedicating a large systems team to hand-tune CUDA kernels for months, they
+allocated a permanent cluster of GPUs to Devin with a single goal: maximize
+output tokens/minute per GPU (TPM) on their agentic workload.
+
+Over ~7 days (Sep 20 – Sep 26), Devin hypothesized optimizations, benchmarked
+them on the real hardware, and sent winning patches to human engineers for
+approval. Each step stacked on the last (with standard LLM inference engineering
+context):
+
+  - Starting point: ~9k TPM (slower than the previous generation GB200 / GB300
+    baselines).
+
+1.  Merged GPU-to-GPU steps (+15%): Fusing collective communication/kernel
+    launches to reduce inter-GPU synchronization overhead.
+2.  Batched draft-model guesses (+15%): Optimizing speculative decoding (using a
+    small fast draft model to propose multiple tokens verified in parallel by
+    the main model).
+3.  Grouped incoming prompts (+9%): Improved request/prefix batching to boost
+    arithmetic intensity.
+4.  Pre-recorded GPU tasks (+7%): Using CUDA Graphs to capture and replay static
+    kernel sequences with near-zero CPU launch overhead.
+5.  More conversations at once (72, +9%) & More memory, less waiting (96, +20%):
+    Increasing continuous batching concurrency and KV-cache memory utilization
+    so GPU compute cores don't sit idle waiting on memory bandwidth.
+6.  Faster memory clock (+8%) & Automated tuning (120, +16%): Hardware clock
+    tuning and automated kernel/tile-size parameter sweeps.
+
+Final Result: 23,600+ TPM (a 2.8x gain), vastly outperforming the previous-gen
+GB300 peak (17,185) in just one week.
+
+Case Study 2: Building "Devin for Android" From Scratch in 44 Days
+
+Cognition had an iOS team actively shipping features, but lacked the headcount
+to staff an Android team. So an engineer named Samyok gave Devin one overarching
+job:
+
+"Your job is to product manage the Android app... basically, you're going to
+autonomously create the entire thing, but we need to figure out what the
+blockers are for you doing that first."
+
+  - How the loop ran: They wired permanent hooks into the iOS repo so every new
+    iOS feature triggered Devin to build parity on Android. Devin monitored
+    Slack for user feedback, ran pixel-for-pixel screenshot comparisons against
+    the iOS app, and posted video/image proof back in Slack.
+  - The 44-Day Output:
+      - 344,651 lines of Kotlin written.
+      - 1,134 PRs merged (999 merged with zero human approval).
+      - 2,841 screenshot tests & 1,217 tickets closed.
+      - 98.5% of all commits written by Devin.
+      - Shipped as a real product in open testing on Google Play (not throwaway
+        prototype code).
+  - What it took from the human (Samyok):
+      - Only 183 messages (1,961 words total)—roughly 6 PRs merged per 1 human
+        message.
+      - On 22 of the 44 days (half the entire project!), Samyok sent zero
+        messages—yet Devin still merged 24 to 57 PRs per day autonomously.
+      - Many of his messages weren't technical instructions at all, just
+        high-level steering like "be more ambitious."
+
+How Both Talks Fit Together (The Big Picture)
+
+If you combine Lauren Tan's talk and Walden Yan's talk, a unified playbook for
+AI-native engineering emerges:
+
+| Dimension           | Lauren Tan (Grok Bot / SpaceX–xAI)                                                   | Walden Yan (Devin / Cognition)                                                            |
+| :------------------ | :----------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| **Core Philosophy** | Engineer **trust** via deterministic codebases & heavy verification.                 | Build a **self-driving Software Factory** & delegate **outcomes/jobs**, not tasks.        |
+| **Codebase Design** | Ban nuance (`useEffect`), ban comments, enforce strict directory imports (`dune`).   | Localize everything (`docker compose` + mocked 3rd parties) into **hourly VM snapshots**. |
+| **Verification**    | 70% of tokens on verification: custom CLIs, CDP, TLA+, Lean, Bombadil fuzzing.       | Self-maintaining `SKILL.md` tests, pixel-for-pixel UI diffs, video proof in Slack.        |
+| **Scaling & Loop**  | Fix the inner loop first, then attach outer triggers (`sandcastle` release fuzzing). | Vertical 2–3 person pods + **analyzer agents** recursively optimizing CI/costs/skills.    |
+| **Outcome**         | \~11,000 PRs/month, 0.47% revert rate, faster Electron app perf.                     | 40.4x PR volume with 2.7x headcount, 2.8x GPU inference TPM, 344k-line Android app.       |
+
+Bottom line from Walden: Once your sandbox, verification, and feedback loops are
+in place, your team isn't bottlenecked by coding speed anymore—you're only
+limited by how ambitious your goals are.

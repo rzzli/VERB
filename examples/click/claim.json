@@ -1,0 +1,11 @@
+{
+  "claim": "CLI help identifies an explicitly empty default and leaves an unset option unlabeled",
+  "probe": ["{python}", "{bundle}/probe.py"],
+  "fixtures": ["probe.py"],
+  "env": { "PYTHONPATH": "{root}/src", "PYTHONNOUSERSITE": "1" },
+  "assertions": [
+    { "key": "empty default", "base": "unlabeled", "fixed": "[default: \"\"]" },
+    { "key": "unset default", "base": "unlabeled", "fixed": "unlabeled" }
+  ],
+  "required": [["{python}", "-m", "pytest", "-q", "tests/test_options.py"]]
+}

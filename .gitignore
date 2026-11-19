@@ -1,0 +1,3 @@
+.pilot/
+node_modules/
+*.tgz

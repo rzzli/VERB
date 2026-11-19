@@ -1,0 +1,10 @@
+{
+  "name": "verb",
+  "version": "0.2.0",
+  "description": "VERB — Verify Expected Runtime Behavior by replaying a behavioral claim against broken and proposed code",
+  "type": "module",
+  "bin": { "verb": "./bin/verb.js" },
+  "files": ["bin", "lib", "skills", "examples/click", "templates", "README.md"],
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test test/verification.test.js" }
+}
