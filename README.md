@@ -1,78 +1,95 @@
-# VERB — Verify Expected Runtime Behavior
+# VERB
 
-Give a coding agent a bug it can reproduce. VERB runs the same probe on the broken code and the proposed fix, checks a neighboring behavior, and records what actually happened. It works before commit and has no runtime package dependencies.
+**Did the patch fix the behavior the user reported?**
 
-## Try it on a real bug
+VERB runs the same probe on a known-broken revision and a proposed fix. It records what each version did, checks a neighboring case that should still work, and gives you a receipt you can inspect or replay. Use it on uncommitted edits or between two Git commits.
 
-Install Node.js 22 or later and Git. From this project's directory, run `npm link` to expose the `verb` command. You can also run `node /absolute/path/to/bin/verb.js` in place of `verb`. The Click example additionally uses Python 3.11, pytest 8, and colorama. Here is a complete first run in PowerShell, starting in this project's directory.
+*Verify Expected Runtime Behavior*
+
+[Quick start](#quick-start) · [Commands](#commands) · [Write a probe](#write-a-probe) · [Tests](#tests)
+
+## How it works
+
+A **claim** describes the symptom and expected fix. A **probe** drives the real CLI and reports what it observed. Freezing the probe and its fixtures lets you apply the same test before and after an edit.
+
+```mermaid
+flowchart TD
+    claim["Claim + probe"] --> base["verb baseline<br/>Reproduce the symptom on the broken revision"]
+    base --> edit["Edit the code"]
+    edit --> check["verb check<br/>Test the current working tree"]
+    check -->|Symptom persists or control fails| edit
+    check -->|Both match expectations| prove["verb prove<br/>Rerun both versions and required checks"]
+    prove --> receipt["JSON receipt<br/>Verdict, observations, commands and replay arguments"]
+```
+
+## Quick start
+
+Replay a real bug in Click’s `--help` output. Both revisions exit successfully. Only the fix shows `[default: ""]` for an explicitly empty default while leaving an unset option unlabeled.
+
+Start in the VERB repository root with **Node.js 22+, Git, and Python 3.11**. The example uses a local Python environment.
+
+**PowerShell**
 
 ```powershell
-$tool = (Get-Location).Path
+$verb = (Resolve-Path bin/verb.js).Path
+$claim = (Resolve-Path examples/click/claim.json).Path
 git clone https://github.com/pallets/click.git click-demo
 Set-Location click-demo
-git checkout --detach c021f05
 py -3.11 -m venv .venv
 $env:VERB_PYTHON = (Resolve-Path .venv/Scripts/python.exe).Path
 & $env:VERB_PYTHON -m pip install "pytest>=8,<9" colorama
-$claim = Join-Path $tool examples/click/claim.json
-verb baseline $claim --base c021f05
-verb check $claim
-verb prove $claim --base c021f05 --candidate d3e3852
+node $verb prove $claim --base c021f05 --candidate d3e3852
 ```
 
-The middle command deliberately returns **1** on the broken checkout. The final command should return **0**. On Linux the equivalent is:
+<details>
+<summary>Linux commands</summary>
 
 ```sh
-tool="$PWD"
+verb="$PWD/bin/verb.js"
+claim="$PWD/examples/click/claim.json"
 git clone https://github.com/pallets/click.git click-demo
 cd click-demo
-git checkout --detach c021f05
 python3.11 -m venv .venv
 export VERB_PYTHON="$PWD/.venv/bin/python"
 "$VERB_PYTHON" -m pip install 'pytest>=8,<9' colorama
-claim="$tool/examples/click/claim.json"
-verb baseline "$claim" --base c021f05
-verb check "$claim"
-verb prove "$claim" --base c021f05 --candidate d3e3852
+node "$verb" prove "$claim" --base c021f05 --candidate d3e3852
 ```
 
-Read the two option rows. The affected option changes from `unlabeled` to `[default: ""]`. The unset option stays `unlabeled` on both revisions. Both help commands exit successfully. The proof also runs Click's `tests/test_options.py`. Each recorded command includes its exit code, output, and duration. [Original issue](https://github.com/pallets/click/issues/2500) · [Upstream fix](https://github.com/pallets/click/commit/d3e3852)
+</details>
 
-## Use it with your own project
+**Expected result: `VERIFIED` (exit 0).** The receipt shows both option labels and the result of Click’s option test suite. A patch that labels *every* option fails the unset-option check. [Example claim](examples/click/claim.json) · [Probe](examples/click/probe.py)
 
-Run the CLI anywhere inside the target Git checkout. Copy [the claim template](templates/claim.json) and write its probe alongside it. For coding agents, point the agent at [the bundled skill](skills/verb-regression/SKILL.md), or copy its directory into the agent's skill-discovery directory. A useful first request is “Reproduce this bug and find a plausible wrong fix that would pass an obvious test.”
+## Commands
 
-| Command | What exit zero establishes |
+Run `npm link` from the VERB repository to install the `verb` command. Then run it from the Git checkout you want to test.
+
+| Command | Use it to |
 | --- | --- |
-| `verb baseline CLAIM --base REF` | The selected revision exhibited the known symptom and control observations. Saves the frozen inputs for this claim path. |
-| `verb check CLAIM` | The saved baseline and current edits match their respective expectations. This focused run skips required suite commands. |
-| `verb prove CLAIM --base REF [--candidate REF]` | Both fresh behavioral runs match expectations and every declared required command succeeded. Defaults to current local edits. |
-| `verb status RECEIPT` | The working files still match the content digest in that working-tree receipt. This command only checks freshness. |
+| `verb baseline CLAIM --base REF` | Confirm the broken revision exhibits the specified symptom and save the frozen inputs. |
+| `verb check CLAIM` | Compare current edits against the saved baseline during development. |
+| `verb prove CLAIM --base REF [--candidate REF]` | Run a fresh comparison and the candidate’s required checks. The candidate defaults to your working tree. |
+| `verb status RECEIPT` | Check whether the current working files still match a saved receipt. |
 
-Add `--json` to any command. The default output includes the absolute receipt path and replay argument vector. Run the replay from the recorded repository. A working-tree replay uses today's files; check the old receipt with `status` first. A commit replay pins commit IDs. Baselines, observations used for conflict detection, and receipts live under the worktree's Git directory in `verb/`. Each run has its own receipt. History is local to that checkout. When upgrading, run `verb baseline CLAIM --base REF` once to populate the new store. You can inspect an earlier working-tree receipt directly with `verb status RECEIPT`.
+Add `--json` for machine-readable output. Exit codes distinguish **verified (0)**, **failed (1)**, and **inconclusive (2)**. For example, a candidate that still exhibits the bug fails. A baseline that never exhibited it makes the proof inconclusive.
 
-### Write a probe
+## What works today
 
-Use a trusted script outside the subject snapshot. Its working directory is the snapshot at `VERB_ROOT`, and `VERB_PROFILE` points to a fresh writable profile. Run the real entry point and emit one JSON object on stdout. Return zero when observations were collected, including on the broken version. Send diagnostics to stderr. Make parsing fail if the requested option, row, or response is missing.
+On Windows and Linux, VERB replayed five historical fixes across two repositories. The Click release test checks that VERB accepts the upstream fix, catches an overbroad fix, and identifies a probe that loads Click from outside the checkout. [Click release test](test/click-gate.js)
+
+## Use it with your coding agent
+
+Give your agent the bundled skill and a bug report. Ask it to identify one plausible wrong fix and write a control that would catch it. For a first claim, copy the template and replace its observations with values your CLI actually produces. [Agent skill](skills/verb-regression/SKILL.md) · [Claim template](templates/claim.json)
+
+## Write a probe
+
+Run the real CLI from the snapshot at `VERB_ROOT`. Use `VERB_PROFILE` for settings that need a fresh user directory. Emit one JSON object on stdout with the absolute path of the application file actually loaded and the values you observed.
 
 ```json
-{"origin":"/absolute/path/to/tested/checkout/src/app.js","observations":{"saved theme":"dark","unconfigured locale":"en"}}
+{"origin":"/path/to/snapshot/src/app.js","observations":{"saved theme":"dark","unconfigured locale":"en"}}
 ```
 
-Report the absolute executable or module file **actually used**. For example, read the loaded module's filename or get the path from the launched application. The verifier checks that its resolved file belongs to the snapshot. A trusted probe supplies this provenance. A fabricated path could misrepresent what ran.
+Keep expected values in the claim. Return zero when the probe collected the observations, even on the broken version. List the probe and its input files under `fixtures` and rerun `verb baseline` when any of them change. Use trusted probes and repositories, since commands run with your local permissions.
 
-- `fixtures` contains regular files relative to the claim file, including the probe. Invoke the script as a `{bundle}/filename` argument. A change to the claim bytes or any declared fixture invalidates the saved baseline.
-- `assertions` maps each observation key to literal `base` and `fixed` strings. Use equal values for a control. Keep expected values here and emit observations from the probe.
-- `setup` and `required` are arrays of argument vectors. Setup runs in each fresh tree. Required commands run after the candidate passes its assertions during `prove`. The first unsuccessful required command stops the run. Configure runners to fail on empty selections where relevant. A zero suite exit only records what that command reports.
-- `probe`, command arguments, and values in optional `env` support `{root}`, `{bundle}`, `{node}`, and `{python}`. The last uses `VERB_PYTHON` or the platform Python command. Invoke executables directly; use an explicit interpreter for shell or batch scripts. Declare project-specific environment variables and dependencies needed by the subject.
-- `timeoutMs` defaults to 60 seconds per command. Combined stdout/stderr is limited to 4 MiB per command. Timeout, output overflow, missing evidence, or an unexpected process failure yields incomplete evidence.
+## Tests
 
-### Interpret a result
-
-**Verified (0)** means the requested operation succeeded. **Failed (1)** identifies a violated candidate assertion or an unsuccessful required check. **Inconclusive (2)** explains missing or contradictory evidence, such as an already-fixed baseline, ambient import, setup failure, or timeout. When completed observations disagree for identical claim and input identities on the same platform, the receipt records the conflict. Inspect the run history and address the cause before relying on that input again.
-
-Each execution gets a separate source directory, profile, and temp directory. The working-tree snapshot includes tracked and new nonignored files, disk versions of staged files, and deletions. Git metadata, ignored build products, submodules, and symlink inputs are outside the v1 input model. Use setup to recreate required build artifacts. Commands run locally as the caller and inherit access to the host, including the network. Use trusted repositories, claims, and probes.
-
-## Run the release gates
-
-Run `node --test test/verification.test.js` from the verifier project. From any clone of Click containing the two pilot revisions, with the example Python environment configured, run `node /absolute/path/to/test/click-gate.js`. It edits a disposable clone and checks the committed fix, uncommitted fix, wrong fix, off-tree import, missing observation, and failed suite.
+Run `npm test` from the VERB repository. To run the Click release test, complete the quick start and run `node ../test/click-gate.js` from `click-demo`. It exercises both revisions in a disposable clone.

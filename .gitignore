@@ -1,3 +1,9 @@
 .pilot/
 node_modules/
 *.tgz
+
+# Local research notes and historical pilot materials
+/memory/
+/docs/
+/test/history-pilot.js
+/test/pilot/
