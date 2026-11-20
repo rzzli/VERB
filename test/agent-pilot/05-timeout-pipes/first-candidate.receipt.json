@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"fb5f95340243edba77d320aafdd5f3c9869937a212b51a25a9b805f897970e94"},
   "action": "prove",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\4ed6b60b-86d7-4f31-b3e7-8b57c040f4cc.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\4ed6b60b-86d7-4f31-b3e7-8b57c040f4cc.json",
   "timestamp": "2026-11-19T05:56:30.746Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-BqoBgu\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-BqoBgu\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 4817,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-BqoBgu\\\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"waited for detached child\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-BqoBgu\\\\f5094f6a-73cd-4012-a9d1-6944d8f091a8\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"waited for detached child\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
           "stderr": "{\"detachedElapsedMs\":3384,\"activeElapsedMs\":804,\"normalElapsedMs\":329,\"configuredTimeoutMs\":400,\"boundedThresholdMs\":1500}\n"
         }
       ],
@@ -61,19 +62,19 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-BqoBgu\\983fca15-745c-412b-91c3-865c2ad22022\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-BqoBgu\\983fca15-745c-412b-91c3-865c2ad22022\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 2315,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-BqoBgu\\\\983fca15-745c-412b-91c3-865c2ad22022\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"bounded\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-BqoBgu\\\\983fca15-745c-412b-91c3-865c2ad22022\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"bounded\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
           "stderr": "{\"detachedElapsedMs\":806,\"activeElapsedMs\":795,\"normalElapsedMs\":333,\"configuredTimeoutMs\":400,\"boundedThresholdMs\":1500}\n"
         },
         {
           "phase": "required",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\tools\\node\\node.exe",
             "--test",
             "test/*.test.js"
           ],
@@ -119,7 +120,7 @@
   "replay": [
     "verb",
     "prove",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -127,7 +128,7 @@
     "kind": "working",
     "id": "aee6e41e9eef8155624bd99893f500ce4a2bf9b68eea9e9f625cfa30292a5e49"
   },
-  "baselineReceipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351.json",
+  "baselineReceipt": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351.json",
   "claim": "A command timeout must bound waiting for stdout held by a detached descendant after the launcher has exited; ordinary timeout classification and successful commands must remain intact.",
   "digest": "5924b750034435979024733ce828c6da3d603896f46ff7e25aa6c25ac4c30a8a",
   "required": [

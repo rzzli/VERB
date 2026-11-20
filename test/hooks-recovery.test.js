@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { fixture, project, write } from './helpers.js';
+import { fixture, project, verb, write } from './helpers.js';
 
 const hook = path.join(project, 'hooks/verify.mjs');
 const cli = path.join(project, 'bin/verb.js');
@@ -32,8 +32,13 @@ function lockFile(f) {
   return path.join(f.repo, '.git', 'verb', 'locks', key + '.lock');
 }
 
-function proven(t) {
+function proven(t, claimName) {
   const f = fixture(t);
+  if (claimName) {
+    const renamed = path.join(f.dir, claimName);
+    fs.renameSync(f.claim, renamed);
+    f.claim = renamed;
+  }
   run([cli, 'baseline', f.claim, '--base', 'HEAD', '--json'], f.repo);
   write(path.join(f.repo, 'value'), 'new');
   const proof = run([cli, 'prove', f.claim, '--base', 'HEAD', '--json'], f.repo);
@@ -102,3 +107,65 @@ test('hooks allow work outside a Git repository instead of surfacing Git discove
     assert.doesNotMatch(result.stderr, /fatal:/);
   }
 });
+
+test('the missing claim hint identifies a usable absolute path from a subdirectory', t => {
+  const f = proven(t, "someone's $claim! with ‘quotes’.json");
+  fs.unlinkSync(f.claim);
+  const sub = path.join(f.repo, 'nested');
+  fs.mkdirSync(sub);
+  const stopped = run([hook, '--stop'], sub);
+  assert.equal(stopped.status, 2);
+  const command = stopped.stderr.trimEnd().match(/with: (verb deactivate [\s\S]+)$/)?.[1];
+  assert.ok(command, stopped.stderr);
+  // Exercise copy/paste of the whole printed command with the documented shell.
+  const windows = process.platform === 'win32';
+  const ps = 'function verb { & $env:VERB_TEST_NODE $env:VERB_TEST_CLI @args --json }\n' + command + '\nexit $LASTEXITCODE';
+  const args = windows ? ['-NoProfile', '-NonInteractive', '-EncodedCommand', Buffer.from(ps, 'utf16le').toString('base64')]
+    : ['-c', 'verb() { "$VERB_TEST_NODE" "$VERB_TEST_CLI" "$@" --json; }\n' + command];
+  const retired = spawnSync(windows ? 'powershell.exe' : 'sh', args, {
+    cwd: sub, timeout: 30000, encoding: 'utf8', windowsHide: true,
+    env: { ...process.env, VERB_TEST_NODE: process.execPath, VERB_TEST_CLI: cli }
+  });
+  assert.ifError(retired.error);
+  assert.equal(retired.status, 0, retired.stdout + retired.stderr);
+  assert.equal(JSON.parse(retired.stdout).removed, 1);
+  assert.equal(verb(sub, 0, 'status', '--active').active, 0);
+});
+
+test('deactivate reports a path mismatch and leaves the active claim in place', t => {
+  const f = proven(t);
+  const missed = verb(f.repo, 0, 'deactivate', 'claim.json');
+  assert.equal(missed.removed, 0);
+  assert.ok(missed.reason.includes(path.join(f.repo, 'claim.json')));
+  assert.ok(missed.reason.includes('Still active: ' + f.claim));
+  assert.equal(verb(f.repo, 0, 'status', '--active').active, 1);
+  assert.equal(verb(f.repo, 0, 'deactivate', f.claim).removed, 1);
+  assert.equal(verb(f.repo, 0, 'deactivate', f.claim).removed, 0);
+});
+
+test('a missing probe is reported as a fixture by both the hook and check', t => {
+  const f = proven(t);
+  fs.unlinkSync(f.probe);
+  const stopped = run([hook, '--stop'], f.repo);
+  assert.equal(stopped.status, 2);
+  for (const reason of [stopped.stderr, verb(f.repo, 2, 'check', f.claim).reason]) {
+    assert.ok(reason.includes('Fixture is missing: ' + f.probe), reason);
+    assert.ok(reason.includes('(listed in ' + f.claim + ')'), reason);
+    assert.match(reason, /verb deactivate /);
+    assert.doesNotMatch(reason, /Claim file is missing/);
+  }
+});
+
+for (const foreign of [false, true]) {
+  test('keeps a lock with ' + (foreign ? 'a foreign host' : 'no readable owner'), t => {
+    const f = proven(t);
+    const lock = lockFile(f);
+    const data = foreign ? { pid: deadPid(), host: 'other-host', token: 'other' } : {};
+    write(lock, data);
+    fs.utimesSync(lock, 100, 100);
+    const status = verb(f.repo, 2, 'status', '--active');
+    assert.ok(status.reason.includes(lock), status.reason);
+    assert.ok(status.reason.includes(foreign ? 'other-host' : 'unknown writer'));
+    assert.deepEqual(JSON.parse(fs.readFileSync(lock)), data);
+  });
+}

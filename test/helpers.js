@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import './git-environment.mjs';
 
 export const project = fileURLToPath(new URL('../', import.meta.url));
 export const scratch = () => fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb gate ')));

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { checkout, copyFixtures, freeze, git, hash, resolveRef, saveJSON, windowsRootAlias, working } from '../lib/files.js';
+import { checkout, copyFixtures, freeze, gitPath, hash, resolveRef, saveJSON, windowsRootAlias, working } from '../lib/files.js';
 import { interrupt, runSide } from '../lib/run.js';
 import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
 import { currentConflict, detectConflicts, entries, load, proofProblem, prune, publishReceipt, receiptOrder, receiptRunId, recent, withClaimLock } from '../lib/store.js';
@@ -69,12 +69,6 @@ function canonicalClaim(file) {
   }
 }
 
-function missingClaim(repo, file) {
-  const shown = path.relative(repo, file) || file;
-  return { reason: 'Claim file is missing: ' + shown + '. Run "verb deactivate ' + shown +
-    '" to retire its saved baseline, or restore the file.' };
-}
-
 function* proofs(repo, store, file, matches = () => true) {
   const dir = path.join(store, 'receipts');
   const files = file ? [file] : recent(dir).concat(entries(dir).filter(e => e.isDirectory())
@@ -105,11 +99,10 @@ function status(repo, store, { file, active }) {
     for (const saved of claims) {
       const baseline = saved.claimPath ? saved : readReceipt(saved.receipt);
       const claimPath = canonicalClaim(baseline.claimPath ?? baseline.replay[2]);
-      if (!fs.existsSync(claimPath)) return { ...result, ...missingClaim(repo, claimPath) };
       let digest;
       try { digest = freeze(claimPath).digest; }
       catch (error) {
-        if (error.code === 'ENOENT') return { ...result, ...missingClaim(repo, claimPath) };
+        if (error.code === 'ENOENT' || error.code === 'fixture_missing') return { ...result, reason: error.message };
         throw error;
       }
       if (digest !== saved.digest || saved.verdict !== 'verified') {
@@ -218,8 +211,8 @@ async function main() {
     console.log(summary(readReceipt(opts.file)));
     return 0;
   }
-  const repo = fs.realpathSync.native(git(process.cwd(), ['rev-parse', '--show-toplevel']).trim());
-  const store = path.join(git(repo, ['rev-parse', '--absolute-git-dir']).trim(), 'verb');
+  const repo = fs.realpathSync.native(gitPath(process.cwd(), '--show-toplevel'));
+  const store = path.join(gitPath(repo, '--absolute-git-dir'), 'verb');
   if (opts.action === 'status') {
     const result = status(repo, store, opts);
     console.log(opts.json ? JSON.stringify(result) : textReport(result));
@@ -230,6 +223,7 @@ async function main() {
   const slot = path.join(store, 'baselines', claimKey, 'current.json');
   if (opts.action === 'deactivate') {
     const slots = new Set([slot]);
+    const stillActive = new Set();
     // Also retire old alias-keyed slots, including differently cased names of deleted Windows files.
     const baselines = path.join(store, 'baselines');
     for (const entry of entries(baselines).filter(e => e.isDirectory())) {
@@ -237,13 +231,21 @@ async function main() {
       const saved = load(current);
       const baseline = saved?.claimPath ? saved : saved?.receipt && load(saved.receipt);
       const claimPath = baseline?.claimPath ?? baseline?.replay?.[2];
-      if (claimPath && path.relative(opts.file, canonicalClaim(claimPath)) === '') slots.add(current);
+      if (!claimPath) continue;
+      if (path.relative(opts.file, canonicalClaim(claimPath)) === '') slots.add(current);
+      else if (saved.active || saved.verdict === 'verified') stillActive.add(claimPath);
     }
+    let removed = 0;
     for (const current of slots) {
       const key = path.basename(path.dirname(current));
-      withClaimLock(store, 'publish-' + key, () => fs.rmSync(current, { force: true }));
+      withClaimLock(store, 'publish-' + key, () => {
+        try { fs.unlinkSync(current); removed++; }
+        catch (error) { if (error.code !== 'ENOENT') throw error; }
+      });
     }
-    const result = { action: 'deactivate', verdict: 'verified', reason: 'Claim is no longer active.' };
+    const reason = removed ? 'Claim is no longer active.' : 'No saved baseline matches ' + opts.file +
+      '. Nothing was deactivated.' + (stillActive.size ? ' Still active: ' + [...stillActive].sort().join(', ') + '.' : '');
+    const result = { action: 'deactivate', verdict: 'verified', removed, reason };
     console.log(opts.json ? JSON.stringify(result) : textReport(result));
     return 0;
   }

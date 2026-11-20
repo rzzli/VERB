@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { git } from '../lib/files.js';
+import { gitPath } from '../lib/files.js';
 import { assertStagedCheckout } from '../lib/staged.js';
 
 // Git may provide a relative temporary index. Preserve its meaning when status and
@@ -13,7 +13,12 @@ const cli = fileURLToPath(new URL('../bin/verb.js', import.meta.url));
 const stop = process.argv.includes('--stop');
 // A user-level hook can run outside any repository. There are no VERB claims there,
 // so allow the action instead of surfacing Git's discovery error as a block.
-const top = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8', windowsHide: true });
+const top = spawnSync('git', ['rev-parse', '--show-toplevel'], {
+  encoding: 'utf8', windowsHide: true,
+  // Git gives discovery and configuration failures the same exit code. Keep
+  // only this diagnostic in a known locale; project commands inherit the user's.
+  env: { ...process.env, LC_ALL: 'C', LANGUAGE: 'C' }
+});
 if (top.error) {
   console.error('VERB blocked: cannot run Git: ' + top.error.message);
   process.exit(stop ? 2 : 1);
@@ -42,7 +47,7 @@ const status = (() => {
   }
 })();
 if (process.argv.includes('--pre-commit') && status.active > 0) try {
-  const repo = git(process.cwd(), ['rev-parse', '--show-toplevel']).trim();
+  const repo = gitPath(process.cwd(), '--show-toplevel');
   const options = { cwd: repo, encoding: 'utf8', windowsHide: true, timeout: 120000, maxBuffer: 64 * 1024 * 1024 };
   // These index flags hide changes from git diff, so a working proof cannot approve them.
   const flags = spawnSync('git', ['ls-files', '-v', '-z'], options);

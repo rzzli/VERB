@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"daada2f02a89b63552088065c4a7000ec04360a2ffa0d7fe35ac54450427669a"},
   "action": "prove",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\51dedfcd-fb57-485c-94a9-ff69f3abf2b9.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\02-env-case\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\51dedfcd-fb57-485c-94a9-ff69f3abf2b9.json",
   "timestamp": "2026-11-19T05:50:26.059Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-pbZjoE\\6c09677a-a6cc-4c22-8ec0-b7889c811c79\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-pbZjoE\\6c09677a-a6cc-4c22-8ec0-b7889c811c79\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 869,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-pbZjoE\\\\6c09677a-a6cc-4c22-8ec0-b7889c811c79\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"ignored\",\"uppercase PATH override\":\"honored\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-pbZjoE\\\\6c09677a-a6cc-4c22-8ec0-b7889c811c79\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"ignored\",\"uppercase PATH override\":\"honored\"}}\n",
           "stderr": ""
         }
       ],
@@ -53,19 +54,19 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-pbZjoE\\f643e450-65a1-4546-b538-d71281fdc568\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-pbZjoE\\f643e450-65a1-4546-b538-d71281fdc568\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 797,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-pbZjoE\\\\f643e450-65a1-4546-b538-d71281fdc568\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"honored\",\"uppercase PATH override\":\"honored\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-pbZjoE\\\\f643e450-65a1-4546-b538-d71281fdc568\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"honored\",\"uppercase PATH override\":\"honored\"}}\n",
           "stderr": ""
         },
         {
           "phase": "required",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\tools\\node\\node.exe",
             "--test",
             "test/*.test.js"
           ],
@@ -103,7 +104,7 @@
   "replay": [
     "verb",
     "prove",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\02-env-case\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -111,7 +112,7 @@
     "kind": "working",
     "id": "3afcea4ac54344beadb751b553d2a84001e9d92cdf30b2b6864d4afff87a897b"
   },
-  "baselineReceipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54.json",
+  "baselineReceipt": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54.json",
   "claim": "On Windows, a claim's lowercase path environment override must replace inherited PATH just as an uppercase PATH override does.",
   "digest": "5a487c9b54931d897a84a3a01fcd5b4aaa2b1b23d1828b583784bc73b570340f",
   "required": [

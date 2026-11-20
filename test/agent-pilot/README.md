@@ -16,7 +16,9 @@ Each trial contains a frozen claim/probe, timestamped setup record, verified bas
 | Receipt paths across operating systems | Linux | [04 summary](04-portable-summary/first-candidate.summary.txt) | [Trial](04-portable-summary/trial.json) · [Review](04-portable-summary/review.json) |
 | Detached-descendant output-pipe timeout | Windows | [05 summary](05-timeout-pipes/first-candidate.summary.txt) | [Trial](05-timeout-pipes/trial.json) · [Review](05-timeout-pipes/review.json) |
 
-The Windows receipt used in trial 04 is an actual verified tool receipt, not a hand-written success. Its native-path control is the original Linux trial 03 baseline receipt. Stored absolute paths describe the original runs; use the replay harness, not their old replay argv, on another machine.
+Each archived receipt is a derived copy. Workspace, interpreter, and profile paths have been replaced with neutral paths that preserve their Windows or POSIX syntax. The `archive.sourceSha256` field identifies the original file. Observations, verdicts, command results, and timings come from the recorded run. Use the replay harness to create receipts with paths for your own checkout.
+
+Trial 04 uses a recorded Windows verification receipt and a Linux baseline as probe fixtures. Its trial record retains the historical input digest and separately pins the normalized fixture digest used for offline replay.
 
 ## Replay offline
 
@@ -39,8 +41,10 @@ Windows runs trials 01, 02, 05. Linux runs 01, 03, 04, 05. Unsupported cases are
 
 The first two Windows captures include incidental CRLF checkout churn. Those original patches are preserved unchanged; only their substantive fixes were integrated. Later clones were configured before checkout to avoid that noise. [Attributes](.gitattributes) preserve artifact bytes across checkouts.
 
-The fixture-mode fix changes the digest format to include executable bits. Consequently current-verifier replay produces new digests and existing user baselines need to be rerun; original-verifier replay still checks the exact recorded digests. This is not evidence tampering.
+The fixture-mode fix changes the digest format to include executable bits. Current-verifier replay therefore produces new digests. With the historical verifier, the harness compares trial 04 against its normalized input digest and the other four trials against their original input digests.
+
+The frozen verifier's required Windows suite has an intermittent failure when two proofs update history concurrently. An independent replay reproduced an `EPERM` rename error with both the user's Git settings and the harness defaults. A failed replay is evidence for that run. Use `--current --integrated` to check the current implementation separately.
 
 ## Scope and decision
 
-See the [pilot log](../../docs/agent-pilot.md) for cost, limitations, and the continuation decision, and [results.json](results.json) for derived metrics and subsequent replay results. The replay harness, bundled baseline, raw receipts, reviews and tests are development artifacts, **excluded from the published package**. Runtime additions remain dependency-free and add no public commands or claim fields.
+See the [pilot log](../../docs/agent-pilot.md) for cost, limitations, and the continuation decision, and [results.json](results.json) for metrics and subsequent replay results. The replay harness, bundled baseline, derived receipts, reviews and tests are development artifacts excluded from the package.

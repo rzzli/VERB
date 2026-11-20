@@ -1,0 +1,12 @@
+{
+  "claim": "Escaped hyphens preserve the same literal matches in JavaScript Unicode and PCRE patterns, including within a character class.",
+  "probe": ["{node}", "{bundle}/probe.cjs"],
+  "fixtures": ["probe.cjs", "subjects.txt"],
+  "assertions": [
+    {"key": "pcreLiteral", "base": "pattern rejected", "fixed": "[\"x-.-y\"]"},
+    {"key": "javascriptLiteral", "base": "[\"x-.-y\"]", "fixed": "[\"x-.-y\"]"},
+    {"key": "pcreClass", "base": "pattern rejected", "fixed": "[\"a\",\"-\",\"c\"]"},
+    {"key": "javascriptClass", "base": "[\"a\",\"-\",\"c\"]", "fixed": "[\"a\",\"-\",\"c\"]"}
+  ],
+  "required": [["{node}", "--check", "index.js"]]
+}

@@ -1,0 +1,10 @@
+{
+  "claim": "Escaped text containing hyphens compiles and matches literally in Unicode patterns, including a hyphen between letters in a character class.",
+  "probe": ["{node}", "{bundle}/probe.cjs"],
+  "fixtures": ["probe.cjs"],
+  "assertions": [
+    {"key": "unicodeLiteral", "base": "SyntaxError", "fixed": "self=true,changed=false,expanded=false"},
+    {"key": "classMembers", "base": "a,-,z", "fixed": "a,-,z"}
+  ],
+  "required": [["{node}", "--check", "index.js"]]
+}

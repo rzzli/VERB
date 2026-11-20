@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import './git-environment.mjs';
 
 const project = fileURLToPath(new URL('../', import.meta.url));
 const cli = path.join(project, 'bin/verb.js');
@@ -61,7 +62,9 @@ await import(process.env.VERB_BENCH_URL);`;
   const rssKb = Number(fs.readFileSync(rssFile, 'utf8'));
   const result = JSON.parse(p.stdout || p.stderr);
   if (p.status !== 0 || result.verdict !== 'verified') throw Error('verb ' + args[0] + ' failed: ' + (p.stdout || p.stderr));
-  return { wallMs, rssKb, receipt: result.receipt };
+  // The benchmark deletes the temporary checkout. Export only a checkout-relative
+  // identity so a shared report does not contain an author's temporary directory.
+  return { wallMs, rssKb, receipt: path.relative(cwd, result.receipt).split(path.sep).join('/') };
 }
 
 function profile(t, name, build) {
@@ -108,7 +111,7 @@ try {
     const prove = run(f.repo, ['prove', f.claim, '--base', 'HEAD'], rss);
     const check = run(f.repo, ['check', f.claim], rss);
     const verbState = bytes(path.join(f.repo, '.git', 'verb'));
-    const receipts = path.dirname(prove.receipt);
+    const receipts = path.join(f.repo, path.dirname(prove.receipt));
     const retained = bytes(receipts);
     out.profiles[name] = {
       content: { files: before.files, bytes: before.total },
@@ -129,9 +132,10 @@ try {
   run(f.repo, ['baseline', f.claim, '--base', 'HEAD'], rss);
   write(path.join(f.repo, 'src/app.txt'), 'fixed\n');
   const first = run(f.repo, ['prove', f.claim, '--base', 'HEAD'], rss);
-  const one = fs.statSync(first.receipt).size;
+  const firstReceipt = path.join(f.repo, first.receipt);
+  const one = fs.statSync(firstReceipt).size;
   for (let i = 0; i < 9; i++) run(f.repo, ['prove', f.claim, '--base', 'HEAD'], rss);
-  const receipts = path.dirname(first.receipt);
+  const receipts = path.dirname(firstReceipt);
   out.verbose = { bytesPerReceipt: one, retainedReceipts: fs.readdirSync(receipts).length,
     retainedBytes: bytes(receipts).total, documentedCap: '30 receipts per claim' };
   console.log(`verbose: ${one} bytes/receipt; ${out.verbose.retainedReceipts} receipts retain ${out.verbose.retainedBytes} bytes`);

@@ -18,6 +18,8 @@ The slowest of the 30 focused checks took **1.338 s**, within the 30-second targ
 
 **Human wiring time is unmeasured.** No first-time participant was available. The wiring column measures copying a prepared probe, writing its claim, and completing the baseline. Probe design and authoring were already complete. A future first-time trial should start when the participant receives a bug report and existing runnable check, and stop when they can show and explain a reproducing baseline and its neighboring control. Record setup, wiring, new probe authoring, and project-suite time separately, along with assistance received and any wrong fix identified by the participant. That trial is needed to assess the 15-minute target.
 
+The [blind review pilot](../blind-review/README.md) revisits these five fixes with fresh reviewers and compares their checks against the upstream authors' targeted tests.
+
 ## Larger checkout
 
 The workload used CPython 3.11.9 (`de54cf5be371a6f5e2e9f208c38def5f81d3ef02`), with **4,687 tracked files and 97,688,493 tracked bytes**. The harness seeded a one-line regression in `textwrap.shorten`, restored the upstream implementation as an uncommitted edit, and tested a custom placeholder and a short-input control. The proof ran CPython's `test.test_textwrap` suite. Warm local caches and small project commands characterize this run.

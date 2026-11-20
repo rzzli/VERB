@@ -1,0 +1,15 @@
+{
+  "claim": "An option with show_default=True visibly labels an explicitly empty string as [default: \"\"]; an unset default and a default hidden by show_default=False have no label.",
+  "probe": ["{python}", "{bundle}/probe.py"],
+  "fixtures": ["probe.py"],
+  "env": {
+    "PYTHONPATH": "{root}/src",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "assertions": [
+    {"key": "explicit_empty", "base": "absent", "fixed": "[default: \"\"]"},
+    {"key": "unset", "base": "absent", "fixed": "absent"},
+    {"key": "hidden_empty", "base": "absent", "fixed": "absent"}
+  ],
+  "required": [["{python}", "-m", "compileall", "-q", "src/click"]]
+}

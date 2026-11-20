@@ -15,8 +15,8 @@
     "test/agent-pilot/04-portable-summary/probe.mjs",
     "test/agent-pilot/04-portable-summary/windows.receipt.json",
     "test/agent-pilot/04-portable-summary/native.receipt.json",
-    ".pilot/agent-trials-20261118-2134/04-portable-summary/bin/verb.js",
-    ".pilot/agent-trials-20261118-2134/04-portable-summary/test/portable-summary.test.js"
+    ".pilot/worktrees/04-portable-summary/bin/verb.js",
+    ".pilot/worktrees/04-portable-summary/test/portable-summary.test.js"
   ],
   "findings": [
     {

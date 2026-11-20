@@ -20,9 +20,9 @@ const cases = [
     expected: ['../tools/node.exe', '--config=config.json']
   },
   {
-    label: 'Windows DOS alias', repo: 'C:\\Users\\runneradmin\\app',
-    aliases: ['C:\\Users\\RUNNER~1\\app'], claim: 'C:\\Users\\runneradmin\\app\\claims\\feature.json',
-    origin: 'src\\app.js', command: ['node', '--config=C:\\Users\\RUNNER~1\\app\\config.json'],
+    label: 'Windows DOS alias', repo: 'C:\\Sample Workspace\\app',
+    aliases: ['C:\\SAMPLE~1\\app'], claim: 'C:\\Sample Workspace\\app\\claims\\feature.json',
+    origin: 'src\\app.js', command: ['node', '--config=C:\\SAMPLE~1\\app\\config.json'],
     expected: ['node', '--config=config.json']
   },
   {

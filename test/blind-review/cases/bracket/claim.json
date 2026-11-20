@@ -1,0 +1,11 @@
+{
+  "claim": "Interpolating escaped text into a character class preserves the exact set of supplied characters, including repeated interior hyphens. The same public function still produces a literal pattern in Unicode mode outside a class.",
+  "probe": ["{node}", "{bundle}/probe.cjs"],
+  "fixtures": ["probe.cjs"],
+  "assertions": [
+    {"key": "singleClassMembers", "base": "jklm", "fixed": "-jm"},
+    {"key": "repeatedClassMembers", "base": "2345JKLM", "fixed": "-25JM"},
+    {"key": "unicodeWholeLiteral", "base": "true,false,false", "fixed": "true,false,false"}
+  ],
+  "required": [["{node}", "--check", "index.js"]]
+}

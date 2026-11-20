@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"bed7c872d9433bb3d5520543c1269e083fb70b1ee1dd061e2c9ce242f0c0ff2c"},
   "action": "baseline",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\01-attributes\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66.json",
   "timestamp": "2026-11-19T05:46:14.466Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-qzYfLv\\362b216a-37a7-4c92-b9fb-d82dfd55991c\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-qzYfLv\\362b216a-37a7-4c92-b9fb-d82dfd55991c\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 1043,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-qzYfLv\\\\362b216a-37a7-4c92-b9fb-d82dfd55991c\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"inconclusive\",\"unchanged policy control\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-qzYfLv\\\\362b216a-37a7-4c92-b9fb-d82dfd55991c\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"inconclusive\",\"unchanged policy control\":\"verified\"}}\n",
           "stderr": ""
         }
       ],
@@ -50,7 +51,7 @@
   "replay": [
     "verb",
     "baseline",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\01-attributes\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -63,5 +64,5 @@
       "test/*.test.js"
     ]
   ],
-  "frozen": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\baselines\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66"
+  "frozen": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes\\.git\\verb\\baselines\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66"
 }

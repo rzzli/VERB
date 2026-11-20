@@ -9,6 +9,11 @@ import tempfile
 here = Path(__file__).resolve().parent
 if sys.version_info[:2] != (3, 11) or len(sys.argv) != 2:
     sys.exit("Use Python 3.11 and supply the path to a local CPython v3.11.9 clone")
+for key in list(os.environ):
+    if key.upper().startswith("GIT_"):
+        del os.environ[key]
+os.environ.update(GIT_CONFIG_NOSYSTEM="1", GIT_ATTR_NOSYSTEM="1",
+                  GIT_CONFIG_GLOBAL=str(here.parent / "git-defaults.conf"))
 revision = "de54cf5be371a6f5e2e9f208c38def5f81d3ef02"
 with tempfile.TemporaryDirectory(prefix="verb-cpython-") as area:
     root = Path(area)

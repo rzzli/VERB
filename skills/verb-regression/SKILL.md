@@ -1,7 +1,9 @@
 ---
 name: verb-regression
-description: Design a behavioral claim and use VERB (Verify Expected Runtime Behavior) to reproduce a reported regression, challenge a plausible false pass, and check a proposed fix against the broken version.
+description: Design a behavioral claim and use VERB to reproduce a regression and test a proposed fix. Supports optional blind review when a fresh reviewer should design and freeze the check before seeing the candidate.
 ---
+
+When the developer asks for a **blind review**, the coordinator starts with the [blind review procedure](references/blind-review.md) before sharing project context. For ordinary regression work, continue below.
 
 Start with what the user saw and what they expected. Locate the public CLI and the repository's relevant checks. Identify a plausible wrong patch that could satisfy the obvious test. Pick a neighboring input whose observed result distinguishes that patch from a correct fix.
 

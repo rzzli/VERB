@@ -20,22 +20,27 @@ for (const name of ['greeter.cjs', 'build.cjs', 'greeter.test.cjs', 'probe.mjs',
   fs.copyFileSync(path.join(source, name), path.join(destination, name), fs.constants.COPYFILE_EXCL);
 }
 fs.writeFileSync(path.join(destination, '.gitignore'), '/dist/\n', { flag: 'wx' });
+// A tutorial launched from a hook may inherit GIT_DIR, GIT_WORK_TREE or an
+// alternate index. Confine Git to this new repo and its own configuration.
+const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^GIT_/i.test(key)));
+Object.assign(env, {
+  GIT_CONFIG_NOSYSTEM: '1',
+  GIT_CONFIG_GLOBAL: path.join(destination, '.git', 'demo-empty-config'),
+  GIT_ATTR_NOSYSTEM: '1',
+  XDG_CONFIG_HOME: path.join(destination, '.git', 'demo-xdg')
+});
 function git(...args) {
   const result = spawnSync('git', args, {
-    cwd: destination, encoding: 'utf8', windowsHide: true, timeout: 10000
+    cwd: destination, env, encoding: 'utf8', windowsHide: true, timeout: 10000
   });
   if (result.error || result.status !== 0) throw Error(result.error?.message || result.stderr || 'Git initialization failed');
 }
-git('init', '-q');
+git('init', '-q', '--template=');
 // All config is local to this newly created disposable repository.
 git('config', 'user.name', 'VERB Node demo');
 git('config', 'user.email', 'verb-demo@localhost');
 git('config', 'core.autocrlf', 'false');
 git('add', '.');
-// Do not run inherited commit hooks or signing tools just to initialize a tutorial.
-const hooks = path.join(destination, '.git', 'demo-empty-hooks');
-fs.mkdirSync(hooks);
-git('-c', 'core.hooksPath=' + hooks, '-c', 'commit.gpgSign=false',
-  'commit', '-qm', 'Known-broken empty display name');
+git('commit', '-qm', 'Known-broken empty display name');
 console.log('Created offline demo with a broken HEAD in ' + destination);
 console.log('Next: enter that directory and run VERB baseline claim.json --base HEAD.');

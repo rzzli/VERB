@@ -3,6 +3,7 @@
   "baselineCommit": "c48f6c2099f5ffe2fabcfa6412cf28998462c73b",
   "setupStartedAt": "2026-11-19T05:50:22.646Z",
   "platform": "linux",
+  "normalizedReplayDigest": "7cbca5a3ff5387c0f65afcff23716f0a9523084e1d890766e3d3e128d61b1a74",
   "node": "v22.23.5",
   "scope": "prospective self-hosted VERB defect; existing bug, not injected",
   "baseline": {

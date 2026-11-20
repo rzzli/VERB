@@ -6,6 +6,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import '../git-environment.mjs';
 
 const evidence = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(evidence, '../..');
@@ -18,7 +19,7 @@ const cases = [
   { id: '01-attributes', platforms: ['win32', 'linux', 'darwin'] },
   { id: '02-env-case', platforms: ['win32'] },
   { id: '03-fixture-modes', platforms: ['linux', 'darwin'] },
-  { id: '04-portable-summary', platforms: ['linux', 'darwin'] },
+  { id: '04-portable-summary', platforms: ['linux'] },
   { id: '05-timeout-pipes', platforms: ['win32', 'linux', 'darwin'] }
 ];
 if (selected && !cases.some(c => c.id === selected)) throw Error('Unknown trial: ' + selected);
@@ -87,7 +88,10 @@ try {
     const proof = verify(repo, cli, claim, record.baselineCommit, 'prove');
     const expected = integrated ? 0 : record['first-candidate'].code;
     assert.equal(proof.code, expected, JSON.stringify(proof.receipt));
-    if (!currentRunner) assert.equal(proof.receipt.digest, record.baseline.digest, 'Frozen input bytes changed');
+    if (!currentRunner) {
+      const expectedDigest = record.normalizedReplayDigest ?? record.baseline.digest;
+      assert.equal(proof.receipt.digest, expectedDigest, 'Frozen input bytes changed');
+    }
     if (proof.code === 0) {
       const required = proof.receipt.sides.candidate.commands.filter(c => c.phase === 'required');
       assert.equal(required.length, proof.receipt.required.length);

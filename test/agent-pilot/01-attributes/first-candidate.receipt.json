@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"18c1d7f30cc5e38461670a2150092c0c448dffd0712d910bc42e3adfbc7c57a8"},
   "action": "prove",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\c5fc5871-a30e-470b-b097-6a74eac96869.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\01-attributes\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\c5fc5871-a30e-470b-b097-6a74eac96869.json",
   "timestamp": "2026-11-19T05:49:21.561Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-TOlKZC\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-TOlKZC\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 1027,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-TOlKZC\\\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"inconclusive\",\"unchanged policy control\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-TOlKZC\\\\59fdec56-0a99-48b5-88e8-1289b0f18fd4\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"inconclusive\",\"unchanged policy control\":\"verified\"}}\n",
           "stderr": ""
         }
       ],
@@ -53,19 +54,19 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-TOlKZC\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-TOlKZC\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 997,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-TOlKZC\\\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"verified\",\"unchanged policy control\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-TOlKZC\\\\df24c1a7-fdfe-4967-aa77-1bd601575e1f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"historical baseline after attribute change\":\"verified\",\"unchanged policy control\":\"verified\"}}\n",
           "stderr": ""
         },
         {
           "phase": "required",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
+            "C:\\tools\\node\\node.exe",
             "--test",
             "test/*.test.js"
           ],
@@ -103,7 +104,7 @@
   "replay": [
     "verb",
     "prove",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\01-attributes\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\01-attributes\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -111,7 +112,7 @@
     "kind": "working",
     "id": "94e029fbb00b2a797e64a6c265d6bc42c2930a041e5c114f0d81a8dcd9d410f8"
   },
-  "baselineReceipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66.json",
+  "baselineReceipt": "D:\\workspace\\verb\\.pilot\\worktrees\\01-attributes\\.git\\verb\\receipts\\692d3354e173c5f6b4d7d79f32e01662e6d8c5d3eb24c9d76515d7bef14b9623\\9202d345-90ed-44bf-9838-d78b35e16d66.json",
   "claim": "Historical baseline checkout uses its own Git attributes, not the candidate's line-ending policy",
   "digest": "7a639af8aae48e0c03fe05b62ff372eac5206405354d3bd5339a7bc6bd9fd143",
   "required": [

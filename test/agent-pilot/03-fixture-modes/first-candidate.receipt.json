@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"a13e40c5b47d5a1e1343032a1814a43d8f857c9b46961994243ce419e6c0cd76"},
   "action": "prove",
-  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes",
-  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
-  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/165a91ed-dc2d-4240-acf2-e4e5a161e832.json",
+  "repo": "/workspace/verb/.pilot/worktrees/03-fixture-modes",
+  "claimPath": "/workspace/verb/test/agent-pilot/03-fixture-modes/claim.json",
+  "receipt": "/workspace/verb/.pilot/worktrees/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/165a91ed-dc2d-4240-acf2-e4e5a161e832.json",
   "timestamp": "2026-11-19T05:56:38.285Z",
   "verdict": "verified",
   "sides": {
@@ -13,7 +14,7 @@
         {
           "phase": "probe",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "/tmp/verb-Pvlj3Q/43c685e9-7005-4ee1-9a8c-7fb8485e9f0c/bundle/probe.mjs"
           ],
           "code": 0,
@@ -69,7 +70,7 @@
         {
           "phase": "probe",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "/tmp/verb-Pvlj3Q/85c12f7b-9e31-4054-8b08-330c8ab8d614/bundle/probe.mjs"
           ],
           "code": 0,
@@ -81,7 +82,7 @@
         {
           "phase": "required",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "--test",
             "test/*.test.js"
           ],
@@ -135,7 +136,7 @@
   "replay": [
     "verb",
     "prove",
-    "/mnt/d/Projects/coding_var/test/agent-pilot/03-fixture-modes/claim.json",
+    "/workspace/verb/test/agent-pilot/03-fixture-modes/claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -143,7 +144,7 @@
     "kind": "working",
     "id": "739f7e6d008ca31661db59894eb6127dc6db323d0111c2f281d5024cc38a929f"
   },
-  "baselineReceipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/cfa4bb83-1b6e-4858-90b1-e75bca83e71a.json",
+  "baselineReceipt": "/workspace/verb/.pilot/worktrees/03-fixture-modes/.git/verb/receipts/2ba726f9ce1d664d5d4e74274d1c3e80d0a2cd3852ae1ab18f48159651f0b97a/cfa4bb83-1b6e-4858-90b1-e75bca83e71a.json",
   "claim": "Frozen POSIX fixtures retain their executable mode and mode changes invalidate the baseline",
   "digest": "455c7b1ecff7896018ddae2aef54f7b245caeeaac28e2cfaf7b5ca46adbc4b9a",
   "required": [

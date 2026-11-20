@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"77fca1fb4be1bbe283f38e7263a24124393f7428283f62ec0bfb9b112c74bdb5"},
   "action": "baseline",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\02-env-case\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case\\.git\\verb\\receipts\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54.json",
   "timestamp": "2026-11-19T05:47:08.149Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-zKN6zu\\ce856041-ce7c-4151-9205-ee57fcb1169f\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-zKN6zu\\ce856041-ce7c-4151-9205-ee57fcb1169f\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 882,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-zKN6zu\\\\ce856041-ce7c-4151-9205-ee57fcb1169f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"ignored\",\"uppercase PATH override\":\"honored\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-zKN6zu\\\\ce856041-ce7c-4151-9205-ee57fcb1169f\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"lowercase PATH override\":\"ignored\",\"uppercase PATH override\":\"honored\"}}\n",
           "stderr": ""
         }
       ],
@@ -50,7 +51,7 @@
   "replay": [
     "verb",
     "baseline",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\02-env-case\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\02-env-case\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -63,5 +64,5 @@
       "test/*.test.js"
     ]
   ],
-  "frozen": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\02-env-case\\.git\\verb\\baselines\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54"
+  "frozen": "D:\\workspace\\verb\\.pilot\\worktrees\\02-env-case\\.git\\verb\\baselines\\0141d1a824adefd6a77877f761d8784c516c9f0fcf4957d2faebdbdeaf964bc5\\9e60f0a4-c347-4451-aaba-3294117bfc54"
 }

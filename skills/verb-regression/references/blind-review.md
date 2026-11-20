@@ -1,0 +1,23 @@
+# Blind review
+
+Use this when the developer wants an independent check design. The coordinator can know the patch. The reviewer needs a fresh session with conversation history, personal memory, and project-memory retrieval disabled for the assignment. A fresh human reviewer can do the same job. If that separation is unavailable or the reviewer has already seen the answer, disclose the exposure and use an ordinary review or start again with someone fresh.
+
+## Before revealing the candidate
+
+Give the fresh session only its packet and the reviewer assignment below. The coding agent that participated in the fix can coordinate the run. It already knows too much to design this check blind.
+
+> Given the supplied bug report, public contract and broken source, design a behavioral probe. Name a plausible wrong fix and a neighboring input that distinguishes it. Return the claim, fixtures, broken observations, materials consulted and any prior exposure. Use only the packet. The coordinator will freeze your design before testing a candidate.
+
+1. **Coordinator:** give the reviewer the reported symptom, public contract, prerequisites and a source-only export of the broken commit, including its existing tests. For example, export that commit with `git archive` into an empty directory outside the candidate checkout. Provide the claim format separately. Keep the candidate, later Git refs, issue/PR solutions, author's new tests or probe, previous receipts, and project chat out of the packet. Restrict retrieval to the supplied material. A clean worktree attached to the author's Git repository still exposes later refs.
+2. **Reviewer:** name a plausible wrong implementation and the neighboring behavior that would expose it. Write a claim and probe using the real entry point. Establish the broken observation using only the supplied revision. State which inputs, tools and public docs you used and any prior exposure. Return the claim, all fixture bytes, proposed commands and the control rationale to the coordinator.
+3. **Coordinator:** store the reviewer's files together at a stable claim path distinct from the author's claim. From the target checkout run `verb baseline CLAIM --base BASE_SHA --json`. A successful baseline records a frozen archive, receipt path and digest. Record those plus the resolved base SHA, reviewer identity or role and freeze time **before releasing any candidate information**. If the baseline is inconclusive, return only the broken-side diagnostic. A pre-reveal revision gets a new freeze record.
+
+## After the freeze
+
+4. Record reveal time and candidate identity. From the same verification checkout, run `verb prove CLAIM --base BASE_SHA --candidate CANDIDATE_SHA --json`, or omit `--candidate` for local edits. Compare the proof's `digest`, `sides.base.id` and `baselineReceipt` with the baseline's `digest`, `sides.base.id` and `receipt`. A mismatch breaks the blind comparison. For a working tree, record the tested content digest. Inspect the candidate observations, controls and required commands. Preserve failed and inconclusive outcomes. Any redesign after reveal is a separately labeled follow-up.
+5. Keep the checkout's existing VERB history. Use the fresh proof and report contradictory observations, suite failures or skipped commands. Context isolation applies to the reviewer; clearing receipts, switching stores to obtain a clean verdict, or reusing an old green status defeats the procedure.
+6. Report the result as **blind check design by [reviewer]**. Record the permitted inputs, freeze/reveal order, baseline and proof references, observed result for the symptom and control, and remaining uncertainty. A receipt binds the executed inputs. The coordinator's log documents visibility and timing; the CLI cannot attest to what a reviewer knew. Identify an external verifier only when a separately identified person or service actually performed the review.
+
+## Measuring the extra review
+
+For a pilot, select real fixes and capture the author's original check and plausible wrong candidates separately before reading the blind probe. Run both checks on the genuine fix and the same wrong candidates. Count an incremental catch only when the author's check passes the wrong candidate and a blind assertion that passed on the genuine fix now fails for the intended reason. Record genuine regressions separately, along with shared catches, misses and inconclusive runs. Measure time from reviewer handoff through successful freeze, plus execution or setup time separately. Label retrospective or seeded challenges and automated sessions explicitly.

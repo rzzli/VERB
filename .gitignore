@@ -7,5 +7,7 @@ node_modules/
 /docs/*
 !/docs/review-and-todo-2026-11-18.md
 !/docs/agent-pilot.md
+!/docs/review-and-todo-2026-11-20.md
+!/docs/standalone-verification-audit.md
 /test/history-pilot.js
 /test/pilot/

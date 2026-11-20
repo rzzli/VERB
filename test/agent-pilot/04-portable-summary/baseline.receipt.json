@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"644ef3babbf224e210bb13b23e39e8fb9269ae74ca78c8959a6262d04c9cacbc"},
   "action": "baseline",
-  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary",
-  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
-  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
+  "repo": "/workspace/verb/.pilot/worktrees/04-portable-summary",
+  "claimPath": "/workspace/verb/test/agent-pilot/04-portable-summary/claim.json",
+  "receipt": "/workspace/verb/.pilot/worktrees/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
   "timestamp": "2026-11-19T05:52:34.842Z",
   "verdict": "verified",
   "sides": {
@@ -13,7 +14,7 @@
         {
           "phase": "probe",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "/tmp/verb-g9152R/ea1b63ae-d493-4df8-a0d9-70dff622ae13/bundle/probe.mjs"
           ],
           "code": 0,
@@ -50,7 +51,7 @@
   "replay": [
     "verb",
     "baseline",
-    "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+    "/workspace/verb/test/agent-pilot/04-portable-summary/claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -63,5 +64,5 @@
       "test/*.test.js"
     ]
   ],
-  "frozen": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/baselines/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170"
+  "frozen": "/workspace/verb/.pilot/worktrees/04-portable-summary/.git/verb/baselines/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170"
 }

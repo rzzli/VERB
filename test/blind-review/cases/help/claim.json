@@ -1,0 +1,12 @@
+{
+  "claim": "When a form-feed hides the entire command description, --help has the same spacing as an omitted description. A form-feed after two public paragraphs preserves their text and spacing.",
+  "probe": ["{python}", "{bundle}/probe.py"],
+  "fixtures": ["probe.py"],
+  "env": {"PYTHONPATH": "{root}/src", "PYTHONNOUSERSITE": "1"},
+  "assertions": [
+    {"key": "empty_help_matches_omitted", "base": "False", "fixed": "True"},
+    {"key": "public_paragraphs_survive", "base": "True", "fixed": "True"},
+    {"key": "mixed_help_matches_public", "base": "True", "fixed": "True"}
+  ],
+  "required": [["{python}", "-m", "compileall", "-q", "src/click"]]
+}

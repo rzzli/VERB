@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"883d9bbdcc16cb6241e3bc3abec53abf73f23ebfdb8ad9595ddadb04a760a903"},
   "action": "prove",
-  "repo": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary",
-  "claimPath": "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
-  "receipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/9e364144-0fed-4eb5-b4bd-f7409bce8a32.json",
+  "repo": "/workspace/verb/.pilot/worktrees/04-portable-summary",
+  "claimPath": "/workspace/verb/test/agent-pilot/04-portable-summary/claim.json",
+  "receipt": "/workspace/verb/.pilot/worktrees/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/9e364144-0fed-4eb5-b4bd-f7409bce8a32.json",
   "timestamp": "2026-11-19T05:58:04.510Z",
   "verdict": "verified",
   "sides": {
@@ -13,7 +14,7 @@
         {
           "phase": "probe",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "/tmp/verb-P6ruLc/51ec0313-652a-4e75-8454-dedf6e4d8729/bundle/probe.mjs"
           ],
           "code": 0,
@@ -53,7 +54,7 @@
         {
           "phase": "probe",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "/tmp/verb-P6ruLc/74de0ff3-fbe3-4f76-b0e2-c02e41e2f43c/bundle/probe.mjs"
           ],
           "code": 0,
@@ -65,7 +66,7 @@
         {
           "phase": "required",
           "argv": [
-            "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/node-linux/bin/node",
+            "/tools/node/bin/node",
             "--test",
             "test/*.test.js"
           ],
@@ -103,7 +104,7 @@
   "replay": [
     "verb",
     "prove",
-    "/mnt/d/Projects/coding_var/test/agent-pilot/04-portable-summary/claim.json",
+    "/workspace/verb/test/agent-pilot/04-portable-summary/claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -111,7 +112,7 @@
     "kind": "working",
     "id": "44f585b9a5ae366a90e99471715d4dc12e84d2846f8694013f4f93ee1193872f"
   },
-  "baselineReceipt": "/mnt/d/Projects/coding_var/.pilot/agent-trials-20261118-2134/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
+  "baselineReceipt": "/workspace/verb/.pilot/worktrees/04-portable-summary/.git/verb/receipts/cfa9449af7bf3f182c3526b3beaa50d0ee9471e7cf7177026c93db6387181455/b5ce1d57-a304-4df9-ab39-4d73e0600170.json",
   "claim": "Reviewing a Windows receipt on Linux must keep claim, origin, executable, and option paths repository-relative without leaking native drive paths",
   "digest": "93e977dd2f82d28b7e187d06e834835ef948d7e8f3dac0fcb1ea435324634971",
   "required": [

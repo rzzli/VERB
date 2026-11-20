@@ -27,9 +27,9 @@ test('offline installed tarball discovers verb and runs the full public gate lif
   const dir = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb installed smoke ')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }));
   assert.equal(inside(project, dir), false, 'installation and target repository must be outside the source checkout');
-  const consumer = path.join(dir, 'consumer'), repo = path.join(dir, 'target');
+  const repo = path.join(dir, 'target');
   const archives = path.join(dir, 'archives');
-  for (const folder of [consumer, repo, archives]) fs.mkdirSync(folder);
+  for (const folder of [repo, archives]) fs.mkdirSync(folder);
   const userConfig = path.join(dir, 'user-config'), globalConfig = path.join(dir, 'global-config');
   for (const file of [userConfig, globalConfig]) fs.writeFileSync(file, '');
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) =>
@@ -53,14 +53,16 @@ test('offline installed tarball discovers verb and runs the full public gate lif
   const pack = JSON.parse(npmRun(project, 'pack', '--json', '--offline', '--ignore-scripts', '--pack-destination', archives))[0];
   assert.equal(pack.filename, path.basename(pack.filename));
   const packed = new Set(pack.files.map(file => file.path));
-  for (const name of ['bin/verb.js', 'lib/files.js', 'lib/staged.js', 'hooks/verify.mjs',
-    'skills/verb-regression/SKILL.md', 'templates/claim.json', 'examples/node/claim.json',
+  for (const name of ['GUIDE.md', 'bin/verb.js', 'lib/files.js', 'lib/staged.js', 'hooks/verify.mjs',
+    'skills/verb-regression/SKILL.md', 'skills/verb-regression/references/blind-review.md',
+    'templates/claim.json', 'examples/node/claim.json',
     'examples/node/probe.mjs', 'examples/node/create-demo.mjs']) assert.ok(packed.has(name), 'missing package file: ' + name);
   assert.equal([...packed].some(name => /^(?:test|docs|\.git)\//.test(name)), false, 'development evidence is not shipped');
-  fs.writeFileSync(path.join(consumer, 'package.json'), JSON.stringify({ name: 'verb-local-smoke', private: true }));
-  npmRun(consumer, 'install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false',
+  fs.writeFileSync(path.join(repo, 'package.json'), JSON.stringify({ name: 'verb-local-smoke', private: true }));
+  fs.writeFileSync(path.join(repo, '.gitignore'), '/node_modules/\n');
+  npmRun(repo, 'install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false',
     '--save=false', path.join(archives, pack.filename));
-  const installed = path.join(consumer, 'node_modules', 'verb-runtime-verify');
+  const installed = path.join(repo, 'node_modules', 'verb-runtime-verify');
   assert.ok(fs.lstatSync(installed).isDirectory());
   assert.equal(fs.lstatSync(installed).isSymbolicLink(), false, 'tarball install must not link back to source');
   assert.equal(inside(project, fs.realpathSync(installed)), false);
@@ -68,8 +70,8 @@ test('offline installed tarball discovers verb and runs the full public gate lif
   assert.equal(manifest.name, 'verb-runtime-verify');
   assert.deepEqual(manifest.dependencies ?? {}, {}, 'runtime must remain dependency-free');
   const installedCLI = path.join(installed, manifest.bin.verb);
-  const installedHook = path.join(installed, 'hooks/verify.mjs');
-  const bin = path.join(consumer, 'node_modules', '.bin');
+  const hookImport = "import('verb-runtime-verify/hooks/verify.mjs')";
+  const bin = path.join(repo, 'node_modules', '.bin');
   const pathKey = Object.keys(env).find(key => key.toUpperCase() === 'PATH') ?? 'PATH';
   env[pathKey] = [bin, path.dirname(process.execPath), ...(env[pathKey] ?? '').split(path.delimiter)
     .filter(entry => entry && !inside(project, path.resolve(entry)))].join(path.delimiter);
@@ -86,12 +88,14 @@ test('offline installed tarball discovers verb and runs the full public gate lif
     if (process.platform !== 'win32') return run(repo, 'verb', args);
     // npm installs a .cmd shim on Windows. Explicit cmd is necessary; the command
     // name is PATH-discovered and all arguments here are controlled fixture paths.
-    assert.ok(args.every(arg => !/["\r\n%]/.test(arg)));
-    const command = 'verb ' + args.map(arg => '"' + arg + '"').join(' ');
+    // Keep the user's temporary-directory name out of cmd's expansion rules.
+    const local = args.map(arg => path.isAbsolute(arg) ? path.relative(repo, arg) : arg);
+    assert.ok(local.every(arg => !/["\r\n%]/.test(arg)));
+    const command = 'verb ' + local.map(arg => '"' + arg + '"').join(' ');
     return run(repo, process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', command], { windowsVerbatimArguments: true });
   };
   const verb = (code, ...args) => JSON.parse(expect(invoke(...args, '--json'), code));
-  const hook = (code, ...args) => expect(run(repo, process.execPath, [installedHook, ...args]), code);
+  const hook = (code, ...args) => expect(run(repo, process.execPath, ['-e', hookImport, '--', ...args]), code);
   const git = (...args) => expect(run(repo, 'git', args));
   assert.match(expect(invoke('--help')), /VERB/);
   git('init', '-q');
@@ -126,9 +130,8 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   verb(0, 'check', claim);
   verb(2, 'status', '--active');
   hook(2, '--stop');
-  const quote = value => "'" + value.replaceAll('\\', '/').replaceAll("'", "'\\''") + "'";
   const precommit = path.join(repo, '.git', 'hooks', 'pre-commit');
-  fs.writeFileSync(precommit, '#!/bin/sh\nexec ' + quote(process.execPath) + ' ' + quote(installedHook) + ' --pre-commit\n');
+  fs.writeFileSync(precommit, '#!/bin/sh\nexec node -e "' + hookImport + '" -- --pre-commit\n');
   fs.chmodSync(precommit, 0o755);
   git('add', '.');
   const blocked = run(repo, 'git', ['commit', '-qm', 'unproved must block']);
@@ -160,8 +163,8 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   verb(0, 'deactivate', claim);
   assert.equal(verb(0, 'status', '--active').active, 0);
   hook(0, '--stop');
-  t.diagnostic(JSON.stringify({ node: process.version, platform: process.platform, npm: npmRun(consumer, '--version'),
+  t.diagnostic(JSON.stringify({ node: process.version, platform: process.platform, npm: npmRun(repo, '--version'),
     package: pack.name, version: pack.version, files: pack.entryCount, compressedBytes: pack.size,
     unpackedBytes: pack.unpackedSize, integrity: pack.integrity, offlineInstall: true, runtimeDependencies: 0,
-    discovery: path.relative(consumer, process.platform === 'win32' ? path.join(bin, 'verb.cmd') : path.join(bin, 'verb')) }));
+    discovery: path.relative(repo, process.platform === 'win32' ? path.join(bin, 'verb.cmd') : path.join(bin, 'verb')) }));
 });

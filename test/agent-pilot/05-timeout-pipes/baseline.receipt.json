@@ -1,8 +1,9 @@
 {
+  "archive": {"pathNormalization":true,"sourceSha256":"9bdfe65ba4007be1266ff3b8ef9620bf295abd38537817cbf1e6f08a7a00848a"},
   "action": "baseline",
-  "repo": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes",
-  "claimPath": "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
-  "receipt": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351.json",
+  "repo": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes",
+  "claimPath": "D:\\workspace\\verb\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+  "receipt": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes\\.git\\verb\\receipts\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351.json",
   "timestamp": "2026-11-19T05:51:01.824Z",
   "verdict": "verified",
   "sides": {
@@ -13,13 +14,13 @@
         {
           "phase": "probe",
           "argv": [
-            "C:\\Users\\zzric\\AppData\\Local\\pi-node\\current\\node.exe",
-            "C:\\Users\\zzric\\AppData\\Local\\Temp\\verb-KSAaW1\\d279fcc1-5aba-491c-ba66-47a30a6a8bac\\bundle/probe.mjs"
+            "C:\\tools\\node\\node.exe",
+            "C:\\scratch\\verb-KSAaW1\\d279fcc1-5aba-491c-ba66-47a30a6a8bac\\bundle/probe.mjs"
           ],
           "code": 0,
           "error": null,
           "ms": 4707,
-          "stdout": "{\"origin\":\"C:\\\\Users\\\\zzric\\\\AppData\\\\Local\\\\Temp\\\\verb-KSAaW1\\\\d279fcc1-5aba-491c-ba66-47a30a6a8bac\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"waited for detached child\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
+          "stdout": "{\"origin\":\"C:\\\\scratch\\\\verb-KSAaW1\\\\d279fcc1-5aba-491c-ba66-47a30a6a8bac\\\\tree\\\\bin\\\\verb.js\",\"observations\":{\"detached pipe timeout\":\"waited for detached child\",\"active root timeout\":\"inconclusive\",\"normal setup and probe\":\"verified\"}}\n",
           "stderr": "{\"detachedElapsedMs\":3395,\"activeElapsedMs\":750,\"normalElapsedMs\":314,\"configuredTimeoutMs\":400,\"boundedThresholdMs\":1500}\n"
         }
       ],
@@ -58,7 +59,7 @@
   "replay": [
     "verb",
     "baseline",
-    "D:\\Projects\\coding_var\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
+    "D:\\workspace\\verb\\test\\agent-pilot\\05-timeout-pipes\\claim.json",
     "--base",
     "c48f6c2099f5ffe2fabcfa6412cf28998462c73b"
   ],
@@ -71,5 +72,5 @@
       "test/*.test.js"
     ]
   ],
-  "frozen": "D:\\Projects\\coding_var\\.pilot\\agent-trials-20261118-2134\\05-timeout-pipes\\.git\\verb\\baselines\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351"
+  "frozen": "D:\\workspace\\verb\\.pilot\\worktrees\\05-timeout-pipes\\.git\\verb\\baselines\\7bd63166864e6a902906cafa823c73d2e9209154afd8b17beebdd273c0fc62f2\\94ceab86-db57-4cd1-bf42-b3a928967351"
 }

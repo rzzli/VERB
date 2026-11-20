@@ -158,3 +158,24 @@ test('offline initializer refuses an existing destination without changing its f
   assert.deepEqual(fs.readFileSync(path.join(repo, 'greeter.cjs')), before);
   assert.equal(cmd(repo, 'git', ['rev-list', '--count', 'HEAD']), '1');
 });
+
+test('offline initializer keeps hook routing and global ignore rules out of the demo', t => {
+  const { dir, repo, initializer } = demo(t);
+  const trackedIndex = path.join(repo, '.git', 'index');
+  const config = path.join(repo, '.git', 'config');
+  cmd(repo, 'git', ['config', 'user.name', 'Original identity']);
+  const before = [config, trackedIndex].map(file => fs.readFileSync(file));
+  const excludes = path.join(dir, 'global-ignore');
+  write(excludes, '*.cjs\n');
+  const globalConfig = path.join(dir, 'global-config');
+  cmd(dir, 'git', ['config', '--file', globalConfig, 'core.excludesFile', excludes]);
+  const destination = path.join(dir, 'second demo');
+  node(repo, [initializer, destination], 0, {
+    GIT_DIR: path.join(repo, '.git'), GIT_WORK_TREE: repo, GIT_INDEX_FILE: trackedIndex,
+    GIT_CONFIG_GLOBAL: globalConfig
+  });
+  assert.deepEqual([config, trackedIndex].map(file => fs.readFileSync(file)), before);
+  assert.equal(cmd(destination, 'git', ['config', '--local', 'user.name']), 'VERB Node demo');
+  assert.ok(cmd(destination, 'git', ['ls-tree', '--name-only', 'HEAD']).split('\n').includes('greeter.cjs'));
+  verb(destination, 0, 'baseline', path.join(destination, 'claim.json'), '--base', 'HEAD');
+});

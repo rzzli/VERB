@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import './git-environment.mjs';
 
 const project = fileURLToPath(new URL('../', import.meta.url));
 const stagedModule = new URL('../lib/staged.js', import.meta.url).href;
@@ -16,11 +17,7 @@ function repository(t) {
   t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }));
   const repo = path.join(dir, 'repo');
   fs.mkdirSync(repo);
-  // No global config/attributes, inherited hook index, network or shared test repositories.
-  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.toUpperCase().startsWith('GIT_')));
-  const config = path.join(dir, 'empty-config');
-  fs.writeFileSync(config, '');
-  Object.assign(env, { GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: config, GIT_ATTR_NOSYSTEM: '1' });
+  const env = { ...process.env };
   const run = (exe, args, extra = {}) => {
     const result = spawnSync(exe, args, { cwd: repo, env, encoding: 'utf8', windowsHide: true,
       timeout: 20000, maxBuffer: 4 * 1024 * 1024, ...extra });
@@ -37,7 +34,6 @@ function repository(t) {
   git('config', 'user.name', 'Staged test');
   git('config', 'core.autocrlf', 'false');
   git('config', 'core.eol', 'lf');
-  git('config', 'core.attributesFile', config);
   const put = (name, bytes) => fs.writeFileSync(path.join(repo, name), bytes);
   const verify = (extra = {}) => run(process.execPath, ['--input-type=module', '-e',
     `import { assertStagedCheckout } from ${JSON.stringify(stagedModule)};

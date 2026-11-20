@@ -1,0 +1,666 @@
+{
+  "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+  "cases": [
+    {
+      "id": "empty",
+      "base": "c021f05c838c1d0401ebc340d1de9b663c7fb578",
+      "digest": "49a6eaaf3cf7db2643c95eddcd194e65dacb94d520c95e3a910c91a09e22a2bb",
+      "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+      "frozenAt": "2026-11-20T19:19:26.867Z",
+      "baselineMs": 607,
+      "baselineReceiptSha256": "17d4215a345fcf0f72bf1fea7f9da9271b4e37b87eea17b43304dd75317f5ae2",
+      "baselineObservations": {
+        "explicit_empty": "absent",
+        "unset": "absent",
+        "hidden_empty": "absent"
+      },
+      "fix": "d3e3852eba45a6f7ce0ae5e02ca49106e228add6",
+      "revealedAt": "2026-11-20T19:20:50.502Z",
+      "authorTestSha256": "d255173dca90c084e086a06d44fb8d29654285617882dc5706f68fae69783dbb",
+      "authorOnBase": {
+        "verdict": "failed",
+        "ms": 465,
+        "checks": [
+          {
+            "name": "tests/test_options.py::test_show_default_with_empty_string",
+            "verdict": "failed"
+          }
+        ]
+      },
+      "genuine": {
+        "stage": "genuine",
+        "author": {
+          "verdict": "passed",
+          "ms": 402,
+          "checks": [
+            {
+              "name": "tests/test_options.py::test_show_default_with_empty_string",
+              "verdict": "passed"
+            }
+          ]
+        },
+        "blindBehavior": "passed",
+        "blindProof": "verified",
+        "blindMs": 1042,
+        "misses": [],
+        "observed": {
+          "explicit_empty": "[default: \"\"]",
+          "unset": "absent",
+          "hidden_empty": "absent"
+        },
+        "testedId": "d3e3852eba45a6f7ce0ae5e02ca49106e228add6",
+        "required": [
+          {
+            "code": 0,
+            "ms": 125
+          }
+        ],
+        "receiptSha256": "546df3067279a04226cc7df820f531b7477e402d04d726cb5e8c91b8c1fe787f"
+      },
+      "challenges": [
+        {
+          "label": "label absent defaults",
+          "stage": "challenge-1",
+          "author": {
+            "verdict": "passed",
+            "ms": 360,
+            "checks": [
+              {
+                "name": "tests/test_options.py::test_show_default_with_empty_string",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "failed",
+          "blindProof": "failed",
+          "blindMs": 891,
+          "misses": [
+            "unset"
+          ],
+          "observed": {
+            "explicit_empty": "[default: \"\"]",
+            "unset": "[default: None]",
+            "hidden_empty": "absent"
+          },
+          "testedId": "da61ae7031c7637a930a5d106d2ea8b08b08dc93fe566908d3f239f07ce272c2",
+          "required": [],
+          "receiptSha256": "91d64a5c189e71b22b98f83c24d09963e7cf0e78d79c7bc648a3ee27862cde26",
+          "newMisses": [
+            "unset"
+          ],
+          "incrementalCatch": true,
+          "decisionCatch": true
+        },
+        {
+          "label": "honor only explicitly enabled defaults",
+          "stage": "challenge-2",
+          "author": {
+            "verdict": "passed",
+            "ms": 349,
+            "checks": [
+              {
+                "name": "tests/test_options.py::test_show_default_with_empty_string",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 907,
+          "misses": [],
+          "observed": {
+            "explicit_empty": "[default: \"\"]",
+            "unset": "absent",
+            "hidden_empty": "absent"
+          },
+          "testedId": "02455c56a57900598be02cbfe21c7dd03fa58a3780a85b22e41445a9cc5bf0a3",
+          "required": [
+            {
+              "code": 0,
+              "ms": 82
+            }
+          ],
+          "receiptSha256": "f29fb126657a49b48b52588e8bec34b219d4ed5ee9d32fb9103ae7239bd46ca9",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "base": "a4f5450a2541e2f2f8cacf57f50435eb78422f99",
+      "digest": "2f33ef6c1a0f984954db24d008ded1945ac8aa4f39de23b9add4f81b17108760",
+      "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+      "frozenAt": "2026-11-20T19:19:27.079Z",
+      "baselineMs": 550,
+      "baselineReceiptSha256": "9cef871c04aa88f6420cc716229a3fdbc8285e02421172465e49a1a941c97e5a",
+      "baselineObservations": {
+        "empty_help_matches_omitted": "False",
+        "public_paragraphs_survive": "True",
+        "mixed_help_matches_public": "True"
+      },
+      "fix": "850bffe0b9db27f52f6f3f0a66eb6df432ce8bcd",
+      "revealedAt": "2026-11-20T19:20:55.914Z",
+      "authorTestSha256": "79c8ed50dd4507ef491a49dc7a69f2db65ee740f07fad31a09ff03b568141192",
+      "authorOnBase": {
+        "verdict": "failed",
+        "ms": 353,
+        "checks": [
+          {
+            "name": "tests/test_formatting.py::test_truncating_docstring_no_help",
+            "verdict": "failed"
+          }
+        ]
+      },
+      "genuine": {
+        "stage": "genuine",
+        "author": {
+          "verdict": "passed",
+          "ms": 333,
+          "checks": [
+            {
+              "name": "tests/test_formatting.py::test_truncating_docstring_no_help",
+              "verdict": "passed"
+            }
+          ]
+        },
+        "blindBehavior": "passed",
+        "blindProof": "verified",
+        "blindMs": 1004,
+        "misses": [],
+        "observed": {
+          "empty_help_matches_omitted": "True",
+          "public_paragraphs_survive": "True",
+          "mixed_help_matches_public": "True"
+        },
+        "testedId": "850bffe0b9db27f52f6f3f0a66eb6df432ce8bcd",
+        "required": [
+          {
+            "code": 0,
+            "ms": 103
+          }
+        ],
+        "receiptSha256": "88b49bed4919b58d2365932a3f7f3ad484acf9ed4a91c7245453bf5c1d9900ef"
+      },
+      "challenges": [
+        {
+          "label": "drop every help string containing a form feed",
+          "stage": "challenge-1",
+          "author": {
+            "verdict": "passed",
+            "ms": 330,
+            "checks": [
+              {
+                "name": "tests/test_formatting.py::test_truncating_docstring_no_help",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "failed",
+          "blindProof": "failed",
+          "blindMs": 880,
+          "misses": [
+            "public_paragraphs_survive",
+            "mixed_help_matches_public"
+          ],
+          "observed": {
+            "empty_help_matches_omitted": "True",
+            "public_paragraphs_survive": "False",
+            "mixed_help_matches_public": "False"
+          },
+          "testedId": "0888c92c85fa8ecd1e818945b632be63383d129e7009444649d7fccf82b862a1",
+          "required": [],
+          "receiptSha256": "67bc59ee8d6faf798699904124eea0737bca9242afb4b673f12fa568e8fde804",
+          "newMisses": [
+            "public_paragraphs_survive",
+            "mixed_help_matches_public"
+          ],
+          "incrementalCatch": true,
+          "decisionCatch": true
+        },
+        {
+          "label": "drop later visible paragraphs",
+          "stage": "challenge-2",
+          "author": {
+            "verdict": "passed",
+            "ms": 340,
+            "checks": [
+              {
+                "name": "tests/test_formatting.py::test_truncating_docstring_no_help",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "failed",
+          "blindProof": "failed",
+          "blindMs": 908,
+          "misses": [
+            "public_paragraphs_survive"
+          ],
+          "observed": {
+            "empty_help_matches_omitted": "True",
+            "public_paragraphs_survive": "False",
+            "mixed_help_matches_public": "True"
+          },
+          "testedId": "1647780f52e5e0e9c0a694fece260398e1be0805bc764bb1c7e16d88f5f58976",
+          "required": [],
+          "receiptSha256": "bc5c414b64a244feb39d43b7d73ed6dbfd2b4d29903a4bb8794c25c4f25e926d",
+          "newMisses": [
+            "public_paragraphs_survive"
+          ],
+          "incrementalCatch": true,
+          "decisionCatch": true
+        }
+      ]
+    },
+    {
+      "id": "bracket",
+      "base": "ea980986c69f1cd8dee3b65597852c6eeaf79430",
+      "digest": "ea817f90b3147953ef2095a17af1d9285e60d170ca637b7a15790cb8a1718224",
+      "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+      "frozenAt": "2026-11-20T19:19:52.140Z",
+      "baselineMs": 294,
+      "baselineReceiptSha256": "066d3e4ba1dadc5e50d95d69c89614923a027848085fb26f15447ca116bc79ca",
+      "baselineObservations": {
+        "singleClassMembers": "jklm",
+        "repeatedClassMembers": "2345JKLM",
+        "unicodeWholeLiteral": "true,false,false"
+      },
+      "fix": "e76291d337900dbfba3b2e04d71c6d718ec7199b",
+      "revealedAt": "2026-11-20T19:21:00.759Z",
+      "authorTestSha256": "a101b761a06d52f70356287cfedfbcd72d7a7f9e854483d6a5159bd45bd1d29c",
+      "authorOnBase": {
+        "verdict": "failed",
+        "ms": 39,
+        "checks": [
+          {
+            "name": "escapes `-`",
+            "verdict": "failed",
+            "error": "AssertionError"
+          }
+        ]
+      },
+      "genuine": {
+        "stage": "genuine",
+        "author": {
+          "verdict": "passed",
+          "ms": 40,
+          "checks": [
+            {
+              "name": "escapes `-`",
+              "verdict": "passed"
+            }
+          ]
+        },
+        "blindBehavior": "failed",
+        "blindProof": "failed",
+        "blindMs": 496,
+        "misses": [
+          "unicodeWholeLiteral"
+        ],
+        "observed": {
+          "singleClassMembers": "-jm",
+          "repeatedClassMembers": "-25JM",
+          "unicodeWholeLiteral": "invalid pattern"
+        },
+        "testedId": "e76291d337900dbfba3b2e04d71c6d718ec7199b",
+        "required": [],
+        "receiptSha256": "1f20dba3ec2087ef69033f01c65fee3870d8a52637ad8e25a657ec137a59825c"
+      },
+      "challenges": [
+        {
+          "label": "hex-escape every character",
+          "stage": "challenge-1",
+          "author": {
+            "verdict": "failed",
+            "ms": 37,
+            "checks": [
+              {
+                "name": "escapes `-`",
+                "verdict": "failed",
+                "error": "AssertionError"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 488,
+          "misses": [],
+          "observed": {
+            "singleClassMembers": "-jm",
+            "repeatedClassMembers": "-25JM",
+            "unicodeWholeLiteral": "true,false,false"
+          },
+          "testedId": "464653b0154cb9cee2eeb6d571b2ccbab1d79cd6d70629e5369f9ba4ae6e2d2b",
+          "required": [
+            {
+              "code": 0,
+              "ms": 36
+            }
+          ],
+          "receiptSha256": "e173937a3312dbf6496c3454e54ca24582aab35df36bdc7ada0864bb74405755",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        },
+        {
+          "label": "escape only the first hyphen",
+          "stage": "challenge-2",
+          "author": {
+            "verdict": "passed",
+            "ms": 37,
+            "checks": [
+              {
+                "name": "escapes `-`",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "failed",
+          "blindProof": "failed",
+          "blindMs": 445,
+          "misses": [
+            "repeatedClassMembers",
+            "unicodeWholeLiteral"
+          ],
+          "observed": {
+            "singleClassMembers": "-jm",
+            "repeatedClassMembers": "-25JKLM",
+            "unicodeWholeLiteral": "invalid pattern"
+          },
+          "testedId": "9f3a1933a9490c82d885ca7cfe8fab13c20773c56f7c95536294895ebaf4fb63",
+          "required": [],
+          "receiptSha256": "8c65625f7a098f8f027babce557d95eadfd83ac74b06866e3073fe8ce930ad4d",
+          "newMisses": [
+            "repeatedClassMembers"
+          ],
+          "incrementalCatch": true,
+          "decisionCatch": false
+        }
+      ]
+    },
+    {
+      "id": "unicode",
+      "base": "5085b257c801507460270b747f645276fbc1d937",
+      "digest": "35665d010fff4c522b130839a7076a19a5d79c1ac5f9e96ea10f9fd840af1e5e",
+      "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+      "frozenAt": "2026-11-20T19:20:09.306Z",
+      "baselineMs": 393,
+      "baselineReceiptSha256": "1824364d0621371e77287a04695b4d821224cca732f523944364163f337e5653",
+      "baselineObservations": {
+        "unicodeLiteral": "SyntaxError",
+        "classMembers": "a,-,z"
+      },
+      "fix": "732905da074f0220487ad6a27590f89bd0819374",
+      "revealedAt": "2026-11-20T19:21:02.785Z",
+      "authorTestSha256": "968c98233e2b92f32baaa3e96cb1954b34451d7cb70f78d6ba975639f2919262",
+      "authorOnBase": {
+        "verdict": "failed",
+        "ms": 43,
+        "checks": [
+          {
+            "name": "escapes `-`",
+            "verdict": "failed",
+            "error": "AssertionError"
+          },
+          {
+            "name": "escapes `-` in a way compatible with the Unicode flag",
+            "verdict": "failed",
+            "error": "SyntaxError"
+          }
+        ]
+      },
+      "genuine": {
+        "stage": "genuine",
+        "author": {
+          "verdict": "passed",
+          "ms": 40,
+          "checks": [
+            {
+              "name": "escapes `-`",
+              "verdict": "passed"
+            },
+            {
+              "name": "escapes `-` in a way compatible with the Unicode flag",
+              "verdict": "passed"
+            }
+          ]
+        },
+        "blindBehavior": "passed",
+        "blindProof": "verified",
+        "blindMs": 534,
+        "misses": [],
+        "observed": {
+          "unicodeLiteral": "self=true,changed=false,expanded=false",
+          "classMembers": "a,-,z"
+        },
+        "testedId": "732905da074f0220487ad6a27590f89bd0819374",
+        "required": [
+          {
+            "code": 0,
+            "ms": 35
+          }
+        ],
+        "receiptSha256": "42b9d24b9f353c10d9fe687d2a7c2bfec91fb253ea5bdba1a3b3d9cd1d2c5c56"
+      },
+      "challenges": [
+        {
+          "label": "Unicode-escape every character",
+          "stage": "challenge-1",
+          "author": {
+            "verdict": "failed",
+            "ms": 39,
+            "checks": [
+              {
+                "name": "escapes `-`",
+                "verdict": "failed",
+                "error": "AssertionError"
+              },
+              {
+                "name": "escapes `-` in a way compatible with the Unicode flag",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 467,
+          "misses": [],
+          "observed": {
+            "unicodeLiteral": "self=true,changed=false,expanded=false",
+            "classMembers": "a,-,z"
+          },
+          "testedId": "2d58758552957cfb0ccbebf0ef0f28164f459af12b8c50f91fe1a416e9115776",
+          "required": [
+            {
+              "code": 0,
+              "ms": 34
+            }
+          ],
+          "receiptSha256": "08c043d5cff52221c65ff1fbaeb22474f7024fe6beb6273f7a9e8020488c2b54",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        },
+        {
+          "label": "escape only the first hyphen",
+          "stage": "challenge-2",
+          "author": {
+            "verdict": "passed",
+            "ms": 42,
+            "checks": [
+              {
+                "name": "escapes `-`",
+                "verdict": "passed"
+              },
+              {
+                "name": "escapes `-` in a way compatible with the Unicode flag",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 489,
+          "misses": [],
+          "observed": {
+            "unicodeLiteral": "self=true,changed=false,expanded=false",
+            "classMembers": "a,-,z"
+          },
+          "testedId": "5ec50157c3ba8446e878d8dab72b05b752b41bc0e9bf5e11a446610b84b161ea",
+          "required": [
+            {
+              "code": 0,
+              "ms": 35
+            }
+          ],
+          "receiptSha256": "92f1b5a1ba732ad91eb7d16666ad856cb5ec7f6d4f1271e5ce9464ece36e0503",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        }
+      ]
+    },
+    {
+      "id": "hyphen",
+      "base": "d248d827a72f75d7bafbe58097b9a5971c560df7",
+      "digest": "74fc6a677ea07c1d498e0a13e5a0f7610c9c1d38add3df713b4ce27d07e99868",
+      "challengeDigest": "3ec0ca83c28295c72e29a068239286cfb96d51f13aa894dc7015308de656b5f7",
+      "frozenAt": "2026-11-20T19:21:24.545Z",
+      "baselineMs": 341,
+      "baselineReceiptSha256": "39799c425bcecdc301d64e62a28c9aa289a4096bad4af540c1907fc9e40dc652",
+      "baselineObservations": {
+        "pcreLiteral": "pattern rejected",
+        "javascriptLiteral": "[\"x-.-y\"]",
+        "pcreClass": "pattern rejected",
+        "javascriptClass": "[\"a\",\"-\",\"c\"]"
+      },
+      "fix": "ec45c70e23ca2e4395498737dfe9c91d6d2d9a35",
+      "revealedAt": "2026-11-20T19:21:24.662Z",
+      "authorTestSha256": "f93265b155f7a975034d4488d7d3bc3b91ca8d89e58936fff64a90214964a6a5",
+      "authorOnBase": {
+        "verdict": "failed",
+        "ms": 41,
+        "checks": [
+          {
+            "name": "escapes `-` in a way compatible with PCRE",
+            "verdict": "failed",
+            "error": "AssertionError"
+          }
+        ]
+      },
+      "genuine": {
+        "stage": "genuine",
+        "author": {
+          "verdict": "passed",
+          "ms": 38,
+          "checks": [
+            {
+              "name": "escapes `-` in a way compatible with PCRE",
+              "verdict": "passed"
+            }
+          ]
+        },
+        "blindBehavior": "passed",
+        "blindProof": "verified",
+        "blindMs": 675,
+        "misses": [],
+        "observed": {
+          "pcreLiteral": "[\"x-.-y\"]",
+          "javascriptLiteral": "[\"x-.-y\"]",
+          "pcreClass": "[\"a\",\"-\",\"c\"]",
+          "javascriptClass": "[\"a\",\"-\",\"c\"]"
+        },
+        "testedId": "ec45c70e23ca2e4395498737dfe9c91d6d2d9a35",
+        "required": [
+          {
+            "code": 0,
+            "ms": 36
+          }
+        ],
+        "receiptSha256": "682283ae831e43b684dd6232a9e6f91fac40571403d4b088724db5f90b0e3d56"
+      },
+      "challenges": [
+        {
+          "label": "hex-escape every character",
+          "stage": "challenge-1",
+          "author": {
+            "verdict": "failed",
+            "ms": 39,
+            "checks": [
+              {
+                "name": "escapes `-` in a way compatible with PCRE",
+                "verdict": "failed",
+                "error": "AssertionError"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 611,
+          "misses": [],
+          "observed": {
+            "pcreLiteral": "[\"x-.-y\"]",
+            "javascriptLiteral": "[\"x-.-y\"]",
+            "pcreClass": "[\"a\",\"-\",\"c\"]",
+            "javascriptClass": "[\"a\",\"-\",\"c\"]"
+          },
+          "testedId": "6a92b945cc36910d36ab10df5269af0b04ac0cfff57fc9db2ee40f7fbf656e1a",
+          "required": [
+            {
+              "code": 0,
+              "ms": 36
+            }
+          ],
+          "receiptSha256": "c9c2c19013d30fa553b68784355ed3c46f4663d8329bdc0a2acefe31b9394ddc",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        },
+        {
+          "label": "escape only the first hyphen",
+          "stage": "challenge-2",
+          "author": {
+            "verdict": "passed",
+            "ms": 37,
+            "checks": [
+              {
+                "name": "escapes `-` in a way compatible with PCRE",
+                "verdict": "passed"
+              }
+            ]
+          },
+          "blindBehavior": "passed",
+          "blindProof": "verified",
+          "blindMs": 599,
+          "misses": [],
+          "observed": {
+            "pcreLiteral": "[\"x-.-y\"]",
+            "javascriptLiteral": "[\"x-.-y\"]",
+            "pcreClass": "[\"a\",\"-\",\"c\"]",
+            "javascriptClass": "[\"a\",\"-\",\"c\"]"
+          },
+          "testedId": "da710c726c2ef652a359b3882e22bdbd83f0cb9627c0f998d0c1171a744947f5",
+          "required": [
+            {
+              "code": 0,
+              "ms": 36
+            }
+          ],
+          "receiptSha256": "52ae19e9d3abdbb10aa3f55230dd81cc2e7a58145b00832e50bca40456fbd727",
+          "newMisses": [],
+          "incrementalCatch": false,
+          "decisionCatch": false
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "challenges": 10,
+    "authorAccepted": 7,
+    "incrementalCatches": 4,
+    "decisionCatches": 3,
+    "genuineBlindVerified": 4
+  }
+}

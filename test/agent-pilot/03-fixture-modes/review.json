@@ -13,8 +13,8 @@
     "test/agent-pilot/03-fixture-modes/first-candidate.patch",
     "test/agent-pilot/03-fixture-modes/claim.json",
     "test/agent-pilot/03-fixture-modes/probe.mjs",
-    ".pilot/agent-trials-20261118-2134/03-fixture-modes/lib/files.js",
-    ".pilot/agent-trials-20261118-2134/03-fixture-modes/test/fixture-modes.test.js"
+    ".pilot/worktrees/03-fixture-modes/lib/files.js",
+    ".pilot/worktrees/03-fixture-modes/test/fixture-modes.test.js"
   ],
   "findings": [
     {

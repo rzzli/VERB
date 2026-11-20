@@ -3,9 +3,10 @@
   "license": "MIT",
   "version": "0.2.0",
   "description": "VERB — Verify Expected Runtime Behavior by replaying a behavioral claim against broken and proposed code",
+  "repository": { "type": "git", "url": "git+https://github.com/rzzli/VERB.git" },
   "type": "module",
   "bin": { "verb": "./bin/verb.js" },
-  "files": ["bin", "lib", "hooks", "skills", "examples/click", "examples/node", "templates", "README.md"],
+  "files": ["bin", "lib", "hooks", "skills", "examples/click", "examples/node", "templates", "README.md", "GUIDE.md"],
   "engines": { "node": ">=22" },
   "scripts": {
     "test": "node --test test/*.test.js",
