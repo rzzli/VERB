@@ -108,12 +108,22 @@ test('hooks allow work outside a Git repository instead of surfacing Git discove
   }
 });
 
+test('hook wiring errors block before Git discovery, including when no mode is given', t => {
+  const f = fixture(t);
+  for (const args of [[], ['--precommit'], ['--pre-commit', 'extra'], ['--stop', '--stop'], ['--pre-commit', '--stop']]) {
+    const result = run([hook, ...args], f.dir);
+    assert.equal(result.status, 2, JSON.stringify(args) + ': ' + result.stderr);
+    assert.match(result.stderr, /exactly one.*--stop.*--pre-commit/);
+  }
+});
+
 test('the missing claim hint identifies a usable absolute path from a subdirectory', t => {
   const f = proven(t, "someone's $claim! with ‘quotes’.json");
   fs.unlinkSync(f.claim);
   const sub = path.join(f.repo, 'nested');
   fs.mkdirSync(sub);
   const stopped = run([hook, '--stop'], sub);
+  if (process.platform === 'win32') assert.match(stopped.stderr, /in PowerShell with: verb deactivate/);
   assert.equal(stopped.status, 2);
   const command = stopped.stderr.trimEnd().match(/with: (verb deactivate [\s\S]+)$/)?.[1];
   assert.ok(command, stopped.stderr);

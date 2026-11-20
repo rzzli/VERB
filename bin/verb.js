@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { checkout, copyFixtures, freeze, gitPath, hash, resolveRef, saveJSON, windowsRootAlias, working } from '../lib/files.js';
 import { interrupt, runSide } from '../lib/run.js';
 import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
-import { currentConflict, detectConflicts, entries, load, proofProblem, prune, publishReceipt, receiptOrder, receiptRunId, recent, withClaimLock } from '../lib/store.js';
+import { cleanRetiredMarkers, currentConflict, detectConflicts, entries, load, proofProblem, prune, publishReceipt, receiptOrder, receiptRunId, recent, withClaimLock } from '../lib/store.js';
 
 const usage = 'VERB — Verify Expected Runtime Behavior\n\nverb baseline CLAIM --base REF\nverb check CLAIM\nverb prove CLAIM --base REF [--candidate REF]\nverb status [RECEIPT | --active]\nverb summary RECEIPT\nverb deactivate CLAIM\nAdd --json for machine-readable output. Run from the target Git repository.';
 const codes = { verified: 0, failed: 1, inconclusive: 2 };
@@ -215,6 +215,7 @@ async function main() {
   const store = path.join(gitPath(repo, '--absolute-git-dir'), 'verb');
   if (opts.action === 'status') {
     const result = status(repo, store, opts);
+    cleanRetiredMarkers(store);
     console.log(opts.json ? JSON.stringify(result) : textReport(result));
     return codes[result.verdict];
   }
@@ -266,7 +267,7 @@ async function main() {
       r.baselineReceipt = readBaseline(slot)?.receipt;
     }
     const bundle = path.join(temp, 'frozen');
-    const { spec, digest, contents, scope, warnings } = freeze(opts.file, bundle);
+    const { spec, digest, contents, scope, warnings, identities } = freeze(opts.file, bundle);
     Object.assign(r, { claim: spec.claim, digest, required: spec.required, scope, warnings });
     if (process.platform === 'win32') {
       const aliases = new Set();
@@ -295,7 +296,7 @@ async function main() {
         r.sides[role] = side;
         const privateBundle = path.join(sideDir, 'bundle');
         copyFixtures(spec.fixtures, bundle, privateBundle);
-        await runSide(side, spec, privateBundle, tree, path.join(sideDir, 'profile'), role, suites, invocation.signal);
+        await runSide(side, spec, privateBundle, tree, path.join(sideDir, 'profile'), role, suites, invocation.signal, identities);
         detectConflicts(store, claimKey, digest, role, side);
         return side;
       } finally {
@@ -310,6 +311,7 @@ async function main() {
       const saved = readBaseline(slot);
       if (saved.digest !== digest || saved.verdict !== 'verified') throw Error('Baseline invalid or claim changed. Run baseline again.');
       r.sides.base = { ...(saved.base ?? readReceipt(saved.receipt).sides.base), cached: true };
+      if (!r.sides.base.historyGeneration) throw Error('Saved baseline predates frozen observer validation. Run baseline again.');
       // Check history too: an intervening prove may have contradicted this saved observation.
       detectConflicts(store, claimKey, digest, 'base', r.sides.base);
     } else {

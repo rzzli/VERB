@@ -1,6 +1,6 @@
 # VERB release-readiness review
 
-The [follow-up audit](standalone-verification-audit.md) covers blind review, a false approval in a fresh proof, portability fixes, and new measurements. Use its priorities for the current working tree.
+The [follow-up audit](standalone-verification-audit.md#follow-up-fixes) records the fixes for the frozen observer, proof history, hook invocation, and lock recovery. The findings below describe the earlier working tree.
 
 Reviewed the working tree based on `b965e40` on November 20, 2026, including the pending lock and recovery fixes. **Use a fresh `prove` for release decisions. Fix proof freshness before relying on the automatic hooks as a release gate.**
 

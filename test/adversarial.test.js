@@ -26,12 +26,12 @@ test('a newer inconclusive proof without a candidate invalidates an earlier veri
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
   write(path.join(repo, 'value'), 'new');
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');
-  assert.equal(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 0);
   write(toggle, 'fail');
   const latest = verb(repo, 2, 'prove', claim, '--base', 'HEAD');
   assert.equal(latest.sides.candidate, undefined);
   assert.equal(verb(repo, 2, 'status').receipt, latest.receipt);
-  assert.notEqual(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 2);
 });
 
 test('a fresh baseline needs a subsequent proof, not a proof from the previous activation', t => {
@@ -39,12 +39,12 @@ test('a fresh baseline needs a subsequent proof, not a proof from the previous a
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
   write(path.join(repo, 'value'), 'new');
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');
-  assert.equal(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 0);
   verb(repo, 0, 'deactivate', claim);
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
-  assert.notEqual(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 2);
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');
-  assert.equal(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 0);
 });
 
 test('Windows claim aliases share a baseline, proof and deactivation slot', { skip: process.platform !== 'win32' }, t => {
@@ -53,7 +53,7 @@ test('Windows claim aliases share a baseline, proof and deactivation slot', { sk
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
   write(path.join(repo, 'value'), 'new');
   verb(repo, 0, 'prove', alias, '--base', 'HEAD');
-  assert.equal(hook(repo).status, 0);
+  assert.equal(hook(repo, '--stop').status, 0);
   verb(repo, 0, 'deactivate', alias);
   assert.equal(verb(repo, 0, 'status', '--active').active, 0);
 });

@@ -149,7 +149,7 @@ test('hooks only gate active claims and pre-commit refuses a partial tree', t =>
   const {repo, dir, claim, spec, git} = fixture(t);
   const hook = (...args) => spawnSync(process.execPath, [path.join(project, 'hooks/verify.mjs'), ...args],
     { cwd: repo, encoding: 'utf8' });
-  assert.equal(hook().status, 0);
+  assert.equal(hook('--stop').status, 0);
   assert.equal(hook('--pre-commit').status, 0);
   verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
   const stopped = hook('--stop');
@@ -159,16 +159,16 @@ test('hooks only gate active claims and pre-commit refuses a partial tree', t =>
   const other = path.join(dir, 'other.json');
   write(other, spec);
   verb(repo, 0, 'prove', other, '--base', 'HEAD');
-  assert.equal(hook().status, 1);
+  assert.equal(hook('--stop').status, 2);
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');
-  assert.equal(hook().status, 0);
+  assert.equal(hook('--stop').status, 0);
   assert.equal(hook('--pre-commit').status, 1);
   git('add', 'value');
   assert.equal(hook('--pre-commit').status, 0);
   write(claim, {...spec, claim: 'changed claim'});
-  assert.match(hook().stderr, /Run baseline again/);
+  assert.match(hook('--stop').stderr, /Run baseline again/);
   verb(repo, 0, 'deactivate', claim);
-  assert.equal(hook().status, 0);
+  assert.equal(hook('--stop').status, 0);
 });
 
 test('pruning keeps 30 receipts and history records without invalidating the saved baseline', t => {

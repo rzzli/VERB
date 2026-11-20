@@ -47,7 +47,7 @@ npm exec --offline -- verb --help
 
 Commit the archive and dependency metadata together if others will install from that path. The CLI uses Node built-ins and Git. Your project's build and test commands may have their own prerequisites.
 
-1. Copy the claim template. Use a frozen entry point such as `"probe": ["{node}", "{bundle}/probe.mjs"]` with `"fixtures": ["probe.mjs"]`. Put any helpers that interpret the result in the bundle too. A checkout-local observer can change with the patch even when the claim digest matches. [Claim template](templates/claim.json)
+1. Copy the claim template. Use a frozen entry point such as `"probe": ["{node}", "{bundle}/probe.mjs"]` with `"fixtures": ["probe.mjs"]`. Put any helpers that interpret the result in the bundle too. VERB checks the observer entry point before running the project. [Claim template](templates/claim.json)
 2. Call the real application and emit one UTF-8 JSON object. For the greeting example the shape is `{"origin":"…","observations":{"empty name":"Hello, !","missing name":"Hello, Guest!"}}`. Fill `origin` with the actual absolute path of the loaded application file. Declare the expected values, a neighboring case, and required project checks in the claim. [Probe contract](GUIDE.md#write-a-probe)
 3. Run `baseline`, `check`, and `prove` from the target checkout. For a project-local installation, use `npm exec --offline -- verb …`. An existing coding agent can propose a probe and look for wrong edits that it would still accept. [Agent skill](skills/verb-regression/SKILL.md)
 
@@ -67,7 +67,7 @@ Ask your coding agent to **“use VERB blind review for this bug.”** Give a fr
 | `verb summary RECEIPT` | Shows observed values, controls, and required-command outcomes. |
 | `verb deactivate CLAIM` | Retires a finished claim. A path mismatch reports which claims are still active. |
 
-In CI, fetch the broken revision, inspect the frozen observer, and run `verb prove CLAIM --base BASE_SHA --candidate HEAD`. A focused check after history rotation can make `status` accept an older, invalidated proof. [History and recovery](GUIDE.md#history-and-recovery)
+In CI, fetch the broken revision, inspect the frozen observer, and run `verb prove CLAIM --base BASE_SHA --candidate HEAD`. To upgrade an active claim created before frozen observer validation, run `baseline` again and then `prove`. [History and recovery](GUIDE.md#history-and-recovery)
 
 **Verdict exit codes** are `0` for verified, `1` for failed, and `2` for inconclusive. An already-fixed baseline, missing observation, or timeout makes a proof inconclusive. Use `--json` for machine-readable verdicts. `summary` exits zero when it can display the receipt, including one for a failed proof.
 

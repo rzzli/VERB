@@ -5,12 +5,20 @@ import path from 'node:path';
 import { gitPath } from '../lib/files.js';
 import { assertStagedCheckout } from '../lib/staged.js';
 
+// The installed hook is imported with node -e, whose argv omits the script path.
+const inline = process.execArgv.some(arg => ['-e', '-p', '-pe', '--eval', '--print'].includes(arg.split('=', 1)[0]));
+const args = process.argv.slice(inline ? 1 : 2);
+if (args.length !== 1 || !['--stop', '--pre-commit'].includes(args[0])) {
+  console.error('VERB blocked: pass exactly one hook mode, --stop or --pre-commit.');
+  process.exit(2);
+}
+const stop = args[0] === '--stop';
+
 // Git may provide a relative temporary index. Preserve its meaning when status and
 // the staged comparison change to the repository root; do not use the default index.
 if (process.env.GIT_INDEX_FILE) process.env.GIT_INDEX_FILE = path.resolve(process.env.GIT_INDEX_FILE);
 
 const cli = fileURLToPath(new URL('../bin/verb.js', import.meta.url));
-const stop = process.argv.includes('--stop');
 // A user-level hook can run outside any repository. There are no VERB claims there,
 // so allow the action instead of surfacing Git's discovery error as a block.
 const top = spawnSync('git', ['rev-parse', '--show-toplevel'], {
@@ -46,7 +54,7 @@ const status = (() => {
     process.exit(stop ? 2 : 1);
   }
 })();
-if (process.argv.includes('--pre-commit') && status.active > 0) try {
+if (!stop && status.active > 0) try {
   const repo = gitPath(process.cwd(), '--show-toplevel');
   const options = { cwd: repo, encoding: 'utf8', windowsHide: true, timeout: 120000, maxBuffer: 64 * 1024 * 1024 };
   // These index flags hide changes from git diff, so a working proof cannot approve them.

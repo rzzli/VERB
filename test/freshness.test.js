@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { fixture, project, write, verb } from './helpers.js';
+import { cmd, fixture, project, write, verb } from './helpers.js';
 
 const cli = path.join(project, 'bin/verb.js');
 const historyBytes = dir => fs.readdirSync(dir).sort().map(name => [name, fs.readFileSync(path.join(dir, name), 'utf8')]);
@@ -48,6 +48,74 @@ test('completed contradictory checks invalidate old proofs without status writin
   verb(f.repo, 2, 'status', '--active');
   verb(f.repo, 0, 'prove', f.claim, '--base', 'HEAD');
   verb(f.repo, 0, 'status', '--active');
+});
+
+test('rotating away a contradiction and then checking cannot resurrect its proof', t => {
+  const f = observationFixture(t);
+  write(f.flag, 'wrong');
+  verb(f.repo, 2, 'check', f.claim);
+  write(f.flag, 'new');
+  const otherTree = path.join(f.repo, 'other-input');
+  write(otherTree, 'changes the working tree digest');
+  for (let i = 0; i < 31; i++) verb(f.repo, 0, 'check', f.claim);
+  fs.unlinkSync(otherTree);
+  assert.match(verb(f.repo, 2, 'status').reason, /history expired/);
+  const checked = verb(f.repo, 0, 'check', f.claim);
+  assert.notEqual(checked.sides.candidate.historyGeneration, f.proof.sides.candidate.historyGeneration);
+  verb(f.repo, 2, 'status');
+  verb(f.repo, 2, 'status', '--active');
+  verb(f.repo, 2, 'status', f.proof.receipt);
+  const fresh = verb(f.repo, 0, 'prove', f.claim, '--base', 'HEAD');
+  assert.ok(fresh.sides.candidate.commands.some(command => command.phase === 'required' && command.code === 0));
+  assert.equal(verb(f.repo, 0, 'status').receipt, fresh.receipt);
+  verb(f.repo, 0, 'status', '--active');
+  verb(f.repo, 2, 'status', f.proof.receipt);
+});
+
+test('a damaged retained contradiction is distinct from a record removed by rotation', t => {
+  const f = observationFixture(t);
+  write(f.flag, 'wrong');
+  verb(f.repo, 2, 'check', f.claim);
+  const before = historyBytes(f.history);
+  const [name, original] = before.sort((a, b) => JSON.parse(b[1]).sequence - JSON.parse(a[1]).sequence)[0];
+  const file = path.join(f.history, name);
+  for (const contents of ['null', 'false', '0', '""']) {
+    write(file, contents);
+    for (const args of [[], ['--active'], [f.proof.receipt]]) {
+      const result = verb(f.repo, 2, 'status', ...args);
+      assert.match(result.reason, /Invalid or unsupported verification history record/);
+      assert.ok(result.reason.includes(file));
+    }
+  }
+  write(file, original);
+  assert.match(verb(f.repo, 2, 'status').reason, /conflicting reruns/);
+});
+
+test('pre-upgrade proofs can be read but require a fresh proof before they approve a checkout', t => {
+  const f = observationFixture(t);
+  const prior = JSON.parse(fs.readFileSync(f.proof.receipt));
+  for (const side of Object.values(prior.sides)) {
+    delete side.historyGeneration;
+    side.historyRevision = null;
+  }
+  write(f.proof.receipt, prior);
+  assert.match(cmd(f.repo, process.execPath, [cli, 'summary', f.proof.receipt]), /VERIFIED/);
+  for (const [file, contents] of historyBytes(f.history)) {
+    const record = JSON.parse(contents);
+    delete record.generation;
+    delete record.role;
+    record.schemaVersion = 1;
+    record.invalidated = null;
+    write(path.join(f.history, file), record);
+  }
+  for (const args of [[], ['--active'], [f.proof.receipt]]) {
+    assert.match(verb(f.repo, 2, 'status', ...args).reason, /predates history generation/);
+  }
+  verb(f.repo, 0, 'check', f.claim);
+  verb(f.repo, 2, 'status', '--active');
+  verb(f.repo, 0, 'prove', f.claim, '--base', 'HEAD');
+  verb(f.repo, 0, 'status', '--active');
+  verb(f.repo, 2, 'status', f.proof.receipt);
 });
 
 for (const slowExit of [0, 1]) {

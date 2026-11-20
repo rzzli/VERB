@@ -10,9 +10,13 @@ Run the real CLI from the snapshot at `VERB_ROOT`. Use `VERB_PROFILE` for settin
 {"origin":"/path/to/snapshot/src/app.js","observations":{"saved theme":"dark","unconfigured locale":"en"}}
 ```
 
-Keep expected values in the claim. Return zero when the probe collected the observations, even on the broken version. Launch the observer from the bundle, for example `["{python}", "{bundle}/observe.py"]`. Freeze any helpers that interpret the output alongside it. VERB currently accepts a checkout-local observer when a later argument names a frozen data fixture. In that arrangement the patch can change what gets reported while the frozen digest stays the same.
+Keep expected values in the claim. Return zero when the probe collected the observations, even on the broken version. Launch the observer from the bundle, for example `["{python}", "{bundle}/observe.py"]`. Include and load its result-parsing helpers from the bundle too. A checkout-local observer with a frozen data argument now produces an inconclusive claim error. To migrate it, move the observer and its helpers into the fixtures, update the probe command, and run a new baseline.
 
 List the probe and its input files under `fixtures` and rerun `verb baseline` when their bytes or executable bits change. POSIX executable fixture bits are preserved in both frozen copies. Use trusted probes and repositories, since commands run with your local permissions.
+
+Use `{node}`, `node`, `{python}`, `python`, `python3`, `sh`, or `/bin/sh` followed immediately by the declared `{bundle}/...` script. Arguments for that script can follow. VERB resolves a named probe interpreter on the host so a similarly named executable in the snapshot cannot replace it.
+
+You can also run a declared executable fixture directly. On Windows, include its exact `.exe` or `.com` filename. For another runtime or interpreter switches, put the invocation in a frozen wrapper and pass the other frozen files to it. After setup, VERB checks the declared fixture bytes and executable bits before starting the observer.
 
 Git pathnames returned for snapshots must be valid UTF-8. On POSIX, VERB reports an inconclusive result if a filename cannot be decoded faithfully.
 
@@ -24,7 +28,8 @@ VERB compares completed observations from the same side and frozen inputs. It tr
 
 - **Observation conflict:** rerun the same probe until the last three completed runs agree. A `check` counts as a completed observation; a timeout or interrupted command does not.
 - **Required-command conflict:** the command must agree across its last three **actual completed executions**. Checks, commands skipped after an earlier failure, and timeouts cannot clear it; cached baselines are not reruns.
-- **Conflicting history.** Run a fresh `prove` after resolving a contradiction. The current status check can approve an old proof if its contradiction has rotated out of history and a focused `check` recreates a record for the same tree. A damaged history file containing JSON `null` can also hide a contradiction. Use the new proof result for release decisions.
+- **Conflicting history.** Run a fresh `prove` after resolving a contradiction. A focused `check` can confirm the observation again, but only a proof runs the required suite and restores approval. An invalid history record blocks approval.
+- **Upgrading existing claims.** For each active claim, run `baseline` again to enable focused checks, then run `prove` to restore status and hook approval. Older receipts remain readable with `summary`.
 - **Locks.** Each history append holds a short per-claim lock. Contenders can retire a confirmed dead local owner's lock one at a time. Locks from another host and locks with an unknown owner require manual recovery. [Hook troubleshooting](#if-a-hook-blocks-and-the-fix-is-not-obvious)
 - **Retention:** each claim keeps up to 30 receipts and 30 sequenced history records. Within the receipt limit VERB reserves space for the active baseline and the latest working proof attempt, including a failed or inconclusive attempt. Agreeing focused checks preserve the proof and its frozen baseline archive. History for older input identities eventually rotates out; export a summary before older receipts do.
 
@@ -85,6 +90,8 @@ New receipts use `verb-receipt/2` and baseline slots use `verb-baseline/2`. Each
 
 ## Wire a hook
 
+Pass exactly one mode, `--stop` or `--pre-commit`. An omitted, unknown, duplicated, or mixed mode exits with code 2, including outside a Git repository.
+
 These examples resolve VERB from the target project’s installed development dependencies. Run the hook inside that Git checkout. The package lookup also works from a nested directory. A successful `baseline` activates its claim; if a later baseline attempt fails, the claim stays active but needs a successful baseline again. Every new baseline needs a subsequent proof; a proof from a previous activation does not count. Proofs made by versions without this baseline binding must be rerun once. A failed attempt stays authoritative even when snapshot cleanup fails: VERB records the inconclusive attempt and its cleanup diagnostic, and both hooks block until a later successful proof. After the proof has served its purpose (for example, after committing), run `verb deactivate CLAIM` so future changes don't require proving the old bug again.
 
 **Agent stop hook (Claude Code):** merge this into `.claude/settings.json`. Exit 2 asks the agent to keep working; the hook tells it what is missing.
@@ -109,7 +116,7 @@ exec node -e "import('verb-runtime-verify/hooks/verify.mjs')" -- --pre-commit
 #### If a hook blocks and the fix is not obvious
 
 - **A claim or fixture was deleted or moved.** `Claim file is missing` names the claim. `Fixture is missing` names the missing input and the claim that lists it. Restore the missing file, correct the fixture list, or retire the baseline using the printed command. The path is quoted for PowerShell on Windows and a POSIX shell elsewhere. Run the command from any directory in the same checkout.
-- **A killed writer left a lock.** VERB can recover a lock in `.git/verb/locks/` when its owner is confirmed gone on the same host. Older PID-and-start-time locks are treated as local. If another host owns the lock, its owner is unreadable, or the PID is still live, VERB waits up to five seconds and reports the path. Confirm that all writers using the checkout have stopped before manually removing the named lock and retrying.
+- **A killed writer left a lock.** VERB can recover a lock in `.git/verb/locks/` when its owner is confirmed gone on the same host. Older PID-and-start-time locks are treated as local. If the owner is foreign, unreadable or still live, or a killed recovery process left a marker for the current lock, VERB waits up to five seconds and reports the lock path. Confirm that all writers using the checkout have stopped before manually removing the named lock and retrying. A subsequent `status` or acquisition clears obsolete recovery markers.
 - **The hook runs outside a Git repository.** A user-level Stop hook then has no VERB claims to check, so the hook allows the action with a short note instead of blocking on Git discovery. Wire project hooks to run inside the repository.
 - **A command could not be launched.** Its receipt records no exit code and `verb summary` prints `exit unavailable`; the verdict is inconclusive.
 - **The agent is blocked repeatedly.** The Stop hook blocks whenever the active gate is not green and does not inspect a harness loop-guard payload. Read the message: each state above names its fix. If the work is genuinely finished, deactivate the claim instead of disabling the hook.

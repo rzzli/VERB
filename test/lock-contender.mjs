@@ -5,6 +5,15 @@ import { withClaimLock } from '../lib/store.js';
 const [mode, store, round, index] = process.argv.slice(2);
 if (mode === 'leave-lock') {
   withClaimLock(store, 'claim', () => process.kill(process.pid, 'SIGKILL'));
+} else if (mode === 'interrupt-recovery') {
+  const lock = path.join(store, 'locks', 'claim.lock');
+  const unlink = fs.unlinkSync;
+  fs.unlinkSync = file => {
+    if (file !== lock) return unlink(file);
+    if (round === 'after-unlink') unlink(file);
+    process.kill(process.pid, 'SIGKILL');
+  };
+  withClaimLock(store, 'claim', () => { throw Error('expected a dead writer'); });
 } else {
   const wait = ms => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   // Make all six real processes inspect the *same* dead owner before any can

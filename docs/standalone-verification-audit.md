@@ -1,6 +1,6 @@
 # VERB working-tree audit
 
-**November 20, 2026.** Reviewed the working files based on `b965e40`, including the pending blind-review workflow. VERB is useful for supervised bug verification. **Hold an unattended release gate.** A fresh proof can accept a changed observer while the application still exhibits the bug. A cached proof and a misconfigured hook have separate paths to incorrect approval.
+**November 20, 2026.** Reviewed the working files based on `b965e40`, including the pending blind-review workflow. The review identified three ways to approve a broken change. The subsequent fixes and their regression coverage are recorded below. The workload measurements and remaining deployment tasks describe the audited snapshot.
 
 ## What a developer can rely on today
 
@@ -10,7 +10,7 @@ A separate Linux trial used a POSIX shell application, a frozen shell observer a
 
 The product is general purpose within a practical boundary. A trusted local program must be able to exercise the behavior from a Git source snapshot, report the file it actually loaded, and express its observations as strings. Node and Python are worked examples. Runtime code has no Click, pilot-revision, model-provider, or hosted-service dependency. Shared ignored dependencies, external services and the installed toolchain can still influence results. Projects requiring a live Git history, submodules, or a different deployment environment need separate evidence. Blind review gives an independent reviewer a restricted input packet. Its record describes the procedure and cannot establish what the reviewer already knew. [Runner](../lib/run.js) · [Usage guide](../GUIDE.md) · [Blind review](../skills/verb-regression/references/blind-review.md)
 
-## Release blockers
+## Release blockers found in the audited snapshot
 
 | Order | Reproduced failure | Fix and acceptance test |
 | --- | --- | --- |
@@ -18,7 +18,12 @@ The product is general purpose within a practical boundary. A trusted local prog
 | 2. Preserve invalidations while their proofs survive | After a contradictory observation invalidated tree A, 31 checks on tree B evicted A's history. One new check on A made both status modes reuse the old green proof without rerunning the required suite. Also, replacing the contradiction record with any of `null`, `false`, `0`, or `""` made active status green. [History and proof eligibility](../lib/store.js) | Persist a proof generation or invalidation marker for as long as a proof can be selected. Validate each existing history record before filtering it. Run both reproductions against current and migrated stores. Both status modes must stay inconclusive until a fresh qualifying proof, or report the corrupt state and its recovery. |
 | 3. Validate the hook invocation | With an unstaged fix and an active proof, `--pre-commit` blocked the commit. A misspelling, `--precommit`, exited zero and skipped the staged comparison. Omitting the mode had the same effect. [Hook](../hooks/verify.mjs) | Parse exactly one supported mode before checking Git or active claims. Test unknown, omitted, duplicated and mixed arguments. Exercise the installed hook through a real commit with unstaged changes and confirm a nonzero exit. |
 
-Until these are fixed, launch the reviewed observer and its parsing helpers from the frozen bundle, run a fresh proof, and inspect the base, candidate, control and required-command results. Existing green hooks alone cannot establish release readiness.
+### Follow-up fixes
+
+- VERB validates the executed observer entry point and checks its frozen fixtures before launch. The regression exercises a real broken CLI with a checkout-local observer that reports the expected value. The invalid claim is rejected before execution. [Claim validation](../lib/files.js) · [Observer regressions](../test/frozen-observer.test.js)
+- Fresh proofs bind both sides to a generation of their respective history. A contradiction or a lost history window requires a new proof. Tests exercise the original 31-check reproduction, all four damaged JSON values, and existing receipts from before the upgrade. [Freshness regressions](../test/freshness.test.js)
+- Hooks reject omitted, misspelled, duplicate, and mixed modes before Git discovery. The installed-package regression tries a real commit with the misspelled mode and confirms HEAD stays at the broken revision. [Installed-package regression](../test/installed-smoke.js)
+- A failed or partial write of lock ownership metadata releases the file created by that attempt. Recovery also clears obsolete takeover markers without disturbing a live owner's lock. Tests cover disk-full errors, a replacement owner, and a recovery process killed on either side of lock removal. [Lock regressions](../test/lock-takeover.test.js)
 
 ## Changes made during this audit
 

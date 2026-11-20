@@ -123,6 +123,9 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
     required: [['{node}', '--test', 'required.test.cjs']] }));
   assert.equal(verb(0, 'status', '--active').active, 0);
   hook(0, '--stop'); hook(0, '--pre-commit');
+  for (const args of [[], ['--precommit'], ['extra', '--stop'], ['--pre-commit', '--pre-commit'], ['--pre-commit', '--stop']]) {
+    hook(2, ...args);
+  }
   verb(0, 'baseline', claim, '--base', base);
   verb(1, 'check', claim);
   hook(2, '--stop'); hook(1, '--pre-commit');
@@ -131,7 +134,8 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   verb(2, 'status', '--active');
   hook(2, '--stop');
   const precommit = path.join(repo, '.git', 'hooks', 'pre-commit');
-  fs.writeFileSync(precommit, '#!/bin/sh\nexec node -e "' + hookImport + '" -- --pre-commit\n');
+  const wireHook = mode => fs.writeFileSync(precommit, '#!/bin/sh\nexec node -e "' + hookImport + '" -- ' + mode + '\n');
+  wireHook('--pre-commit');
   fs.chmodSync(precommit, 0o755);
   git('add', '.');
   const blocked = run(repo, 'git', ['commit', '-qm', 'unproved must block']);
@@ -156,6 +160,16 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   assert.ok(summary.includes(proved.digest));
   assert.match(summary, /neighbor.*\[control\]/);
   assert.match(summary, /Required .*exit 0/);
+  // The proof is for the corrected working value. The index still has the bug.
+  git('restore', '--staged', '--', 'value');
+  hook(1, '--pre-commit');
+  wireHook('--precommit');
+  const miswired = run(repo, 'git', ['commit', '--allow-empty', '-qm', 'miswired hook must block']);
+  expect(miswired, 1);
+  assert.match(miswired.stderr, /exactly one.*--stop.*--pre-commit/);
+  assert.equal(git('rev-parse', 'HEAD'), base);
+  wireHook('--pre-commit');
+  git('add', 'value');
   hook(0, '--stop'); hook(0, '--pre-commit');
   git('commit', '-qm', 'installed package proved fix');
   assert.equal(git('show', 'HEAD:value'), 'new');
