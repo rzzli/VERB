@@ -66,6 +66,37 @@ test('reported scope counts declared observations, controls, and required comman
   assert.deepEqual(baseline.warnings, []);
 });
 
+test('malformed probe output names the contract instead of a TypeError', t => {
+  const f = fixture(t);
+  const attemptProbe = source => {
+    write(f.probe, source);
+    return verb(f.repo, 2, 'baseline', f.claim, '--base', 'HEAD');
+  };
+  const nullOutput = attemptProbe('process.stdout.write("null")');
+  assert.match(nullOutput.sides.base.reason, /probe output must be a JSON object/);
+  assert.doesNotMatch(nullOutput.sides.base.reason, /TypeError|Cannot read properties/);
+  assert.match(attemptProbe('process.stdout.write("not json")').sides.base.reason, /not valid JSON/);
+  assert.match(attemptProbe('console.log(JSON.stringify({observations:{value:"old",neighbor:"same"}}))').sides.base.reason,
+    /origin must be an absolute file path/);
+  assert.match(attemptProbe('import path from "node:path";console.log(JSON.stringify({origin:path.resolve("value"),observations:null}))').sides.base.reason,
+    /observations must be a JSON object/);
+});
+
+test('a command that never launched records no exit code and summary says unavailable', t => {
+  const f = fixture(t), missing = 'verb-missing-binary-' + Date.now();
+  write(f.claim, { ...f.spec, required: [[missing, '--version']] });
+  write(path.join(f.repo, 'value'), 'new');
+  const proof = verb(f.repo, 2, 'prove', f.claim, '--base', 'HEAD');
+  const command = proof.sides.candidate.commands.at(-1);
+  assert.equal(command.phase, 'required');
+  assert.equal(command.code, null);
+  assert.match(command.error, /ENOENT/);
+  const text = spawnSync(process.execPath, [path.join(project, 'bin/verb.js'), 'summary', proof.receipt],
+    { encoding: 'utf8', timeout: 30000 }).stdout;
+  assert.match(text, /exit unavailable/);
+  assert.doesNotMatch(text, /exit -/);
+});
+
 test('shareable summaries distinguish unusable observations and failed commands', t => {
   const f = fixture(t);
   const summary = r => cmd(f.repo, process.execPath, [path.join(project, 'bin/verb.js'), 'summary', r.receipt]);

@@ -10,15 +10,37 @@ import { assertStagedCheckout } from '../lib/staged.js';
 if (process.env.GIT_INDEX_FILE) process.env.GIT_INDEX_FILE = path.resolve(process.env.GIT_INDEX_FILE);
 
 const cli = fileURLToPath(new URL('../bin/verb.js', import.meta.url));
+const stop = process.argv.includes('--stop');
+// A user-level hook can run outside any repository. There are no VERB claims there,
+// so allow the action instead of surfacing Git's discovery error as a block.
+const top = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8', windowsHide: true });
+if (top.error) {
+  console.error('VERB blocked: cannot run Git: ' + top.error.message);
+  process.exit(stop ? 2 : 1);
+}
+if (top.status !== 0) {
+  if (/not a git repository/i.test(top.stderr)) {
+    console.error('VERB: not inside a Git repository, so there are no VERB claims to check.');
+    process.exit(0);
+  }
+  console.error('VERB blocked: cannot inspect this repository: ' + top.stderr.trim());
+  process.exit(stop ? 2 : 1);
+}
 const check = spawnSync(process.execPath, [cli, 'status', '--active', '--json'], { encoding: 'utf8', windowsHide: true });
 if (check.status !== 0) {
   let reason = check.error?.message ?? 'Could not run VERB status.';
   try { reason = JSON.parse(check.stdout || check.stderr).reason ?? reason; } catch {}
   console.error('VERB blocked: ' + reason);
-  process.exit(process.argv.includes('--stop') ? 2 : 1);
+  process.exit(stop ? 2 : 1);
 }
 
-const status = JSON.parse(check.stdout);
+const status = (() => {
+  try { return JSON.parse(check.stdout); }
+  catch {
+    console.error('VERB blocked: status returned unreadable output: ' + (check.stdout || check.stderr).trim().slice(0, 500));
+    process.exit(stop ? 2 : 1);
+  }
+})();
 if (process.argv.includes('--pre-commit') && status.active > 0) try {
   const repo = git(process.cwd(), ['rev-parse', '--show-toplevel']).trim();
   const options = { cwd: repo, encoding: 'utf8', windowsHide: true, timeout: 120000, maxBuffer: 64 * 1024 * 1024 };

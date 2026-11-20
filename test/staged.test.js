@@ -260,6 +260,21 @@ require('node:module').syncBuiltinESMExports();`);
   assert.equal(f.run(process.execPath, [hook, '--pre-commit']).status, 0);
 });
 
+test('owner-only execute bits match Git\'s executable identity', { skip: process.platform === 'win32' }, t => {
+  const f = repository(t);
+  f.put('value.txt', 'record\n');
+  fs.chmodSync(path.join(f.repo, 'value.txt'), 0o744);
+  f.git('add', '.'); f.git('commit', '-qm', 'owner execute');
+  assert.equal(f.git('ls-files', '-s', 'value.txt').split(' ')[0], '100755');
+  const ownerOnly = f.verify();
+  assert.equal(ownerOnly.status, 0, ownerOnly.stderr);
+  // The owner bit is the identity: losing it must still be rejected.
+  fs.chmodSync(path.join(f.repo, 'value.txt'), 0o644);
+  assert.equal(f.verify().status, 1);
+  fs.chmodSync(path.join(f.repo, 'value.txt'), 0o755);
+  assert.equal(f.verify().status, 0);
+});
+
 test('staged executable-mode divergence is rejected even with core.filemode=false', { skip: process.platform === 'win32' }, t => {
   const f = repository(t);
   f.put('value.txt', 'record\n');

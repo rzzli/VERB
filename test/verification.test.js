@@ -128,9 +128,15 @@ fs.writeFileSync(path.join(process.env.VERB_PROFILE,'marker'),'',{flag:'wx'});
 console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'utf8'),neighbor:'same'}}));`);
   fs.unlinkSync(path.join(repo, 'value'));
   write(path.join(repo, 'new-source'), 'new');
-  const run = async () => JSON.parse((await promisify(execFile)(process.execPath,
-    [path.join(project, 'bin/verb.js'), 'prove', claim, '--base', 'HEAD', '--json'],
-    {cwd:repo, timeout:30000})).stdout);
+  const run = async () => {
+    try {
+      return JSON.parse((await promisify(execFile)(process.execPath,
+        [path.join(project, 'bin/verb.js'), 'prove', claim, '--base', 'HEAD', '--json'],
+        {cwd:repo, timeout:30000})).stdout);
+    } catch (error) {
+      throw Error('concurrent prove failed: ' + (error.stderr || error.stdout || error.message));
+    }
+  };
   const [a,b] = await Promise.all([run(),run()]);
   assert.equal(a.verdict, 'verified');
   assert.equal(b.verdict, 'verified');

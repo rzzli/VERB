@@ -48,7 +48,7 @@ function textReport(r) {
     if (role === 'candidate') {
       const executed = side.commands.filter(c => c.phase === 'required');
       lines.push('  Required commands executed: ' + executed.length + '/' + r.required.length);
-      for (const c of executed) lines.push('    ' + JSON.stringify(c.argv) + ' exit ' + c.code);
+      for (const c of executed) lines.push('    ' + JSON.stringify(c.argv) + ' exit ' + (c.code ?? 'unavailable'));
     }
   }
   if (r.reason) lines.push(r.reason);
@@ -67,6 +67,12 @@ function canonicalClaim(file) {
     try { return path.join(fs.realpathSync.native(path.dirname(file)), path.basename(file)); }
     catch (parentError) { if (parentError.code !== 'ENOENT') throw parentError; return file; }
   }
+}
+
+function missingClaim(repo, file) {
+  const shown = path.relative(repo, file) || file;
+  return { reason: 'Claim file is missing: ' + shown + '. Run "verb deactivate ' + shown +
+    '" to retire its saved baseline, or restore the file.' };
 }
 
 function* proofs(repo, store, file, matches = () => true) {
@@ -99,7 +105,14 @@ function status(repo, store, { file, active }) {
     for (const saved of claims) {
       const baseline = saved.claimPath ? saved : readReceipt(saved.receipt);
       const claimPath = canonicalClaim(baseline.claimPath ?? baseline.replay[2]);
-      if (freeze(claimPath).digest !== saved.digest || saved.verdict !== 'verified') {
+      if (!fs.existsSync(claimPath)) return { ...result, ...missingClaim(repo, claimPath) };
+      let digest;
+      try { digest = freeze(claimPath).digest; }
+      catch (error) {
+        if (error.code === 'ENOENT') return { ...result, ...missingClaim(repo, claimPath) };
+        throw error;
+      }
+      if (digest !== saved.digest || saved.verdict !== 'verified') {
         return { ...result, reason: 'Run baseline again for ' + path.relative(repo, claimPath) + '.' };
       }
       pending.set(claimPath, { digest: saved.digest, base: (baseline.base ?? baseline.sides.base).id,
