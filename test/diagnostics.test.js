@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fixture, project, write, verb } from './helpers.js';
+import { cmd, fixture, project, write, verb } from './helpers.js';
 
 const attempt = (f, spec) => {
   write(f.claim, spec);
@@ -64,4 +64,25 @@ test('reported scope counts declared observations, controls, and required comman
   const baseline = verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD');
   assert.deepEqual(baseline.scope, { observations: 2, controls: 1, requiredCommands: 1 });
   assert.deepEqual(baseline.warnings, []);
+});
+
+test('shareable summaries distinguish unusable observations and failed commands', t => {
+  const f = fixture(t);
+  const summary = r => cmd(f.repo, process.execPath, [path.join(project, 'bin/verb.js'), 'summary', r.receipt]);
+  const setup = summary(attempt(f, { ...f.spec, setup: [['{node}', '-e',
+    "console.error('compiler unavailable ' + 'x'.repeat(2000));process.exit(2)"]] }));
+  assert.match(setup, /base\/setup: .*setup command failed/);
+  assert.match(setup, /Diagnostic: "compiler unavailable/);
+  assert.ok(!setup.includes('x'.repeat(320)));
+  const timed = summary(attempt(f, { ...f.spec, timeoutMs: 100, setup: [['{node}','-e','setTimeout(()=>{},2000)']] }));
+  assert.match(timed, /base\/setup: .*timed out/);
+  const missing = summary(attempt(f, { ...f.spec, assertions: [...f.spec.assertions, {key:'missing',base:'a',fixed:'b'}] }));
+  assert.match(missing, /base\/probe: .*missing or invalid observation: missing/);
+  write(path.join(f.repo,'value'),'new');
+  write(f.claim, { ...f.spec, required:[['{node}','-e',"console.error('suite detail');process.exit(7)"]] });
+  const required = summary(verb(f.repo, 1, 'prove', f.claim, '--base', 'HEAD'));
+  assert.match(required, /candidate\/required: .*required command failed/);
+  assert.match(required, /Diagnostic: "suite detail"/);
+  write(f.probe, 'console.log(JSON.stringify({origin:process.execPath,observations:{}}));');
+  assert.match(summary(attempt(f, f.spec)), /base\/probe: .*origin is outside the checkout/);
 });

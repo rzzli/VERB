@@ -43,10 +43,12 @@ for (const sample of cases) {
       action: 'prove', verdict: 'verified', claim: 'Portable receipt summary', digest: 'frozen-digest',
       repo: sample.repo, repoAliases: sample.aliases, claimPath: sample.claim,
       sides: {
-        base: { kind: 'commit', id: 'base-id', origin: sample.origin, assertions: [] },
-        candidate: { kind: 'working', id: 'candidate-id', origin: sample.origin,
-          assertions: [{ key: 'literal', pass: true, expected: literal, actual: literal }],
-          commands: [{ phase: 'required', code: 0 }] }
+        base: { kind: 'commit', id: 'base-id', origin: sample.origin, verdict: 'verified',
+          assertions: [{ key: 'literal', pass: true, control: false, expected: 'old', actual: 'old' }],
+          commands: [{ phase: 'probe', code: 0 }] },
+        candidate: { kind: 'working', id: 'candidate-id', origin: sample.origin, verdict: 'verified',
+          assertions: [{ key: 'literal', pass: true, control: false, expected: literal, actual: literal }],
+          commands: [{ phase: 'probe', code: 0 }, { phase: 'required', code: 0 }] }
       },
       required: [sample.command]
     };

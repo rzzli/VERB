@@ -2,8 +2,25 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { freeze, copyFixtures } from '../lib/files.js';
+import { freeze, copyFixtures, working } from '../lib/files.js';
 import { fixture, write } from './helpers.js';
+
+test('working snapshot executable bits match the recorded inputs under both umasks', {skip: process.platform === 'win32'}, t => {
+  const f = fixture(t);
+  for (const [name, mode] of [['owner', 0o700], ['all', 0o755], ['group', 0o650], ['data', 0o644]]) {
+    write(path.join(f.repo, name), 'content');
+    fs.chmodSync(path.join(f.repo, name), mode);
+  }
+  const id = working(f.repo).id;
+  for (const mask of [0o022, 0o077]) {
+    const dest = path.join(f.dir, String(mask));
+    const previous = process.umask(mask);
+    try { assert.equal(working(f.repo, dest).id, id); } finally { process.umask(previous); }
+    for (const name of ['owner','all','group','data']) {
+      assert.equal(fs.statSync(path.join(dest, name)).mode & 0o111, fs.statSync(path.join(f.repo, name)).mode & 0o111);
+    }
+  }
+});
 
 test('frozen fixtures preserve executable bits and bind them into the digest', {skip: process.platform === 'win32'}, t => {
   const f = fixture(t);

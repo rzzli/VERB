@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { checkout, copyFixtures, freeze, git, hash, resolveRef, saveJSON, windowsRootAlias, working } from '../lib/files.js';
 import { interrupt, runSide } from '../lib/run.js';
 import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
-import { currentConflict, detectConflicts, entries, load, proofProblem, prune, recent, withClaimLock } from '../lib/store.js';
+import { currentConflict, detectConflicts, entries, load, proofProblem, prune, publishReceipt, receiptOrder, receiptRunId, recent, withClaimLock } from '../lib/store.js';
 
 const usage = 'VERB — Verify Expected Runtime Behavior\n\nverb baseline CLAIM --base REF\nverb check CLAIM\nverb prove CLAIM --base REF [--candidate REF]\nverb status [RECEIPT | --active]\nverb summary RECEIPT\nverb deactivate CLAIM\nAdd --json for machine-readable output. Run from the target Git repository.';
 const codes = { verified: 0, failed: 1, inconclusive: 2 };
@@ -73,12 +73,14 @@ function* proofs(repo, store, file, matches = () => true) {
   const dir = path.join(store, 'receipts');
   const files = file ? [file] : recent(dir).concat(entries(dir).filter(e => e.isDirectory())
     .flatMap(e => recent(path.join(dir, e.name))))
-    .sort((a, b) => b.time - a.time || b.file.localeCompare(a.file)).map(e => e.file);
+    .sort(receiptOrder).map(e => e.file);
   let id;
   for (const stored of files) {
     const r = readReceipt(file ?? stored);
     const target = r.sides?.candidate ?? r.target;
-    if (r?.action !== 'prove' || r.repo !== repo || target?.kind !== 'working' || !matches(r)) continue;
+    if (r.action !== 'prove' || r.repo !== repo || !matches(r)) continue;
+    if (r.targetUnavailable) { yield { r, file: stored }; continue; }
+    if (target?.kind !== 'working') continue;
     id ??= working(repo).id;
     if (target.id === id) yield { r, file: stored };
   }
@@ -106,6 +108,7 @@ function status(repo, store, { file, active }) {
     const receiptClaim = r => (r.claimPath ?? r.replay?.[2]) && canonicalClaim(r.claimPath ?? r.replay[2]);
     for (const { r } of proofs(repo, store, undefined, r => pending.has(receiptClaim(r)))) {
       const claimPath = receiptClaim(r);
+      if (r.format !== receiptFormat) return { ...result, reason: 'Legacy proof has no publication sequence. Run prove for ' + claimPath + '.' };
       const { digest, base, baselineReceipt } = pending.get(claimPath);
       if (r.verdict !== 'verified' || r.digest !== digest || r.sides.base.id !== base ||
           r.baselineReceipt !== baselineReceipt) break;
@@ -122,6 +125,7 @@ function status(repo, store, { file, active }) {
   const latest = proofs(repo, store, file).next().value;
   if (!latest) return { ...result, reason: 'No proof receipt matches the current working tree.' };
   result.receipt = latest.file;
+  if (!file && latest.r.format !== receiptFormat) return { ...result, reason: 'Legacy proof has no publication sequence. Run prove again.' };
   if (latest.r.verdict !== 'verified') return { ...result, reason: 'Matching proof was not verified.' };
   const claimPath = latest.r.claimPath ?? latest.r.replay?.[2];
   if (typeof claimPath !== 'string') return { ...result, reason: 'Proof lacks claim identity; run prove again.' };
@@ -151,14 +155,24 @@ function summary(r) {
   };
   if (claimPath) lines.push('Claim: ' + relative(claimPath));
   lines.push('Claim digest (SHA-256): ' + (r.digest ?? '(unavailable)'));
+  const excerpt = value => JSON.stringify(value.length > 320 ? value.slice(0, 319) + '…' : value);
+  if (r.reason) lines.push('Reason: ' + excerpt(r.reason));
   for (const role of ['base', 'candidate']) {
     const side = r.sides[role];
     lines.push(role + ': ' + (side ? `${side.kind} ${side.id}` : 'not run'));
+    if (!side && role === 'candidate' && r.target) lines.push('  Intended target: ' + r.target.kind + ' ' + r.target.id);
     if (side?.origin) lines.push('  Origin: ' + side.origin.split(paths.sep).join('/'));
+    if (side?.reason) {
+      const command = side.commands.at(-1);
+      lines.push('  ' + role + '/' + (command?.phase ?? 'snapshot') + ': ' + excerpt(side.reason));
+      const detail = command?.stderr?.trim() || command?.error || (command?.code !== 0 && command?.stdout?.trim());
+      if (detail) lines.push('  Diagnostic: ' + excerpt(detail));
+    }
     for (const a of side?.assertions ?? []) {
       lines.push(`  ${a.pass ? 'PASS' : 'MISS'} ${a.key}${a.control ? ' [control]' : ''}: expected ${JSON.stringify(a.expected)}, observed ${JSON.stringify(a.actual)}`);
     }
   }
+  for (const error of r.cleanupErrors ?? []) lines.push('Cleanup: ' + excerpt(error.message));
   const executed = r.sides.candidate?.commands.filter(c => c.phase === 'required') ?? [];
   const relativeArg = arg => {
     const absolute = absoluteArgument(arg, paths);
@@ -224,14 +238,14 @@ async function main() {
   // Frequent focused checks can rotate without reading their command output.
   const runId = (opts.action === 'check' ? 'check-' : '') + randomUUID();
   const receipts = path.join(store, 'receipts', claimKey);
-  const receipt = path.join(receipts, runId + '.json');
-  const r = { action: opts.action, format: receiptFormat, repo, claimPath: opts.file, receipt,
+  const r = { action: opts.action, format: receiptFormat, repo, claimPath: opts.file,
     timestamp: new Date().toISOString(), verdict: 'inconclusive', sides: {}, replay: ['verb', opts.action, opts.file] };
   try {
     // Git's ceiling list cannot encode a temporary path containing its separator.
     // An invalid gitfile at our private scratch root stops the same upward search.
     if (temp.includes(path.delimiter)) fs.writeFileSync(path.join(temp, '.git'), 'VERB source archive\n', { flag: 'wx' });
     if (opts.action === 'prove') {
+      r.targetKind = opts.candidate ? 'commit' : 'working';
       // Keep failed attempts visible to status even if baseline/setup aborts before the candidate runs.
       if (!opts.candidate) r.target = working(repo);
       r.baselineReceipt = readBaseline(slot)?.receipt;
@@ -306,13 +320,17 @@ async function main() {
     cleanupSnapshot(temp, r);
   }
   if (interrupted) Object.assign(r, { verdict: 'inconclusive', reason: 'interrupted' });
-  return finalize({ r, opts, store, claimKey, slot, receipts, receipt, interrupted });
+  for (const side of Object.values(r.sides)) {
+    if (!side.verdict) Object.assign(side, { verdict: 'inconclusive', reason: r.reason });
+  }
+  if (r.targetKind === 'working' && !r.target) r.targetUnavailable = true;
+  return finalize({ r, opts, store, claimKey, slot, receipts, runId, interrupted });
 }
 
 // The single approval rule after execution: recheck the read-only eligibility of the
 // decision against completed history (cleanup is slow, so another run may have won),
 // then persist the attempt, save baseline state, and prune only old receipts.
-function finalize({ r, opts, store, claimKey, slot, receipts, receipt, interrupted: stopped }) {
+function finalize({ r, opts, store, claimKey, slot, receipts, runId, interrupted: stopped }) {
   // Cleanup may be slow: another completed execution can invalidate this decision.
   // Status repeats this read-only revision check, including after receipt publication.
   if (r.verdict === 'verified') {
@@ -329,17 +347,20 @@ function finalize({ r, opts, store, claimKey, slot, receipts, receipt, interrupt
     catch (error) {
       // Preserve the attempt and all evidence until baseline ownership is readable.
       Object.assign(r, { verdict: 'inconclusive', reason: error.message });
-      saveJSON(receipt, r);
+      publishReceipt(store, receipts, runId, r);
       return;
     }
-    saveJSON(receipt, r);
+    publishReceipt(store, receipts, runId, r);
     if (opts.action === 'baseline' && !stopped) {
-      saved = { format: baselineFormat, receipt, claimPath: opts.file, verdict: r.verdict, digest: r.digest,
-        base: r.sides.base, active: r.verdict === 'verified' || saved?.verdict === 'verified' || saved?.active };
+      saved = { format: baselineFormat, receipt: r.receipt, claimPath: opts.file, verdict: r.verdict, digest: r.digest,
+        base: r.sides.base, active: Boolean(r.verdict === 'verified' || saved?.verdict === 'verified' || saved?.active) };
       saveJSON(slot, saved);
     }
     for (const file of prune(receipts, saved)) {
-      fs.rmSync(path.join(path.dirname(slot), path.basename(file, '.json')), { recursive: true, force: true });
+      const archiveId = receiptRunId(file);
+      if (/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(archiveId)) {
+        fs.rmSync(path.join(path.dirname(slot), archiveId), { recursive: true, force: true });
+      }
     }
   });
   console.log(opts.json ? JSON.stringify(r) : textReport(r));
