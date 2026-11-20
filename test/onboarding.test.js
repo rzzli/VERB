@@ -76,7 +76,7 @@ test('offline Node quick start rejects a broad wrong patch and verifies the actu
 });
 
 test('Git-aware example builds in its repo, diagnoses source-only snapshots, and supports a frozen version override', t => {
-  const { repo, claim } = demo(t);
+  const { dir, repo, claim, initializer } = demo(t);
   const sourceBuild = node(repo, ['build.cjs']);
   assert.match(sourceBuild.stdout, /Built Greeter version git-[0-9a-f]+/);
   const application = JSON.parse(node(repo, [path.join('dist', 'greeter.cjs'), '{}']).stdout);
@@ -87,15 +87,30 @@ test('Git-aware example builds in its repo, diagnoses source-only snapshots, and
   delete spec.env;
   const gitOnly = path.join(repo, 'git-only-claim.json');
   write(gitOnly, spec);
-  const failed = JSON.parse(node(repo, [path.join(project, 'bin/verb.js'), 'baseline', gitOnly, '--base', 'HEAD', '--json'], 2).stdout);
-  assert.equal(failed.verdict, 'inconclusive');
-  assert.deepEqual(failed.sides.base.commands.map(command => command.phase), ['setup']);
-  assert.match(failed.sides.base.commands[0].stderr, /Git metadata is unavailable/);
-  assert.match(failed.sides.base.commands[0].stderr, /GREETER_BUILD_VERSION/);
-  assert.match(failed.sides.base.commands[0].stderr, /do not copy or link \.git/);
+  const enclosing = path.join(dir, 'unrelated checkout');
+  node(dir, [initializer, enclosing]);
+  const nestedTemp = path.join(enclosing, 'temp');
+  fs.mkdirSync(nestedTemp);
+  const nested = { TMPDIR: nestedTemp, TEMP: nestedTemp, TMP: nestedTemp };
+  const unusualTemp = path.join(enclosing, 'temp' + path.delimiter + 'nested');
+  fs.mkdirSync(unusualTemp);
+  const hookEnv = { ...nested, GIT_DIR: path.join(repo, '.git'), GIT_WORK_TREE: repo,
+    GIT_INDEX_FILE: path.join(repo, '.git', 'index') };
+  for (const env of [{}, nested, hookEnv, { TMPDIR: unusualTemp, TEMP: unusualTemp, TMP: unusualTemp }]) {
+    const failed = JSON.parse(node(repo, [path.join(project, 'bin/verb.js'), 'baseline', gitOnly, '--base', 'HEAD', '--json'], 2, env).stdout);
+    assert.equal(failed.verdict, 'inconclusive');
+    assert.deepEqual(failed.sides.base.commands.map(command => command.phase), ['setup']);
+    assert.match(failed.sides.base.commands[0].stderr, /Git metadata is unavailable/);
+    assert.match(failed.sides.base.commands[0].stderr, /GREETER_BUILD_VERSION/);
+    assert.match(failed.sides.base.commands[0].stderr, /do not copy or link \.git/);
+  }
   const supported = verb(repo, 0, 'baseline', claim, '--base', 'HEAD');
   assert.equal(supported.sides.base.observations['build version'], 'demo-1');
   assert.equal(supported.sides.base.commands[0].stdout.trim(), 'Built Greeter version demo-1');
+  node(repo, ['patch.mjs', 'fixed']);
+  const proof = JSON.parse(node(repo, [path.join(project, 'bin/verb.js'), 'prove', claim, '--base', 'HEAD', '--json'], 0, hookEnv).stdout);
+  assert.equal(proof.sides.candidate.observations['build version'], 'demo-1');
+  assert.equal(proof.sides.candidate.commands.at(-1).phase, 'required');
 });
 
 test('full CLI launched inside Node test context executes and fails a real required test instead of skipping it', t => {

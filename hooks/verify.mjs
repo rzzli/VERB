@@ -18,7 +18,8 @@ if (check.status !== 0) {
   process.exit(process.argv.includes('--stop') ? 2 : 1);
 }
 
-if (process.argv.includes('--pre-commit') && JSON.parse(check.stdout).active > 0) try {
+const status = JSON.parse(check.stdout);
+if (process.argv.includes('--pre-commit') && status.active > 0) try {
   const repo = git(process.cwd(), ['rev-parse', '--show-toplevel']).trim();
   const options = { cwd: repo, encoding: 'utf8', windowsHide: true, timeout: 120000, maxBuffer: 64 * 1024 * 1024 };
   // These index flags hide changes from git diff, so a working proof cannot approve them.
@@ -45,7 +46,7 @@ if (process.argv.includes('--pre-commit') && JSON.parse(check.stdout).active > 0
       process.exit(1);
     }
   }
-  assertStagedCheckout(repo);
+  assertStagedCheckout(repo, status.workingDigest);
 } catch (error) {
   console.error('VERB blocked: ' + error.message);
   process.exit(1);

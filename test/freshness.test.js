@@ -15,14 +15,21 @@ function observationFixture(t) {
   write(f.probe, `import fs from 'node:fs'; import path from 'node:path';
 const origin=path.resolve('value'), value=fs.readFileSync(origin,'utf8');
 console.log(JSON.stringify({origin,observations:{value:value==='old'?value:fs.readFileSync(${JSON.stringify(flag)},'utf8'),neighbor:'same'}}));`);
-  verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD');
+  const baseline = verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD');
   write(path.join(f.repo, 'value'), 'new');
   const proof = verb(f.repo, 0, 'prove', f.claim, '--base', 'HEAD');
-  return { ...f, flag, proof, history: path.join(f.repo, '.git', 'verb', 'history', 'claims', path.basename(path.dirname(proof.receipt))) };
+  return { ...f, flag, proof, baseline, history: path.join(f.repo, '.git', 'verb', 'history', 'claims', path.basename(path.dirname(proof.receipt))) };
 }
 
 test('completed contradictory checks invalidate old proofs without status writing executions', t => {
   const f = observationFixture(t);
+  for (let i = 0; i < 31; i++) verb(f.repo, 0, 'check', f.claim);
+  assert.equal(verb(f.repo, 0, 'status').receipt, f.proof.receipt);
+  verb(f.repo, 0, 'status', '--active');
+  assert.equal(JSON.parse(fs.readFileSync(f.baseline.receipt)).digest, f.baseline.digest);
+  assert.deepEqual(fs.readFileSync(path.join(f.baseline.frozen, 'claim.json')), fs.readFileSync(f.claim));
+  assert.deepEqual(fs.readFileSync(path.join(f.baseline.frozen, 'fixtures', 'probe.mjs')), fs.readFileSync(f.probe));
+  assert.equal(fs.readdirSync(path.dirname(f.proof.receipt)).length, 30);
   write(f.flag, 'wrong');
   verb(f.repo, 2, 'check', f.claim);
   const before = historyBytes(f.history);

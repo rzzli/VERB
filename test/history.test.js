@@ -122,3 +122,16 @@ test('history and receipt retention remain bounded across check and prove modes'
   assert.equal(fs.readdirSync(receipts).filter(name => name.endsWith('.json')).length, 30);
   assert.equal(fs.readdirSync(history).filter(name => name.endsWith('.json')).length, 30);
 });
+
+test('agreeing focused checks retain the latest failed full proof until a new proof succeeds', t => {
+  const f = suiteFixture(t);
+  write(f.flags[0], '1');
+  const failed = f.prove(1);
+  write(f.flags[0], '0');
+  for (let i = 0; i < 31; i++) f.check(0);
+  assert.equal(verb(f.repo, 2, 'status').receipt, failed.receipt);
+  verb(f.repo, 2, 'status', '--active');
+  assert.equal(JSON.parse(fs.readFileSync(failed.receipt)).verdict, 'failed');
+  f.prove(2); f.prove(2); f.prove(0);
+  verb(f.repo, 0, 'status', '--active');
+});

@@ -41,7 +41,8 @@ function repository(t) {
   const put = (name, bytes) => fs.writeFileSync(path.join(repo, name), bytes);
   const verify = (extra = {}) => run(process.execPath, ['--input-type=module', '-e',
     `import { assertStagedCheckout } from ${JSON.stringify(stagedModule)};
-try { console.log(assertStagedCheckout(process.cwd())); }
+import { working } from ${JSON.stringify(filesModule)};
+try { console.log(assertStagedCheckout(process.cwd(), working(process.cwd()).id)); }
 catch (error) { console.error(error.message); process.exitCode = 1; }`], extra);
   const snapshot = ref => {
     const dest = fs.mkdtempSync(path.join(dir, 'checkout-'));
@@ -225,6 +226,38 @@ test('relative GIT_INDEX_FILE survives a hook invocation from a subdirectory', t
   assert.equal(accepted.status, 0, accepted.stderr);
   assert.equal(f.git('write-tree'), defaultIndex);
   assert.equal(f.git('show', ':value.txt'), 'old', 'the default index was not substituted or modified');
+});
+
+test('pre-commit binds the staged checkout to the proof across a concurrent formatting edit', t => {
+  const f = repository(t);
+  f.put('value.txt', 'old');
+  f.git('add', '.'); f.git('commit', '-qm', 'broken');
+  const p = proof(f, 'old', 'new');
+  f.put('value.txt', 'new');
+  f.git('add', '.');
+  const proved = p.prove();
+  assert.equal(p.verb(0, 'status', '--active').workingDigest, proved.sides.candidate.id);
+  assert.equal(f.run(process.execPath, [hook, '--pre-commit']).status, 0);
+
+  // Synchronize the formatter exactly after the real status subprocess returns.
+  const wrapper = path.join(f.dir, 'format-after-status.cjs');
+  fs.writeFileSync(wrapper, `const cp = require('node:child_process'), fs = require('node:fs');
+const spawn = cp.spawnSync;
+cp.spawnSync = function(exe, args, opts) {
+  const result = spawn(exe, args, opts);
+  if (args.includes('--active') && result.status === 0) {
+    fs.writeFileSync('format.css', 'body { color: blue; }');
+    cp.execFileSync('git', ['add', 'format.css']);
+  }
+  return result;
+};
+require('node:module').syncBuiltinESMExports();`);
+  const raced = f.run(process.execPath, ['--require', wrapper, hook, '--pre-commit']);
+  assert.equal(f.git('show', ':format.css'), 'body { color: blue; }');
+  assert.equal(raced.status, 1, raced.stderr);
+  assert.match(raced.stderr, /Staged checkout differs from the proof/);
+  p.prove();
+  assert.equal(f.run(process.execPath, [hook, '--pre-commit']).status, 0);
 });
 
 test('staged executable-mode divergence is rejected even with core.filemode=false', { skip: process.platform === 'win32' }, t => {

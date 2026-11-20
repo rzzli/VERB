@@ -173,14 +173,14 @@ test('pruning keeps 30 receipts and history records without invalidating the sav
   const history = path.join(repo, '.git', 'verb', 'history', 'claims', path.basename(receipts));
   const record = fs.readFileSync(path.join(history, fs.readdirSync(history)[0]), 'utf8');
   for (let i = 0; i < 31; i++) {
-    write(path.join(receipts, `prev-${i}.json`), {});
+    write(path.join(receipts, `prev-${i}.json`), { action: 'check', verdict: 'verified' });
     write(path.join(history, `prev-${i}.json`), record);
   }
   write(path.join(repo, 'value'), 'new');
   verb(repo, 0, 'check', claim);
   assert.equal(fs.readdirSync(receipts).length, 30);
   assert.equal(fs.readdirSync(history).length, 30);
-  assert.equal(fs.existsSync(baseline.receipt), false);
+  assert.equal(fs.existsSync(baseline.receipt), true);
   verb(repo, 0, 'check', claim);
 });
 
