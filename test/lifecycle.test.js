@@ -15,7 +15,7 @@ function injectedCleanup(f, action, location) {
   const wrapper = path.join(f.dir, 'cleanup-wrapper.mjs');
   write(wrapper, `import fs from 'node:fs'; import path from 'node:path';
 const make = fs.mkdtempSync, remove = fs.rmSync, owned = new Set();
-fs.mkdtempSync = (...args) => { const dir = make(...args); if (path.basename(args[0]) === 'verb-') owned.add(fs.realpathSync(dir)); return dir; };
+fs.mkdtempSync = (...args) => { const dir = make(...args); if (path.basename(args[0]) === 'verb-') owned.add(fs.realpathSync.native(dir)); return dir; };
 fs.rmSync = (dir, options) => {
   const target = ${JSON.stringify(location)} === 'outer' ? owned.has(dir) : owned.has(path.dirname(dir));
   if (target && options?.recursive) throw Object.assign(Error('injected snapshot cleanup failure'), {code:'EBUSY'});
@@ -94,7 +94,7 @@ if (fs.existsSync(${JSON.stringify(flag)})) {
         await new Promise(resolve => setTimeout(resolve, 50));
       }
       const temp = path.dirname(path.dirname(worker.cwd));
-      assert.equal(path.dirname(temp), fs.realpathSync(os.tmpdir()));
+      assert.equal(path.dirname(temp), fs.realpathSync.native(os.tmpdir()));
       assert.ok(path.basename(temp).startsWith('verb-'));
       // Best-effort scratch removal: a still-locked tree must not fail the regression.
       for (let attempt = 0; attempt < 40; attempt++) {

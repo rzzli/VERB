@@ -24,7 +24,7 @@ function npmCLI() {
 
 test('offline installed tarball discovers verb and runs the full public gate lifecycle', { timeout: 180000 }, t => {
   const npm = npmCLI();
-  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'verb installed smoke ')));
+  const dir = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb installed smoke ')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }));
   assert.equal(inside(project, dir), false, 'installation and target repository must be outside the source checkout');
   const consumer = path.join(dir, 'consumer'), repo = path.join(dir, 'target');
@@ -74,7 +74,7 @@ test('offline installed tarball discovers verb and runs the full public gate lif
   env[pathKey] = [bin, path.dirname(process.execPath), ...(env[pathKey] ?? '').split(path.delimiter)
     .filter(entry => entry && !inside(project, path.resolve(entry)))].join(path.delimiter);
   if (process.platform === 'win32') {
-    const discoveries = expect(run(repo, 'where.exe', ['verb'])).split(/\r?\n/);
+    const discoveries = expect(run(repo, 'where.exe', ['verb'])).split(/\r?\n/).map(file => fs.realpathSync.native(file));
     assert.ok(discoveries.some(file => path.relative(path.join(bin, 'verb.cmd'), file) === ''));
     assert.ok(inside(bin, discoveries[0]), 'command discovery must prefer the installed shim');
     assert.ok(fs.readFileSync(path.join(bin, 'verb.cmd'), 'utf8').includes('verb-runtime-verify'));

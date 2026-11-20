@@ -20,6 +20,12 @@ const cases = [
     expected: ['../tools/node.exe', '--config=config.json']
   },
   {
+    label: 'Windows DOS alias', repo: 'C:\\Users\\runneradmin\\app',
+    aliases: ['C:\\Users\\RUNNER~1\\app'], claim: 'C:\\Users\\runneradmin\\app\\claims\\feature.json',
+    origin: 'src\\app.js', command: ['node', '--config=C:\\Users\\RUNNER~1\\app\\config.json'],
+    expected: ['node', '--config=config.json']
+  },
+  {
     label: 'POSIX', repo: '/workspace/project', claim: '/workspace/project/claims/feature.json',
     origin: 'src/app.js',
     command: ['/usr/bin/node', '/workspace/project/check.js', '--config=/workspace/project/config.json'],
@@ -35,7 +41,7 @@ for (const sample of cases) {
     const literal = 'literal C:\\private\\observation is not a structured path';
     const receipt = {
       action: 'prove', verdict: 'verified', claim: 'Portable receipt summary', digest: 'frozen-digest',
-      repo: sample.repo, claimPath: sample.claim,
+      repo: sample.repo, repoAliases: sample.aliases, claimPath: sample.claim,
       sides: {
         base: { kind: 'commit', id: 'base-id', origin: sample.origin, assertions: [] },
         candidate: { kind: 'working', id: 'candidate-id', origin: sample.origin,

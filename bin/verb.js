@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { checkout, copyFixtures, freeze, git, hash, resolveRef, saveJSON, working } from '../lib/files.js';
+import { checkout, copyFixtures, freeze, git, hash, resolveRef, saveJSON, windowsRootAlias, working } from '../lib/files.js';
 import { interrupt, runSide } from '../lib/run.js';
 import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
 import { currentConflict, detectConflicts, entries, load, proofProblem, prune, recent } from '../lib/store.js';
@@ -129,13 +129,23 @@ function status(repo, store, { file, active }) {
   return { ...result, verdict: 'verified', warnings: latest.r.warnings ?? [], reason: 'Working files match a verified proof.' };
 }
 
+function absoluteArgument(arg, paths) {
+  if (paths.isAbsolute(arg)) return arg;
+  const equals = arg.indexOf('=');
+  if (equals > 0 && paths.isAbsolute(arg.slice(equals + 1))) return arg.slice(equals + 1);
+}
+
 function summary(r) {
   const claimPath = r.claimPath ?? r.replay?.[2];
   const lines = [`VERB ${r.verdict.toUpperCase()} (${r.action}): ${r.claim ?? '(unavailable)'}`];
   // Stored paths belong to the receipt's OS, not necessarily the reviewer's host.
   const paths = /^(?:[A-Za-z]:[\\/]|\\\\)/.test(r.repo) ? path.win32 : path.posix;
   const relative = file => {
-    const rel = paths.relative(r.repo, file);
+    const root = r.repoAliases?.find(alias => {
+      const rel = paths.relative(alias, file);
+      return rel !== '..' && !rel.startsWith('..' + paths.sep) && !paths.isAbsolute(rel);
+    }) ?? r.repo;
+    const rel = paths.relative(root, file);
     return paths.isAbsolute(rel) ? '(outside repository volume)' : rel.split(paths.sep).join('/');
   };
   if (claimPath) lines.push('Claim: ' + relative(claimPath));
@@ -150,12 +160,8 @@ function summary(r) {
   }
   const executed = r.sides.candidate?.commands.filter(c => c.phase === 'required') ?? [];
   const relativeArg = arg => {
-    if (paths.isAbsolute(arg)) return relative(arg);
-    const equals = arg.indexOf('=');
-    if (equals > 0 && paths.isAbsolute(arg.slice(equals + 1))) {
-      return arg.slice(0, equals + 1) + relative(arg.slice(equals + 1));
-    }
-    return arg;
+    const absolute = absoluteArgument(arg, paths);
+    return absolute ? arg.slice(0, arg.length - absolute.length) + relative(absolute) : arg;
   };
   for (const [i, argv] of (r.required ?? []).entries()) {
     const args = argv.map(relativeArg);
@@ -210,7 +216,7 @@ async function main() {
     console.log(opts.json ? JSON.stringify(result) : textReport(result));
     return 0;
   }
-  const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'verb-')));
+  const temp = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb-')));
   const runId = randomUUID();
   const receipts = path.join(store, 'receipts', claimKey);
   const receipt = path.join(receipts, runId + '.json');
@@ -225,6 +231,15 @@ async function main() {
     const bundle = path.join(temp, 'frozen');
     const { spec, digest, contents, scope, warnings } = freeze(opts.file, bundle);
     Object.assign(r, { claim: spec.claim, digest, required: spec.required, scope, warnings });
+    if (process.platform === 'win32') {
+      const aliases = new Set();
+      for (const arg of spec.required.flat()) {
+        const file = absoluteArgument(arg, path);
+        const alias = file && windowsRootAlias(repo, file);
+        if (alias) aliases.add(alias);
+      }
+      if (aliases.size) r.repoAliases = [...aliases];
+    }
     const base = opts.base && resolveRef(repo, opts.base);
     if (base) r.replay.push('--base', base);
     const candidate = opts.candidate && resolveRef(repo, opts.candidate);

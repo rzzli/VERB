@@ -231,7 +231,10 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   write(path.join(repo, 'value'), 'new');
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');
   fs.unlinkSync(link);
-  fs.symlinkSync(path.join(repo, 'value'), link, 'file');
+  // Git can retain an absolute DOS-spelled target even when VERB opens the long root.
+  const absoluteRoot = process.platform === 'win32'
+    ? cmd(repo, 'cmd.exe', ['/d', '/c', 'for %I in (.) do @echo %~fsI']) : repo;
+  fs.symlinkSync(path.join(absoluteRoot, 'value'), link, 'file');
   git('add', 'alias');
   git('commit', '-qm', 'absolute internal link');
   verb(repo, 0, 'prove', claim, '--base', 'HEAD');

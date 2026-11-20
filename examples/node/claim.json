@@ -10,6 +10,6 @@
     { "key": "named person", "base": "Hello, Ada!", "fixed": "Hello, Ada!" },
     { "key": "build version", "base": "demo-1", "fixed": "demo-1" }
   ],
-  "required": [["{node}", "--test", "greeter.test.cjs"]],
+  "required": [["{node}", "--test", "--test-reporter=tap", "greeter.test.cjs"]],
   "timeoutMs": 10000
 }

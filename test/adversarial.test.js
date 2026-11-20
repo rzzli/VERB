@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { cmd, fixture, project, write, verb } from './helpers.js';
-import { hash } from '../lib/files.js';
+import { hash, linkTarget } from '../lib/files.js';
 
 const hook = (repo, ...args) => spawnSync(process.execPath, [path.join(project, 'hooks/verify.mjs'), ...args],
   { cwd: repo, encoding: 'utf8', timeout: 30000 });
@@ -69,6 +69,28 @@ test('Windows deactivation handles deleted claims and legacy case-alias slots', 
   write(path.join(legacy, 'current.json'), { ...saved, claimPath: alias });
   fs.unlinkSync(claim);
   verb(repo, 0, 'deactivate', alias);
+  assert.equal(verb(repo, 0, 'status', '--active').active, 0);
+});
+
+test('Windows short repository paths identify the same claim, link target and summary argument', { skip: process.platform !== 'win32' }, t => {
+  const { repo, dir, claim, spec } = fixture(t);
+  const short = cwd => cmd(cwd, 'cmd.exe', ['/d', '/c', 'for %I in (.) do @echo %~fsI']);
+  const shortRepo = short(repo), shortClaim = path.join(short(dir), path.basename(claim));
+  if (path.relative(repo, shortRepo) === '') return t.skip('Volume does not provide distinct DOS short names');
+  const link = path.join(repo, 'alias');
+  assert.equal(linkTarget(repo, link, path.join(shortRepo, 'value'), true), 'value');
+  const redirect = path.join(dir, 'redirect');
+  fs.symlinkSync(repo, redirect, 'junction');
+  assert.throws(() => linkTarget(repo, link, path.join(redirect, 'value'), true), /outside the snapshot/);
+  write(claim, { ...spec, required: [['{node}', '-e', 'process.exit(0)', '--', '--config=' + path.join(shortRepo, 'config.json')]] });
+  const baseline = verb(shortRepo, 0, 'baseline', shortClaim, '--base', 'HEAD');
+  write(path.join(repo, 'value'), 'new');
+  const proof = verb(repo, 0, 'prove', claim, '--base', 'HEAD');
+  assert.equal(proof.baselineReceipt, baseline.receipt);
+  verb(shortRepo, 0, 'status', '--active');
+  assert.ok(cmd(repo, process.execPath, [path.join(project, 'bin/verb.js'), 'summary', proof.receipt]).includes('--config=config.json'));
+  fs.unlinkSync(claim);
+  verb(shortRepo, 0, 'deactivate', shortClaim);
   assert.equal(verb(repo, 0, 'status', '--active').active, 0);
 });
 

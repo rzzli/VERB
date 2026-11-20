@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 export const project = fileURLToPath(new URL('../', import.meta.url));
-export const scratch = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'verb gate ')));
+export const scratch = () => fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb gate ')));
 export const clean = dir => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3 });
 export const write = (file, data) => fs.writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data));
 export function cmd(cwd, exe, args) {

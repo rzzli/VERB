@@ -71,7 +71,7 @@ for (const mode of ['working', 'commit']) {
         assert.ok(fs.lstatSync(path.join(dest, alias)).isSymbolicLink());
         assert.equal(fs.readFileSync(path.join(dest, alias, 'prefix'), 'utf8'), 'shared:');
       }
-      assert.equal(fs.realpathSync(path.join(dest, 'alias')), path.join(source, 'prefix'));
+      assert.equal(fs.realpathSync.native(path.join(dest, 'alias')), path.join(source, 'prefix'));
       assert.throws(() => snapshot(f, mode), /missing or cannot be resolved/);
     });
   }

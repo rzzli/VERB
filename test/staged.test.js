@@ -12,7 +12,7 @@ const filesModule = new URL('../lib/files.js', import.meta.url).href;
 const hook = path.join(project, 'hooks/verify.mjs');
 
 function repository(t) {
-  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'verb staged test ')));
+  const dir = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'verb staged test ')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }));
   const repo = path.join(dir, 'repo');
   fs.mkdirSync(repo);
