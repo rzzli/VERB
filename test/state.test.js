@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fixture, project, write, verb } from './helpers.js';
-import { baselineFormat, receiptFormat } from '../lib/state.js';
+import { baselineFormat, readReceipt, receiptFormat } from '../lib/state.js';
 
 const slotOf = (f, receipt) => path.join(f.repo, '.git', 'verb', 'baselines', path.basename(path.dirname(receipt)), 'current.json');
 
@@ -97,6 +97,21 @@ test('partial verified records are not treated as complete approval', t => {
   const complete = JSON.parse(fs.readFileSync(proof.receipt, 'utf8'));
   write(proof.receipt, { ...complete, sides: {} });
   assert.match(verb(f.repo, 2, 'status').reason, /incomplete|not verified/);
+});
+
+test('a strict receipt must retain its replay policy and the same explained control on both sides', t => {
+  const f = fixture(t);
+  f.spec.assertions[1].wrongFix = 'Replace both values.';
+  write(f.claim, f.spec);
+  write(path.join(f.repo, 'value'), 'new');
+  const proof = verb(f.repo, 0, 'prove', f.claim, '--base', 'HEAD', '--strict');
+  assert.equal(readReceipt(proof.receipt).strict, true);
+  const withoutFlag = { ...proof, replay: proof.replay.filter(arg => arg !== '--strict') };
+  write(proof.receipt, withoutFlag);
+  assert.throws(() => readReceipt(proof.receipt), /strict/i);
+  delete proof.sides.base.assertions[1].wrongFix;
+  write(proof.receipt, proof);
+  assert.throws(() => readReceipt(proof.receipt), /strict/i);
 });
 
 test('publication order survives tied and reversed receipt timestamps', t => {

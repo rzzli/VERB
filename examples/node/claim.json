@@ -6,7 +6,10 @@
   "fixtures": ["probe.mjs"],
   "assertions": [
     { "key": "empty name", "base": "Hello, Guest!", "fixed": "Hello, !" },
-    { "key": "missing name", "base": "Hello, Guest!", "fixed": "Hello, Guest!" },
+    {
+      "key": "missing name", "base": "Hello, Guest!", "fixed": "Hello, Guest!",
+      "wrongFix": "Removing the Guest fallback fixes empty names but breaks callers who omit their name."
+    },
     { "key": "named person", "base": "Hello, Ada!", "fixed": "Hello, Ada!" },
     { "key": "build version", "base": "demo-1", "fixed": "demo-1" }
   ],

@@ -1,6 +1,102 @@
 # VERB usage guide
 
-Start with the [offline demo and command overview](README.md). This guide covers probe design, builds, hooks, receipts, and troubleshooting.
+[Quick start](#quick-start) · [Use it in your project](#use-it-in-your-project) · [Commands](#commands) · [Write a probe](#write-a-probe) · [Hook setup](#wire-a-hook)
+
+## Quick start
+
+The demo CLI greets someone by their display name. An empty string is a valid name. A missing name should still get the fallback greeting, `Hello, Guest!`. The bug is that both inputs get the fallback.
+
+You need **Node.js 22+ and Git**. Start in a directory with room for two new folders. These commands work in PowerShell and POSIX shells. Once you clone VERB, the demo runs offline.
+
+```sh
+git clone https://github.com/rzzli/VERB.git verb-tool
+node verb-tool/examples/node/create-demo.mjs verb-demo
+cd verb-demo
+node ../verb-tool/bin/verb.js baseline claim.json --base HEAD
+```
+
+`VERIFIED (baseline)` means the frozen probe reproduced the bug at the demo's first commit. Try the edit that removes the fallback.
+
+```sh
+node patch.mjs wrong
+node ../verb-tool/bin/verb.js check claim.json
+```
+
+The empty-name assertion passes. The missing-name case, labeled `[control]`, catches the regression. The check exits **1** and prints these lines for the candidate.
+
+```text
+PASS empty name expected "Hello, !", observed "Hello, !"
+MISS missing name [control] expected "Hello, Guest!", observed "Hello, !"
+    Wrong fix: "Removing the Guest fallback fixes empty names but breaks callers who omit their name."
+```
+
+The claim’s `wrongFix` field explains the omitted-name control. Apply the fix that preserves both behaviors, then request a strict proof.
+
+```sh
+node patch.mjs fixed
+node ../verb-tool/bin/verb.js prove claim.json --base HEAD --strict
+node ../verb-tool/bin/verb.js status --active
+```
+
+The proof runs both versions and the demo's required tests. Look for `VERIFIED (prove)` and `Required commands executed: 1/1`. To inspect the evidence later, run `node ../verb-tool/bin/verb.js summary "RECEIPT_PATH"`, replacing `RECEIPT_PATH` with the path printed by `prove`. [Demo claim](examples/node/claim.json) · [Probe](examples/node/probe.mjs) · [Required tests](examples/node/greeter.test.cjs)
+
+### Keep the control after the fix
+
+The demo's ordinary test suite also checks that omitting the name greets `Guest`. Retire the VERB claim, reintroduce the wrong edit, and run the project's tests directly.
+
+```sh
+node ../verb-tool/bin/verb.js deactivate claim.json
+node patch.mjs wrong
+node build.cjs
+node --test greeter.test.cjs
+```
+
+The suite exits **1**. The test named `greeting for {}` expected `Hello, Guest!` and received `Hello, !`. Restore the demo with `node patch.mjs fixed`, rebuild, and rerun the tests to see them pass. In your own project, keep a control in the native suite whenever it expresses behavior future edits should preserve.
+
+## Use it in your project
+
+Run VERB from the Git checkout you want to test. Windows and Linux have automated coverage. The CLI needs Node.js 22+ and Git. Your application's build and test commands may have additional prerequisites.
+
+You can call `bin/verb.js` from a separate VERB checkout, as in the demo. For a project-local installation, run `npm pack` in your VERB checkout and copy the archive into the target project's `vendor/` directory. From the target project root, install the file using the filename npm printed.
+
+```sh
+npm install --save-dev ./vendor/verb-runtime-verify-0.2.0.tgz
+npm exec --offline -- verb --help
+```
+
+Commit the archive, package manifest and lockfile together when sharing that installation. The commands below use `verb` for brevity. With a project-local installation, prefix them with `npm exec --offline --`.
+
+1. Copy the claim template. Identify the broken revision, the observable symptom, and one neighboring input that should keep working. On that input's assertion, use `wrongFix` to describe the plausible shortcut it would catch. [Claim template](templates/claim.json)
+2. Write a probe that exercises the real application entry point. Declare the observations and required project commands in the claim. [Probe contract](#write-a-probe)
+3. Run `baseline` to reproduce the bug, use `check` while editing, then run `prove`. For an independent check design, ask your coding agent to “use VERB blind review for this bug.” A fresh reviewer designs the check before seeing the patch. [Agent skill](skills/verb-regression/SKILL.md) · [Blind review procedure](skills/verb-regression/references/blind-review.md)
+
+## Commands
+
+| Command | Result |
+| --- | --- |
+| `verb baseline CLAIM --base REF` | Reproduces the reported symptom and freezes the claim and fixtures. |
+| `verb check CLAIM` | Tests current edits against the saved baseline. Skips required commands for fast feedback. |
+| `verb prove CLAIM --base REF [--candidate REF] [--strict]` | Runs both versions afresh and the candidate's required checks. The candidate defaults to the working tree, including new source files. Strict mode requires an explained control and a declared project command. |
+| `verb status [RECEIPT]` | Checks whether a working-tree proof still applies to the current files. |
+| `verb status --active` | Checks every active claim, including changes to external claim files. An empty set of active claims exits successfully. |
+| `verb summary RECEIPT` | Displays the saved observations, controls and required-command results. |
+| `verb deactivate CLAIM` | Retires the claim from this checkout's active checks. |
+
+Verdict commands exit **0** for verified, **1** for failed and **2** for inconclusive. A missing observation, a timeout or an already-fixed baseline is inconclusive. Use `--json` for a machine-readable verdict. `summary` exits zero when it displays a receipt, including one with a failed verdict.
+
+To test VERB itself, run `npm test` in its source checkout. Run `npm run test:installed` to pack the CLI, install it offline and exercise the installed command and hooks.
+
+### Require a proof in CI
+
+For selected fixes, make a CI job required before merge. Fetch both commits and supply their full SHAs. In this example, replace `BASE_SHA` with the known-broken commit and `CANDIDATE_SHA` with the exact commit CI is considering. Use the exit status of this invocation as the gate.
+
+```sh
+verb prove claim.json --base BASE_SHA --candidate CANDIDATE_SHA --strict
+```
+
+Strict mode accepts a claim with at least one unchanged assertion carrying a nonblank `wrongFix` and at least one `required` command. Missing either makes the proof `inconclusive` (exit 2). A strict receipt records `"strict": true` and includes the flag in its replay command. Review the shortcut and expected values along with the actual observations. Inspect the required command's output to confirm the intended tests ran. VERB records exit status, including a zero from a suite that discovered no tests.
+
+Run compilers, type checks and linters where they already run in CI. A Git-aware scanner such as `aislop ci --changes --base BASE_SHA` needs a Git checkout containing the base and candidate history. Run it there as a separate job. VERB’s disposable source trees have no Git history. The scan can flag a duplicated helper even when both greeting cases pass. [aislop CI guide](https://github.com/scanaislop/aislop/blob/main/docs/ci.md)
 
 ## Write a probe
 
@@ -83,7 +179,9 @@ Use the same file bytes (including line endings) and executable bits. Windows do
 
 ### Claim scope and state
 
-Every receipt reports the declared scope: number of observations, how many are unchanged controls, and how many required commands. A claim with no control or no required command is still valid, but VERB prints a `Scope:` warning instead of implying that either was exercised. Invalid claims name the exact field, for example `assertions[1].expected: unknown assertion field`, and unknown top-level keys are rejected rather than silently ignored.
+Receipts report the number of observations, unchanged controls, and declared project commands. An assertion with identical `base` and `fixed` values is a control. Its optional `wrongFix` string explains which shortcut it tests. The live output and saved summary show this rationale beside the control’s evidence. Editing the rationale changes the claim digest, so run a new baseline before using `check`.
+
+An ordinary proof warns when a claim omits controls or project commands. Strict proofs enforce the prerequisites described in the [CI example](#require-a-proof-in-ci). Invalid claims name the exact field, for example `assertions[1].expected: unknown assertion field`.
 
 New receipts use `verb-receipt/2` and baseline slots use `verb-baseline/2`. Each publication gets a durable sequence shared across claims in the repository. Status and retention use that order even if receipt timestamps change. Receipts from version 1 and older unversioned receipts remain readable. An old proof can still be inspected by receipt path. Automatic status and active hooks require a fresh `prove` before approving an unsequenced decision, since its original publication order cannot be recovered from a backup. Incomplete decision fields produce an `inconclusive` diagnostic naming the record. `verb summary` includes the verdict reason, failing side and phase, and up to 320 characters of available command diagnostics.
 

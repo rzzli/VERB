@@ -119,7 +119,8 @@ const origin = path.resolve('value');
 console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'utf8'),neighbor:fs.readFileSync('neighbor','utf8')}}));`);
   fs.writeFileSync(claim, JSON.stringify({ claim: 'installed package reads the fixed value',
     probe: ['{node}', '{bundle}/probe.mjs'], fixtures: ['probe.mjs'], timeoutMs: 5000,
-    assertions: [{ key: 'value', base: 'old', fixed: 'new' }, { key: 'neighbor', base: 'same', fixed: 'same' }],
+    assertions: [{ key: 'value', base: 'old', fixed: 'new' }, { key: 'neighbor', base: 'same', fixed: 'same',
+      wrongFix: 'Overwrite the neighboring record with the new value.' }],
     required: [['{node}', '--test', 'required.test.cjs']] }));
   assert.equal(verb(0, 'status', '--active').active, 0);
   hook(0, '--stop'); hook(0, '--pre-commit');
@@ -151,7 +152,8 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
     assert.match(commands[0].stdout, /INSTALLED_REQUIRED_TEST_RAN/, commands[0].stderr);
     assert.doesNotMatch(commands[0].stderr, /recursively|skipping running tests/i);
   };
-  const proved = verb(0, 'prove', claim, '--base', base);
+  const proved = verb(0, 'prove', claim, '--base', base, '--strict');
+  assert.equal(proved.strict, true);
   requiredRan(proved);
   assert.equal(verb(0, 'status').receipt, proved.receipt);
   assert.equal(verb(0, 'status', '--active').active, 1);
@@ -159,6 +161,8 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   const summary = expect(invoke('summary', proved.receipt));
   assert.ok(summary.includes(proved.digest));
   assert.match(summary, /neighbor.*\[control\]/);
+  assert.match(summary, /strict/i);
+  assert.ok(summary.includes(proved.sides.candidate.assertions.find(a => a.key === 'neighbor').wrongFix));
   assert.match(summary, /Required .*exit 0/);
   // The proof is for the corrected working value. The index still has the bug.
   git('restore', '--staged', '--', 'value');
@@ -173,7 +177,13 @@ console.log(JSON.stringify({origin, observations:{value:fs.readFileSync(origin,'
   hook(0, '--stop'); hook(0, '--pre-commit');
   git('commit', '-qm', 'installed package proved fix');
   assert.equal(git('show', 'HEAD:value'), 'new');
-  requiredRan(verb(0, 'prove', claim, '--base', base, '--candidate', 'HEAD'));
+  const committed = verb(0, 'prove', claim, '--base', base, '--candidate', 'HEAD', '--strict');
+  requiredRan(committed);
+  assert.ok(committed.replay.includes('--strict'));
+  assert.equal(committed.replay[committed.replay.indexOf('--candidate') + 1], git('rev-parse', 'HEAD'));
+  const replayed = expect(invoke(...committed.replay.slice(1)));
+  assert.match(replayed, /strict/i);
+  assert.ok(replayed.includes('Overwrite the neighboring record'));
   verb(0, 'deactivate', claim);
   assert.equal(verb(0, 'status', '--active').active, 0);
   hook(0, '--stop');

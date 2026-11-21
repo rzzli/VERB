@@ -23,6 +23,10 @@ test('misspelled or unsupported fields name the exact location', t => {
     [{ ...f.spec, requiredTimeoutMs: 'soon' }, 'requiredTimeoutMs'],
     [{ ...f.spec, env: { 'BAD-NAME': 'value' } }, 'env.BAD-NAME'],
     [{ ...f.spec, assertions: [one, { ...one }] }, 'assertions[1].key'],
+    [{ ...f.spec, assertions: [{ ...one, wrongFix: 'Always return the new value.' }] }, 'assertions[0].wrongFix'],
+    ...['   ', false, null].map(wrongFix => [
+      { ...f.spec, assertions: [one, { ...f.spec.assertions[1], wrongFix }] }, 'assertions[1].wrongFix'
+    ]),
     [{ ...f.spec, assertions: [{ key: 'same', base: 'x', fixed: 'x' }] }, 'assertions']
   ];
   for (const [spec, field] of cases) {
@@ -64,6 +68,37 @@ test('reported scope counts declared observations, controls, and required comman
   const baseline = verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD');
   assert.deepEqual(baseline.scope, { observations: 2, controls: 1, requiredCommands: 1 });
   assert.deepEqual(baseline.warnings, []);
+});
+
+test('strict proof diagnoses missing evidence separately from a candidate regression', t => {
+  const f = fixture(t);
+  const prove = (...opts) => verb(f.repo, 2, 'prove', f.claim, '--base', 'HEAD', '--strict', ...opts);
+  const noExplanation = prove();
+  assert.equal(noExplanation.strict, true);
+  assert.match(noExplanation.reason, /control/i);
+  assert.deepEqual(noExplanation.sides, {}, 'policy is checked before running project code');
+  assert.ok(noExplanation.replay.includes('--strict'));
+  assert.ok(noExplanation.replay.includes(f.git('rev-parse', 'HEAD')));
+
+  const control = { ...f.spec.assertions[1], wrongFix: 'Overwrite both settings with the new value.' };
+  write(f.claim, { ...f.spec, assertions: [f.spec.assertions[0], control], required: [] });
+  const noCommand = prove('--candidate', 'HEAD');
+  assert.match(noCommand.reason, /required/i);
+  assert.deepEqual(noCommand.sides, {});
+  assert.ok(noCommand.replay.includes('--candidate'));
+
+  write(f.claim, { ...f.spec, assertions: [f.spec.assertions[0], control] });
+  const baseline = verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD');
+  assert.equal(baseline.sides.base.assertions[1].wrongFix, control.wrongFix);
+  write(f.claim, { ...f.spec, assertions: [f.spec.assertions[0], { ...control, wrongFix: 'Reset the neighboring setting.' }] });
+  assert.match(verb(f.repo, 2, 'check', f.claim).reason, /baseline/i);
+  assert.notEqual(verb(f.repo, 0, 'baseline', f.claim, '--base', 'HEAD').digest, baseline.digest);
+  for (const action of ['check', 'baseline', 'status', 'summary', 'deactivate']) {
+    const args = action === 'baseline' ? [f.claim, '--base', 'HEAD'] : action === 'status' ? [] : [f.claim];
+    const result = spawnSync(process.execPath, [path.join(project, 'bin/verb.js'), action, ...args, '--strict'],
+      { cwd: f.repo, encoding: 'utf8', timeout: 30000 });
+    assert.equal(result.status, 2, action + ' accepted --strict');
+  }
 });
 
 test('malformed probe output names the contract instead of a TypeError', t => {

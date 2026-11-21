@@ -8,7 +8,7 @@ import { interrupt, runSide } from '../lib/run.js';
 import { baselineFormat, readBaseline, readReceipt, receiptFormat } from '../lib/state.js';
 import { cleanRetiredMarkers, currentConflict, detectConflicts, entries, load, proofProblem, prune, publishReceipt, receiptOrder, receiptRunId, recent, withClaimLock } from '../lib/store.js';
 
-const usage = 'VERB — Verify Expected Runtime Behavior\n\nverb baseline CLAIM --base REF\nverb check CLAIM\nverb prove CLAIM --base REF [--candidate REF]\nverb status [RECEIPT | --active]\nverb summary RECEIPT\nverb deactivate CLAIM\nAdd --json for machine-readable output. Run from the target Git repository.';
+const usage = 'VERB — Verify Expected Runtime Behavior\n\nverb baseline CLAIM --base REF\nverb check CLAIM\nverb prove CLAIM --base REF [--candidate REF] [--strict]\nverb status [RECEIPT | --active]\nverb summary RECEIPT\nverb deactivate CLAIM\nAdd --json for machine-readable output. Run from the target Git repository.';
 const codes = { verified: 0, failed: 1, inconclusive: 2 };
 let interrupted = false;
 const invocation = new AbortController();
@@ -27,6 +27,7 @@ function argumentsFor(argv) {
   for (let i = 0; i < args.length; i++) {
     const key = args[i];
     if (key === '--json' && action !== 'summary') opts.json = true;
+    else if (key === '--strict' && action === 'prove' && !opts.strict) opts.strict = true;
     else if (key === '--active' && action === 'status' && !file && !opts.active) opts.active = true;
     else if (['--base', '--candidate'].includes(key) && args[i + 1] && !args[i + 1].startsWith('--') &&
       !Object.hasOwn(opts, key.slice(2))) opts[key.slice(2)] = args[++i];
@@ -38,11 +39,13 @@ function argumentsFor(argv) {
 
 function textReport(r) {
   const lines = [r.verdict.toUpperCase() + ' (' + r.action + ') ' + (r.claim ?? '')];
+  if (r.strict) lines.push('Proof mode: strict');
   for (const [role, side] of Object.entries(r.sides ?? {})) {
     lines.push(role + ' ' + side.id + (side.cached ? ' (saved baseline)' : ''));
     for (const a of side.assertions ?? []) {
       lines.push('  ' + (a.pass ? 'PASS ' : 'MISS ') + a.key + (a.control ? ' [control]' : '') +
         ' expected ' + JSON.stringify(a.expected) + ', observed ' + JSON.stringify(a.actual));
+      if (a.wrongFix) lines.push('    Wrong fix: ' + JSON.stringify(a.wrongFix));
     }
     if (side.reason) lines.push('  ' + side.reason);
     if (role === 'candidate') {
@@ -149,6 +152,7 @@ function absoluteArgument(arg, paths) {
 function summary(r) {
   const claimPath = r.claimPath ?? r.replay?.[2];
   const lines = [`VERB ${r.verdict.toUpperCase()} (${r.action}): ${r.claim ?? '(unavailable)'}`];
+  if (r.strict) lines.push('Proof mode: strict');
   // Stored paths belong to the receipt's OS, not necessarily the reviewer's host.
   const paths = /^(?:[A-Za-z]:[\\/]|\\\\)/.test(r.repo) ? path.win32 : path.posix;
   const relative = file => {
@@ -176,6 +180,7 @@ function summary(r) {
     }
     for (const a of side?.assertions ?? []) {
       lines.push(`  ${a.pass ? 'PASS' : 'MISS'} ${a.key}${a.control ? ' [control]' : ''}: expected ${JSON.stringify(a.expected)}, observed ${JSON.stringify(a.actual)}`);
+      if (a.wrongFix) lines.push('    Wrong fix: ' + JSON.stringify(a.wrongFix));
     }
   }
   for (const error of r.cleanupErrors ?? []) lines.push('Cleanup: ' + excerpt(error.message));
@@ -256,6 +261,8 @@ async function main() {
   const receipts = path.join(store, 'receipts', claimKey);
   const r = { action: opts.action, format: receiptFormat, repo, claimPath: opts.file,
     timestamp: new Date().toISOString(), verdict: 'inconclusive', sides: {}, replay: ['verb', opts.action, opts.file] };
+  if (opts.strict) r.strict = true;
+  let base = opts.base, candidate = opts.candidate;
   try {
     // Git's ceiling list cannot encode a temporary path containing its separator.
     // An invalid gitfile at our private scratch root stops the same upward search.
@@ -278,10 +285,14 @@ async function main() {
       }
       if (aliases.size) r.repoAliases = [...aliases];
     }
-    const base = opts.base && resolveRef(repo, opts.base);
-    if (base) r.replay.push('--base', base);
-    const candidate = opts.candidate && resolveRef(repo, opts.candidate);
-    if (candidate) r.replay.push('--candidate', candidate);
+    if (base) base = resolveRef(repo, base);
+    if (candidate) candidate = resolveRef(repo, candidate);
+    if (opts.strict) {
+      const missing = [];
+      if (!spec.assertions.some(a => a.wrongFix)) missing.push('an unchanged neighboring control with a wrongFix explanation');
+      if (!spec.required.length) missing.push('at least one required project command');
+      if (missing.length) throw Error('Strict proof requires ' + missing.join(' and ') + '.');
+    }
     const perform = async (role, commit, suites) => {
       if (interrupted) throw Error('interrupted');
       const sideDir = path.join(temp, randomUUID());
@@ -334,6 +345,9 @@ async function main() {
     r.reason = error.cause ? error.cause + '; ' + error.message : error.message;
     if (error.field) r.field = error.field;
   } finally {
+    if (base) r.replay.push('--base', base);
+    if (candidate) r.replay.push('--candidate', candidate);
+    if (opts.strict) r.replay.push('--strict');
     cleanupSnapshot(temp, r);
   }
   if (interrupted) Object.assign(r, { verdict: 'inconclusive', reason: 'interrupted' });

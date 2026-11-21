@@ -1,0 +1,300 @@
+{
+  "platform": "win32",
+  "node": "v22.23.5",
+  "python": "3.11.15",
+  "pytest": "8.4.2",
+  "colorama": "0.4.6",
+  "git": "git version 2.53.0.windows.2",
+  "scanner": "0.20.0",
+  "ruff": "ruff 0.15.4",
+  "scannerPolicy": {
+    "version": 1,
+    "ci": {
+      "failBelow": 70,
+      "failOnMissingTools": true,
+      "format": "json"
+    },
+    "security": {
+      "audit": false
+    },
+    "telemetry": {
+      "enabled": false
+    }
+  },
+  "rows": [
+    {
+      "case": "empty",
+      "variant": "genuine",
+      "base": "c021f05c838c1d0401ebc340d1de9b663c7fb578",
+      "candidate": "d3e3852eba45a6f7ce0ae5e02ca49106e228add6",
+      "tree": "78b7f309e5c42b354db8efaf8a6e7f6a2a148f9f",
+      "native": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 1543,
+        "summary": "584 passed, 28 skipped, 1 xfailed in 1.20s",
+        "failedTests": []
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 938,
+        "score": 93,
+        "filesForScore": 37,
+        "errors": 0,
+        "warnings": 6,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 952,
+        "verdict": "verified",
+        "reason": null,
+        "digest": "3e9dd187ef8cc9bdb7ffc61ed0f4f0dd9b9cbebce9159467ee40bd1d7b9389bc",
+        "misses": [],
+        "requiredExecuted": 1
+      },
+      "standard": "pass",
+      "withVerb": "pass"
+    },
+    {
+      "case": "empty",
+      "variant": "label absent defaults",
+      "base": "c021f05c838c1d0401ebc340d1de9b663c7fb578",
+      "candidate": "cd770a37e8962a0ee6e7d3111fcae2856e592b28",
+      "tree": "dbda0b891a6450689d6e42a5945d1a615129749b",
+      "native": {
+        "status": "block",
+        "exit": 1,
+        "ms": 1440,
+        "summary": "2 failed, 582 passed, 28 skipped, 1 xfailed in 1.13s",
+        "failedTests": [
+          "tests/test_options.py::test_do_not_show_no_default",
+          "tests/test_options.py::test_do_not_show_default_empty_multiple"
+        ]
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 918,
+        "score": 93,
+        "filesForScore": 37,
+        "errors": 0,
+        "warnings": 6,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "block",
+        "exit": 1,
+        "ms": 876,
+        "verdict": "failed",
+        "reason": "behavioral assertion failed",
+        "digest": "3e9dd187ef8cc9bdb7ffc61ed0f4f0dd9b9cbebce9159467ee40bd1d7b9389bc",
+        "misses": [
+          "unset"
+        ],
+        "requiredExecuted": 0
+      },
+      "standard": "block",
+      "withVerb": "block"
+    },
+    {
+      "case": "empty",
+      "variant": "honor only explicitly enabled defaults",
+      "base": "c021f05c838c1d0401ebc340d1de9b663c7fb578",
+      "candidate": "e6d58556ea1ccbf81c37de7857976d3adad9d69e",
+      "tree": "431a82feaa8e99f232b28957531ddbe06dec8b37",
+      "native": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 1412,
+        "summary": "584 passed, 28 skipped, 1 xfailed in 1.11s",
+        "failedTests": []
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 906,
+        "score": 93,
+        "filesForScore": 37,
+        "errors": 0,
+        "warnings": 6,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 1021,
+        "verdict": "verified",
+        "reason": null,
+        "digest": "3e9dd187ef8cc9bdb7ffc61ed0f4f0dd9b9cbebce9159467ee40bd1d7b9389bc",
+        "misses": [],
+        "requiredExecuted": 1
+      },
+      "standard": "pass",
+      "withVerb": "pass"
+    },
+    {
+      "case": "help",
+      "variant": "genuine",
+      "base": "a4f5450a2541e2f2f8cacf57f50435eb78422f99",
+      "candidate": "850bffe0b9db27f52f6f3f0a66eb6df432ce8bcd",
+      "tree": "43378cca0335dc60b74dac79a15dc360a67063c2",
+      "native": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 1506,
+        "summary": "574 passed, 27 skipped, 1 xfailed in 1.19s",
+        "failedTests": []
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 914,
+        "score": 99,
+        "filesForScore": 38,
+        "errors": 0,
+        "warnings": 2,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 983,
+        "verdict": "verified",
+        "reason": null,
+        "digest": "e337a8321e1536a41535f61c9e98202cc78eeef9c03ea58479977a22368b8204",
+        "misses": [],
+        "requiredExecuted": 1
+      },
+      "standard": "pass",
+      "withVerb": "pass"
+    },
+    {
+      "case": "help",
+      "variant": "drop every help string containing a form feed",
+      "base": "a4f5450a2541e2f2f8cacf57f50435eb78422f99",
+      "candidate": "59ed15d121424c31aa228ebbf67f826d8ee089ec",
+      "tree": "b2b594b5f43d97613c015ad4ec1bb58bc0787a29",
+      "native": {
+        "status": "block",
+        "exit": 1,
+        "ms": 1405,
+        "summary": "1 failed, 573 passed, 27 skipped, 1 xfailed in 1.09s",
+        "failedTests": [
+          "tests/test_formatting.py::test_truncating_docstring"
+        ]
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 904,
+        "score": 99,
+        "filesForScore": 38,
+        "errors": 0,
+        "warnings": 2,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "block",
+        "exit": 1,
+        "ms": 898,
+        "verdict": "failed",
+        "reason": "behavioral assertion failed",
+        "digest": "e337a8321e1536a41535f61c9e98202cc78eeef9c03ea58479977a22368b8204",
+        "misses": [
+          "public_paragraphs_survive",
+          "mixed_help_matches_public"
+        ],
+        "requiredExecuted": 0
+      },
+      "standard": "block",
+      "withVerb": "block"
+    },
+    {
+      "case": "help",
+      "variant": "drop later visible paragraphs",
+      "base": "a4f5450a2541e2f2f8cacf57f50435eb78422f99",
+      "candidate": "9db6858437ed9dc2ab0f59da922486685457079b",
+      "tree": "f7ece07871dd5d0dad6ff53db0db9af30cd03ec8",
+      "native": {
+        "status": "block",
+        "exit": 1,
+        "ms": 1425,
+        "summary": "3 failed, 571 passed, 27 skipped, 1 xfailed in 1.12s",
+        "failedTests": [
+          "tests/test_formatting.py::test_basic_functionality",
+          "tests/test_formatting.py::test_formatting_empty_help_lines",
+          "tests/test_formatting.py::test_truncating_docstring"
+        ]
+      },
+      "scan": {
+        "status": "pass",
+        "exit": 0,
+        "ms": 888,
+        "score": 99,
+        "filesForScore": 38,
+        "errors": 0,
+        "warnings": 2,
+        "reasons": [],
+        "engines": {
+          "format": "ran",
+          "lint": "ran",
+          "code-quality": "ran",
+          "ai-slop": "ran",
+          "security": "ran"
+        }
+      },
+      "proof": {
+        "status": "block",
+        "exit": 1,
+        "ms": 904,
+        "verdict": "failed",
+        "reason": "behavioral assertion failed",
+        "digest": "e337a8321e1536a41535f61c9e98202cc78eeef9c03ea58479977a22368b8204",
+        "misses": [
+          "public_paragraphs_survive"
+        ],
+        "requiredExecuted": 0
+      },
+      "standard": "block",
+      "withVerb": "block"
+    }
+  ]
+}

@@ -51,13 +51,20 @@ test('offline Node quick start rejects a broad wrong patch and verifies the actu
   assert.equal(control.pass, false, 'the real neighbor distinguishes the broad wrong fix');
   assert.equal(control.actual, 'Hello, !');
   assert.equal(wrong.sides.candidate.assertions.find(a => a.key === 'named person').pass, true);
-  verb(repo, 1, 'prove', claim, '--base', 'HEAD');
+  const wrongProof = verb(repo, 1, 'prove', claim, '--base', 'HEAD', '--strict');
+  const missed = wrongProof.sides.candidate.assertions.find(a => a.key === 'missing name');
+  assert.equal(missed.wrongFix, JSON.parse(originalClaim).assertions.find(a => a.key === missed.key).wrongFix);
+  assert.ok(missed.wrongFix);
+  const wrongSummary = cmd(repo, process.execPath, [path.join(project, 'bin/verb.js'), 'summary', wrongProof.receipt]);
+  assert.match(wrongSummary, /MISS missing name \[control\]/);
+  assert.ok(wrongSummary.includes(missed.wrongFix));
   verb(repo, 2, 'status', '--active');
 
   node(repo, ['patch.mjs', 'fixed']);
   const checked = verb(repo, 0, 'check', claim);
   assert.equal(checked.sides.candidate.commands.some(command => command.phase === 'required'), false);
-  const proof = verb(repo, 0, 'prove', claim, '--base', 'HEAD');
+  const proof = verb(repo, 0, 'prove', claim, '--base', 'HEAD', '--strict');
+  assert.equal(proof.strict, true);
   assert.equal(proof.digest, baseline.digest, 'same frozen inputs across both patches');
   assert.ok(proof.sides.candidate.assertions.every(assertion => assertion.pass));
   const required = proof.sides.candidate.commands.filter(command => command.phase === 'required');
@@ -73,6 +80,15 @@ test('offline Node quick start rejects a broad wrong patch and verifies the actu
   assert.match(summary, /missing name \[control\]/);
   assert.deepEqual(fs.readFileSync(claim), originalClaim);
   assert.deepEqual(fs.readFileSync(path.join(repo, 'probe.mjs')), originalProbe);
+
+  verb(repo, 0, 'deactivate', claim);
+  assert.equal(verb(repo, 0, 'status', '--active').active, 0);
+  // Simulate a later edit after the original claim has been retired.
+  node(repo, ['patch.mjs', 'wrong']);
+  node(repo, ['build.cjs']);
+  const native = node(repo, ['--test', '--test-reporter=tap', 'greeter.test.cjs'], 1, { NODE_TEST_CONTEXT: undefined });
+  assert.match(native.stdout, /^not ok \d+ - greeting for \{\}/m);
+  assert.match(native.stdout, /^ok \d+ - greeting for \{"displayName":""\}/m);
 });
 
 test('Git-aware example builds in its repo, diagnoses source-only snapshots, and supports a frozen version override', t => {
@@ -119,7 +135,7 @@ test('full CLI launched inside Node test context executes and fails a real requi
   fs.appendFileSync(path.join(repo, 'greeter.test.cjs'), `
     test('deliberate required test failure', () => assert.fail('must execute, not silently skip'));
   `);
-  const child = node(repo, [path.join(project, 'bin/verb.js'), 'prove', claim, '--base', 'HEAD', '--json'], 1,
+  const child = node(repo, [path.join(project, 'bin/verb.js'), 'prove', claim, '--base', 'HEAD', '--strict', '--json'], 1,
     { NODE_TEST_CONTEXT: 'child-v8' });
   const result = JSON.parse(child.stdout);
   assert.equal(result.verdict, 'failed');

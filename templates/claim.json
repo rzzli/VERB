@@ -4,7 +4,10 @@
   "fixtures": ["probe.mjs"],
   "assertions": [
     { "key": "saved theme", "base": "light", "fixed": "dark" },
-    { "key": "unconfigured locale", "base": "en", "fixed": "en" }
+    {
+      "key": "unconfigured locale", "base": "en", "fixed": "en",
+      "wrongFix": "Returning the last saved value for every key would also give the unconfigured locale the value dark."
+    }
   ],
   "required": [["{node}", "--test"]]
 }
